@@ -33,7 +33,7 @@ public class Account {
     @Column(nullable = false)
     private Instant lastUpdated;
 
-    protected Account() { } // JPA
+    public Account() { } // JPA
 
     public Account(String holderName, BigDecimal openingBalance) {
         this.holderName = Objects.requireNonNull(holderName, "holderName is required");

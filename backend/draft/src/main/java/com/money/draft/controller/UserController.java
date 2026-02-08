@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/me")
 public class UserController {
@@ -21,10 +23,12 @@ public class UserController {
     }
 
     @PostMapping("/transfer")
-    public ResponseEntity<?> transfer(Authentication auth, @RequestBody MeTransferRequest req) {
-        var user = userRepo.findByUsername(auth.getName()).orElseThrow();
+    public ResponseEntity<?> transfer(
+            Principal principal,
+            @RequestBody MeTransferRequest req
+    ) {
+        var user = userRepo.findByUsername(principal.getName()).orElseThrow();
 
-        // ✅ Server enforces fromAccountId and generates idempotencyKey
         var resp = transferService.transferForUser(
                 user.getAccountId(),
                 req.getToAccountId(),
@@ -33,4 +37,5 @@ public class UserController {
 
         return ResponseEntity.ok(resp);
     }
+
 }

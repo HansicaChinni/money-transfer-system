@@ -1,6 +1,7 @@
 package com.money.draft.domain.entity;
 
 
+import com.money.draft.domain.enums.Role;
 import jakarta.persistence.*;
 import java.time.Instant;
 
@@ -8,7 +9,7 @@ import java.time.Instant;
 @Table(name = "users")
 public class AppUser {
 
-    public enum Role { USER, ADMIN }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
