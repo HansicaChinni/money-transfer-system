@@ -1,0 +1,135 @@
+<div class="transfer-wrapper" *ngIf="!loadingAccount; else accountLoading">
+  <div class="transfer-layout" *ngIf="currentAccount; else noAccount">
+    <mat-card class="account-card">
+      <mat-card-header>
+        <div mat-card-avatar class="avatar-circle">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <mat-card-title>From Account</mat-card-title>
+        <mat-card-subtitle>Funds will be debited from this account</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="account-details">
+          <div class="detail-row">
+            <span class="label">Account ID</span>
+            <span class="value">#{{ currentAccount.id }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Holder Name</span>
+            <span class="value">{{ currentAccount.holderName }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Current Balance</span>
+            <span class="value">
+              {{ currentAccount.balance | currency:'USD':'symbol':'1.2-2' }}
+            </span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Status</span>
+            <span class="status-chip" [ngClass]="getStatusClass(currentAccount.status)">
+              {{ currentAccount.status | titlecase }}
+            </span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="form-card">
+      <mat-card-header>
+        <mat-card-title>New Transfer</mat-card-title>
+        <mat-card-subtitle>Enter destination account and amount</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div *ngIf="errorMessage" class="alert error">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+
+        <div *ngIf="successMessage" class="alert success">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ successMessage }}</span>
+        </div>
+
+        <form [formGroup]="transferForm" (ngSubmit)="onSubmit()" class="transfer-form">
+          <mat-form-field appearance="outline">
+            <mat-label>To Account ID</mat-label>
+            <input
+              matInput
+              type="number"
+              formControlName="toAccountId"
+              placeholder="Enter destination account ID"
+            >
+            <mat-error *ngIf="transferForm.get('toAccountId')?.hasError('required')">
+              Destination account is required
+            </mat-error>
+            <mat-error *ngIf="transferForm.get('toAccountId')?.hasError('min')">
+              Account ID must be greater than 0
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Amount</mat-label>
+            <input
+              matInput
+              type="number"
+              formControlName="amount"
+              placeholder="Enter transfer amount"
+              step="0.01"
+              min="0.01"
+            >
+            <span matSuffix class="currency-suffix">USD</span>
+            <mat-error *ngIf="transferForm.get('amount')?.hasError('required')">
+              Amount is required
+            </mat-error>
+            <mat-error *ngIf="transferForm.get('amount')?.hasError('min')">
+              Amount must be at least 0.01
+            </mat-error>
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="resetForm()"
+              [disabled]="loading"
+            >
+              Cancel
+            </button>
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="loading || transferForm.invalid"
+            >
+              <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+              <span *ngIf="!loading">Submit Transfer</span>
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <ng-template #noAccount>
+    <div class="state-card">
+      <mat-card>
+        <mat-card-content>
+          <div class="state-icon error">
+            <mat-icon>error_outline</mat-icon>
+          </div>
+          <div class="state-title">No account available</div>
+          <div class="state-message">
+            No account is associated with this user. Please contact support.
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </ng-template>
+</div>
+
+<ng-template #accountLoading>
+  <div class="loading-container">
+    <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+  </div>
+</ng-template>

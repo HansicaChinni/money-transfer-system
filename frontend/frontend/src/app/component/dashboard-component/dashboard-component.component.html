@@ -1,0 +1,70 @@
+<div class="dashboard-wrapper" *ngIf="!loading">
+  <div class="dashboard-layout" *ngIf="account; else errorState">
+    <mat-card class="welcome-card">
+      <mat-card-header>
+        <div mat-card-avatar class="avatar-circle">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <mat-card-title>Welcome, {{ account.holderName }}</mat-card-title>
+        <mat-card-subtitle>Your money transfer overview</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="account-meta">
+          <div class="meta-item">
+            <span class="label">Account ID</span>
+            <span class="value">#{{ account.id }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Status</span>
+            <span class="status-chip" [ngClass]="getStatusClass(account.status)">
+              {{ account.status | titlecase }}
+            </span>
+          </div>
+          <div class="meta-item" *ngIf="account.lastUpdated">
+            <span class="label">Last updated</span>
+            <span class="value">{{ account.lastUpdated | date:'medium' }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="balance-card">
+      <mat-card-content>
+        <div class="balance-label">Current Balance</div>
+        <div class="balance-value">
+          {{ account.balance | currency:'USD':'symbol':'1.2-2' }}
+        </div>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-stroked-button color="primary" (click)="navigateToTransfer()">
+          <mat-icon>send</mat-icon>
+          New Transfer
+        </button>
+        <button mat-button (click)="navigateToHistory()">
+          <mat-icon>history</mat-icon>
+          View History
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <ng-template #errorState>
+    <div class="state-card">
+      <mat-card>
+        <mat-card-content>
+          <div class="state-icon error">
+            <mat-icon>error_outline</mat-icon>
+          </div>
+          <div class="state-title">Unable to load dashboard</div>
+          <div class="state-message">
+            {{ errorMessage || 'No account associated with this user.' }}
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </ng-template>
+</div>
+
+<div class="loading-container" *ngIf="loading">
+  <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+</div>
