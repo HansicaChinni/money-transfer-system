@@ -60,14 +60,23 @@ export class AuthService {
     return this.http.post<{ message: string }>('http://localhost:8080/me/password', payload);
   }
 
-  logout(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem(this.TOKEN_KEY);
-      localStorage.removeItem(this.USER_INFO_KEY);
-    }
-    this.currentUserSubject.next(null);
-    this.router.navigate(['/login']);
+logout(): void {
+  if (isPlatformBrowser(this.platformId)) {
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_INFO_KEY);
+
+    // 🔒 lock history at login page
+    window.history.pushState(null, '', '/login');
+
+    window.onpopstate = () => {
+      window.history.pushState(null, '', '/login');
+    };
   }
+
+  this.currentUserSubject.next(null);
+  this.router.navigateByUrl('/login', { replaceUrl: true });
+}
+
 
   getToken(): string | null {
     if (!isPlatformBrowser(this.platformId)) {

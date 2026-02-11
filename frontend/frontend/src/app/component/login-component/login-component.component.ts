@@ -13,6 +13,7 @@ import { Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -51,6 +52,15 @@ export class LoginComponent {
 
 ngOnInit(): void {
   if (isPlatformBrowser(this.platformId)) {
+
+    // lock back/forward navigation after logout
+    window.history.pushState(null, '', window.location.href);
+
+    window.onpopstate = () => {
+      window.history.pushState(null, '', window.location.href);
+    };
+
+    // existing token check
     if (localStorage.getItem('token')) {
       this.router.navigateByUrl('/dashboard', { replaceUrl: true });
     }
