@@ -4,25 +4,55 @@
   align-items: center;
   min-height: 100vh;
   padding: 24px 16px;
-  background: radial-gradient(circle at top, #e5edff 0, #f9fafb 55%, #f3f4f6 100%);
+  background: linear-gradient(135deg, var(--midnight-navy) 0%, #0D1B2A 50%, #1a0033 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-container::before {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 215, 255, 0.1) 0%, transparent 70%);
+  top: -200px;
+  right: -200px;
+  pointer-events: none;
+}
+
+.login-container::after {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(160, 32, 240, 0.1) 0%, transparent 70%);
+  bottom: -200px;
+  left: -200px;
+  pointer-events: none;
 }
 
 .login-box {
   width: 100%;
   max-width: 450px;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 0.6s ease-out;
 }
 
 mat-card {
   padding: 0;
   overflow: hidden;
+  background-color: var(--card-bg) !important;
+  border: 1px solid rgba(0, 215, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 215, 255, 0.1), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 mat-card-header {
-  background-color: #ffffff;
-  color: #111827;
+  background: linear-gradient(135deg, var(--deep-ultraviolet) 0%, var(--cyber-purple) 100%);
+  color: white;
   padding: 40px 32px;
   margin-bottom: 0;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(0, 215, 255, 0.2);
 }
 
 .header-content {
@@ -45,25 +75,34 @@ mat-card-header {
   align-items: center;
   justify-content: center;
   padding: 8px;
-  background-color: #e5edff;
-  color: #3f51b5;
+  background-color: rgba(0, 215, 255, 0.2);
+  color: var(--electric-cyan);
+  box-shadow: 0 0 20px rgba(0, 215, 255, 0.4);
+}
+
+.logo-image {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 215, 255, 0.4);
 }
 
 mat-card-title {
   font-size: 24px;
   font-weight: 600;
   margin: 8px 0 4px 0;
-  color: #111827;
+  color: white;
 }
 
 mat-card-subtitle {
   font-size: 13px;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.8);
   margin: 0;
 }
 
 mat-card-content {
   padding: 32px;
+  background-color: var(--card-bg);
 }
 
 form {
@@ -74,21 +113,137 @@ form {
 
 mat-form-field {
   width: 100%;
+  
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    background: rgba(0, 215, 255, 0.05);
+  }
+
+  ::ng-deep .mat-mdc-form-field-label {
+    color: var(--text-muted);
+  }
+
+  ::ng-deep.mat-focused .mat-mdc-form-field-label {
+    color: var(--electric-cyan) !important;
+  }
+}
+
+.form-field-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: var(--cool-slate-grey);
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: var(--electric-cyan);
+  }
 }
 
 .login-button {
   width: 100%;
-  height: 48px;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--cyber-purple) 0%, var(--deep-ultraviolet) 100%);
+  color: white;
   font-size: 16px;
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(160, 32, 240, 0.3);
   margin-top: 8px;
-  position: relative;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(160, 32, 240, 0.5);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.error-message {
+  color: #FF6B6B;
+  background-color: rgba(255, 107, 107, 0.1);
+  border-left: 3px solid #FF6B6B;
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.show-password-toggle {
+  cursor: pointer;
+  color: var(--cool-slate-grey);
+  user-select: none;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: var(--electric-cyan);
+  }
+}
+
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 
   mat-spinner {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .login-box {
+    max-width: calc(100% - 32px);
+  }
+
+  mat-card-header {
+    padding: 32px 24px;
+  }
+
+  mat-card-content {
+    padding: 24px;
+  }
+
+  mat-card-title {
+    font-size: 20px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 

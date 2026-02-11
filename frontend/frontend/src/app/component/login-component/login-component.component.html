@@ -4,7 +4,8 @@
       <mat-card-header>
         <div class="header-content">
           <div class="logo-container">
-            <mat-icon class="logo-icon">account_balance</mat-icon>
+            <img src="assets/banklogo.png" alt="Bank Logo" class="logo-image" (error)="onLogoError($event)">
+            <mat-icon class="logo-icon" *ngIf="false">account_balance</mat-icon>
           </div>
           <mat-card-title>Money Transfer System</mat-card-title>
           <mat-card-subtitle>Secure & Reliable Banking</mat-card-subtitle>

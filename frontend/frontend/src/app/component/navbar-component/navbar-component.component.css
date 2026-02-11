@@ -1,9 +1,10 @@
 .navbar {
-  background: linear-gradient(120deg, #1f2937, #111827);
-  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.6);
+  background: linear-gradient(120deg, var(--midnight-navy) 0%, #0D1B2A 50%, #1a0033 100%);
+  box-shadow: 0 8px 32px rgba(0, 215, 255, 0.15), 0 2px 8px rgba(0, 0, 0, 0.6);
   position: sticky;
   top: 0;
   z-index: 1000;
+  border-bottom: 1px solid rgba(0, 215, 255, 0.2);
 }
 
 .navbar-content {
@@ -14,26 +15,43 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 16px;
+  height: 64px;
 }
 
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+}
+
+.navbar-logo {
+  height: 48px;
+  width: auto;
+  border-radius: 8px;
+  filter: drop-shadow(0 0 8px rgba(0, 215, 255, 0.3));
+  transition: all 0.3s ease;
+}
+
+.navbar-logo:hover {
+  filter: drop-shadow(0 0 16px rgba(0, 215, 255, 0.6));
+  transform: scale(1.05);
 }
 
 .navbar-icon {
   font-size: 32px;
   width: 32px;
   height: 32px;
-  color: #e5edff;
+  color: var(--electric-cyan);
 }
 
 .navbar-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #f9fafb;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, var(--electric-cyan) 0%, var(--neon-turquoise) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .navbar-right {
@@ -47,30 +65,56 @@
     gap: 6px;
     font-weight: 500;
     letter-spacing: 0.5px;
-    color: #e5e7eb;
+    color: var(--text-light);
+    transition: all 0.3s ease;
+    position: relative;
 
     mat-icon {
       font-size: 20px;
       width: 20px;
       height: 20px;
     }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--electric-cyan);
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 0.3s ease;
+    }
+
+    &:hover::after {
+      transform: scaleX(1);
+    }
   }
 }
 
 .active-link {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(0, 215, 255, 0.15);
   border-radius: 4px;
+  color: var(--electric-cyan) !important;
+  
+  &::after {
+    transform: scaleX(1);
+  }
 }
 
 .user-button {
   margin-left: 8px;
   padding: 0 12px;
+  border-left: 1px solid rgba(0, 215, 255, 0.2);
   
   span {
     max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: var(--electric-cyan);
   }
 }
 
@@ -78,45 +122,63 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 16px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(0, 215, 255, 0.2);
+}
+
+.user-menu-header-info {
+  flex: 1;
+
+  .user-menu-username {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--electric-cyan);
+  }
+
+  .user-menu-role {
+    font-size: 12px;
+    color: var(--neon-turquoise);
+  }
+}
+
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: var(--text-light);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
 
   mat-icon {
-    font-size: 40px;
-    width: 40px;
-    height: 40px;
-    color: #667eea;
+    color: var(--cyber-purple);
+  }
+
+  &:hover {
+    background-color: rgba(0, 215, 255, 0.1);
+    color: var(--electric-cyan);
+
+    mat-icon {
+      color: var(--electric-cyan);
+    }
   }
 }
 
-.user-info {
-  .username {
-    font-weight: 600;
-    font-size: 14px;
-    color: #333;
-  }
-
-  .role {
-    font-size: 12px;
-    color: #666;
-    text-transform: uppercase;
-    margin-top: 2px;
-  }
+.divider {
+  height: 1px;
+  background-color: rgba(0, 215, 255, 0.2);
+  margin: 4px 0;
 }
 
-mat-divider {
-  margin: 8px 0;
-}
+.logout-button {
+  padding: 12px 16px;
+  color: #FF6B6B;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
 
-@media (max-width: 768px) {
-  .navbar-title {
-    display: none;
-  }
-
-  .navbar-right button span {
-    display: none;
-  }
-
-  .user-button span {
-    display: inline !important;
+  &:hover {
+    background-color: rgba(255, 107, 107, 0.1);
   }
 }

@@ -57,20 +57,13 @@ export class TransferComponent implements OnInit {
   }
 
   loadCurrentAccount(): void {
-    const accountId = this.authService.getCurrentAccountId();
-
-    if (!accountId) {
-      this.loadingAccount = false;
-      return;
-    }
-
-    this.accountService.getAccount(accountId).subscribe({
+    this.accountService.getAccount().subscribe({
       next: (account) => {
         this.currentAccount = account;
         this.loadingAccount = false;
       },
-      error: () => {
-        this.errorMessage = 'Failed to load account data';
+      error: (error) => {
+        this.errorMessage = error.error?.message || 'Failed to load account data';
         this.loadingAccount = false;
       }
     });

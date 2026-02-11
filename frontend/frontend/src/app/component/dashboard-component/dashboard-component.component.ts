@@ -41,21 +41,16 @@ export class DashboardComponent implements OnInit {
   }
 
   loadAccountData(): void {
-    const accountId = this.authService.getCurrentAccountId();
-
-    if (!accountId) {
-      this.errorMessage = 'No account associated with this user';
-      this.loading = false;
-      return;
-    }
-
-    this.accountService.getAccount(accountId).subscribe({
+    console.log('Loading account data...');
+    this.accountService.getAccount().subscribe({
       next: (account) => {
+        console.log('Account loaded successfully:', account);
         this.account = account;
         this.loading = false;
       },
-      error: () => {
-        this.errorMessage = 'Failed to load account data';
+      error: (error) => {
+        console.error('Error loading account:', error);
+        this.errorMessage = error.error?.message || 'Failed to load account data';
         this.loading = false;
       }
     });

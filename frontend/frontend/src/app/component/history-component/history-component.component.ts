@@ -43,19 +43,13 @@ export class HistoryComponent implements OnInit {
   }
 
   loadTransactions(): void {
-    if (!this.currentAccountId) {
-      this.errorMessage = 'No account associated with this user';
-      this.loading = false;
-      return;
-    }
-
-    this.accountService.getTransactions(this.currentAccountId).subscribe({
+    this.accountService.getTransactions().subscribe({
       next: (transactions) => {
         this.transactions = transactions;
         this.loading = false;
       },
-      error: () => {
-        this.errorMessage = 'Failed to load transaction history';
+      error: (error) => {
+        this.errorMessage = error.error?.message || 'Failed to load transaction history';
         this.loading = false;
       }
     });

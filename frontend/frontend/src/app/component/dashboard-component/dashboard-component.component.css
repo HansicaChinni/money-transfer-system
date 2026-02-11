@@ -4,7 +4,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  background-color: #f5f5f8;
+  background: linear-gradient(135deg, var(--midnight-navy) 0%, var(--dark-bg) 50%, #1a0033 100%);
 }
 
 .dashboard-layout {
@@ -17,67 +17,206 @@
 
 .welcome-card,
 .balance-card {
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  background-color: var(--card-bg);
+  box-shadow: 0 8px 32px rgba(0, 215, 255, 0.1), 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 215, 255, 0.2);
   border-radius: 12px;
+  padding: 24px;
+  color: var(--text-light);
+  transition: all 0.3s ease;
+}
+
+.welcome-card:hover,
+.balance-card:hover {
+  border-color: rgba(0, 215, 255, 0.4);
+  box-shadow: 0 12px 40px rgba(0, 215, 255, 0.2), 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.welcome-heading {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 .avatar-circle {
-  background-color: #e5edff;
+  background: linear-gradient(135deg, rgba(0, 215, 255, 0.2) 0%, rgba(160, 32, 240, 0.2) 100%);
+  border: 2px solid rgba(0, 215, 255, 0.3);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
 }
 
 .avatar-circle mat-icon {
-  color: #3f51b5;
+  color: var(--electric-cyan);
+  font-size: 32px;
+}
+
+.welcome-text h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--electric-cyan);
+}
+
+.welcome-text p {
+  font-size: 14px;
+  color: var(--text-muted);
 }
 
 .account-meta {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
-  margin-top: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 215, 255, 0.2);
 }
 
 .meta-item .label {
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #9ca3af;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 .meta-item .value {
   display: block;
-  margin-top: 4px;
-  font-size: 14px;
-  color: #111827;
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--electric-cyan);
 }
 
 .status-chip {
   display: inline-flex;
   align-items: center;
-  padding: 2px 10px;
+  padding: 6px 14px;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .status-active {
-  background-color: #ecfdf3;
-  color: #16a34a;
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .status-locked,
 .status-closed {
-  background-color: #fef3c7;
-  color: #b45309;
+  background-color: rgba(255, 107, 107, 0.15);
+  color: #FF6B6B;
+  border: 1px solid rgba(255, 107, 107, 0.3);
 }
 
 .balance-card {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.balance-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.balance-amount {
+  font-size: 42px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--electric-cyan) 0%, var(--neon-turquoise) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 24px;
+}
+
+.balance-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-button {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid rgba(0, 215, 255, 0.3);
+  border-radius: 6px;
+  background-color: rgba(0, 215, 255, 0.05);
+  color: var(--electric-cyan);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background-color: rgba(0, 215, 255, 0.15);
+    border-color: rgba(0, 215, 255, 0.5);
+    box-shadow: 0 0 15px rgba(0, 215, 255, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.error-container {
+  padding: 24px;
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 8px;
+  color: #FF6B6B;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-weight: 500;
+
+  mat-icon {
+    font-size: 24px;
+  }
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  color: var(--electric-cyan);
+}
+
+@media (max-width: 768px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .balance-amount {
+    font-size: 32px;
+  }
+
+  .account-meta {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .balance-label {
@@ -87,27 +226,6 @@
   color: #6b7280;
   margin-bottom: 8px;
 }
-
-.balance-value {
-  font-size: 32px;
-  font-weight: 600;
-  color: #111827;
-}
-
-mat-card-actions {
-  padding: 16px 24px 20px;
-}
-
-.state-card {
-  width: 100%;
-  max-width: 480px;
-}
-
-.state-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 12px;

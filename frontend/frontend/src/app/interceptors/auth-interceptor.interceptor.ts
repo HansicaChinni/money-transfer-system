@@ -8,11 +8,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // Skip adding token for login requests
   if (req.url.includes('/auth/login')) {
+    console.log('[AuthInterceptor] Skipping token for login request:', req.url);
     return next(req);
   }
 
   // Clone the request and add authorization header if token exists
   if (token) {
+    console.log('[AuthInterceptor] Adding Bearer token to request:', req.url);
     const clonedRequest = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
@@ -21,5 +23,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(clonedRequest);
   }
 
+  console.warn('[AuthInterceptor] No token found for request:', req.url);
   return next(req);
 };

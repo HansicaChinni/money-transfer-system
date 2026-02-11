@@ -26,14 +26,30 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${this.API_URL}/login`, credentials)
       .pipe(
         tap(response => {
-          this.setToken(response.token);
-          const respAny = response as any;
-          const accountId = respAny.accountId ?? respAny.account_id ?? null;
+          console.log('Login response:', response);
+          
+          // Extract token - try multiple possible property names
+          const token = response.token || (response as any).access_token;
+          if (!token) {
+            console.error('No token found in login response:', response);
+            throw new Error('No JWT token in response');
+          }
+          
+          this.setToken(token);
+          
+          // Extract account ID - try multiple possible property names
+          const accountId = response.accountId ?? (response as any).account_id ?? null;
+          
+          // Extract role - try multiple possible property names
+          const role = response.role ?? (response as any).userRole ?? 'USER';
+          
           const userInfo: UserInfo = {
             username: credentials.username,
-            role: respAny.role ?? respAny.userRole ?? 'USER',
+            role: role,
             accountId: accountId
           };
+          
+          console.log('User info stored:', userInfo);
           this.setUserInfo(userInfo);
           this.currentUserSubject.next(userInfo);
         })
