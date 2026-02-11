@@ -2,10 +2,14 @@
 package com.money.draft.service.impl;
 
 import com.money.draft.domain.repository.AccountRepository;
+import com.money.draft.domain.repository.AppUserRepository;
 import com.money.draft.domain.repository.TransactionLogRepository;
+import com.money.draft.dto.AdminAccountDetailResponse;
 import com.money.draft.dto.AdminAccountView;
+import com.money.draft.dto.AdminCreateAccountRequest;
 import com.money.draft.dto.TransactionLogResponse;
 import com.money.draft.service.AdminService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +24,17 @@ public class AdminServiceImpl implements AdminService {
 
     private final AccountRepository accountRepo;
     private final TransactionLogRepository txRepo;
+    private final AppUserRepository userRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    public AdminServiceImpl(AccountRepository accountRepo, TransactionLogRepository txRepo) {
+    public AdminServiceImpl(AccountRepository accountRepo,
+                            TransactionLogRepository txRepo,
+                            AppUserRepository userRepo,
+                            PasswordEncoder passwordEncoder) {
         this.accountRepo = accountRepo;
         this.txRepo = txRepo;
+        this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -66,5 +77,63 @@ public class AdminServiceImpl implements AdminService {
     // Pass-through when already LocalDateTime
     private static LocalDateTime toLocalDateTime(LocalDateTime ldt) {
         return ldt;
+    }
+
+    @Override
+    @Transactional
+    public AdminAccountDetailResponse createAccount(AdminCreateAccountRequest req) {
+        // 1. Prevent duplicate usernames
+        if (userRepo.findByUsername(req.username()).isPresent()) {
+            throw new com.money.draft.exception.BusinessException("DUPLICATE_USER", "Username already exists");
+        }
+
+        // 2. Create and Save Account (image_9cc5f4.png fields)
+        com.money.draft.domain.entity.Account account = new com.money.draft.domain.entity.Account();
+        account.setHolderName(req.holderName());
+        account.setBalance(req.initialBalance());
+        account.setStatus(com.money.draft.domain.enums.AccountStatus.ACTIVE);
+
+        com.money.draft.domain.entity.Account savedAccount = accountRepo.save(account);
+
+        // 3. Create and Save User (image_9cc8d6.png fields)
+        com.money.draft.domain.entity.AppUser user = new com.money.draft.domain.entity.AppUser();
+        user.setUsername(req.username());
+        user.setPassword(passwordEncoder.encode(req.password()));
+        user.setRole(com.money.draft.domain.enums.Role.USER);
+        user.setAccountId(savedAccount.getId());
+
+        userRepo.save(user);
+
+        return mapToAdminDetailResponse(savedAccount);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AdminAccountDetailResponse getAccountDetails(Long id) {
+        com.money.draft.domain.entity.Account a = accountRepo.findById(id)
+                .orElseThrow(() -> new com.money.draft.exception.AccountNotFoundException(id));
+        return mapToAdminDetailResponse(a);
+    }
+
+    @Override
+    @Transactional
+    public AdminAccountDetailResponse updateAccountStatus(Long id, com.money.draft.domain.enums.AccountStatus status) {
+        com.money.draft.domain.entity.Account a = accountRepo.findById(id)
+                .orElseThrow(() -> new com.money.draft.exception.AccountNotFoundException(id));
+
+        a.setStatus(status);
+        return mapToAdminDetailResponse(accountRepo.save(a));
+    }
+
+    // Mapper for the Admin-specific detail view
+    private AdminAccountDetailResponse mapToAdminDetailResponse(com.money.draft.domain.entity.Account a) {
+        return new AdminAccountDetailResponse(
+                a.getId(),
+                a.getHolderName(),
+                a.getBalance(),
+                a.getStatus().name(),
+                a.getVersion(),
+                toLocalDateTime(a.getLastUpdated())
+        );
     }
 }
