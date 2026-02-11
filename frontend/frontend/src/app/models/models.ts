@@ -10,6 +10,11 @@ export interface LoginResponse {
   accountId: number | null;
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
 // Account Models
 export interface AccountResponse {
   id: number;

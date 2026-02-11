@@ -4,6 +4,7 @@ import { DashboardComponent } from './component/dashboard-component/dashboard-co
 import { TransferComponent } from './component/transfer-component/transfer-component.component';
 import { HistoryComponent } from './component/history-component/history-component.component';
 import { AdminComponent } from './component/admin-component/admin-component.component';
+import { ChangePasswordComponent } from './component/change-password-component/change-password-component.component';
 import { authGuard } from './guards/auth-guard.guard';
 import { adminGuard } from './guards/admin-guard.guard';
 
@@ -23,6 +24,11 @@ export const routes: Routes = [
   { 
     path: 'history', 
     component: HistoryComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'change-password',
+    component: ChangePasswordComponent,
     canActivate: [authGuard]
   },
   { 

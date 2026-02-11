@@ -2,7 +2,7 @@ import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { LoginRequest, LoginResponse, UserInfo } from '../models/models';
+import { ChangePasswordRequest, LoginRequest, LoginResponse, UserInfo } from '../models/models';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -27,15 +27,21 @@ export class AuthService {
       .pipe(
         tap(response => {
           this.setToken(response.token);
+          const respAny = response as any;
+          const accountId = respAny.accountId ?? respAny.account_id ?? null;
           const userInfo: UserInfo = {
             username: credentials.username,
-            role: response.role,
-            accountId: response.accountId
+            role: respAny.role ?? respAny.userRole ?? 'USER',
+            accountId: accountId
           };
           this.setUserInfo(userInfo);
           this.currentUserSubject.next(userInfo);
         })
       );
+  }
+
+  changePassword(payload: ChangePasswordRequest): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>('http://localhost:8080/me/password', payload);
   }
 
   logout(): void {
