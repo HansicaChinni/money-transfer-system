@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -9,6 +9,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../services/auth-service.service';
+import { Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
 
 @Component({
   selector: 'app-login',
@@ -26,6 +29,7 @@ import { AuthService } from '../../services/auth-service.service';
   templateUrl: './login-component.component.html',
   styleUrls: ['./login-component.component.css']
 })
+
 export class LoginComponent {
   loginForm: FormGroup;
   loading = false;
@@ -35,13 +39,26 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+      @Inject(PLATFORM_ID) private platformId: Object
+
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]]
     });
   }
+
+ngOnInit(): void {
+  if (isPlatformBrowser(this.platformId)) {
+    if (localStorage.getItem('token')) {
+      this.router.navigateByUrl('/dashboard', { replaceUrl: true });
+    }
+  }
+}
+
+
+
 
   onSubmit(): void {
     if (this.loginForm.invalid) {
@@ -56,9 +73,9 @@ export class LoginComponent {
         this.loading = false;
         // Navigate based on role
         if (response.role === 'ADMIN') {
-          this.router.navigate(['/admin']);
+this.router.navigateByUrl('/admin', { replaceUrl: true });
         } else {
-          this.router.navigate(['/dashboard']);
+this.router.navigateByUrl('/dashboard', { replaceUrl: true });
         }
       },
       error: (error) => {
