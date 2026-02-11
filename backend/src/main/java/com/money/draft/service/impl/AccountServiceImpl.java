@@ -17,15 +17,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepo;
     private final TransactionLogRepository txRepo;
+    private final AppUserRepository userRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    public AccountServiceImpl(AccountRepository accountRepo, TransactionLogRepository txRepo, AppUserRepository userRepo, PasswordEncoder passwordEncoder) {
+    public AccountServiceImpl(AccountRepository accountRepo,
+                              TransactionLogRepository txRepo,
+                              AppUserRepository userRepo,
+                              PasswordEncoder passwordEncoder) {
         this.accountRepo = accountRepo;
         this.txRepo = txRepo;
         this.userRepo = userRepo;
@@ -61,15 +70,14 @@ public class AccountServiceImpl implements AccountService {
                         tx.getStatus().name(),
                         tx.getFailureReason(),
                         tx.getIdempotencyKey(),
-                        tx.getCreatedOn()
+                        toLocalDateTime(tx.getCreatedOn()) // Instant -> LocalDateTime (UTC)
                 ))
-                .toList();
+                .collect(Collectors.toList());
     }
 
-
-    private final AppUserRepository userRepo;
-    private final PasswordEncoder passwordEncoder;
-
+    private static LocalDateTime toLocalDateTime(Instant instant) {
+        return instant == null ? null : instant.atOffset(ZoneOffset.UTC).toLocalDateTime();
+    }
 
     @Override
     @Transactional
@@ -78,7 +86,7 @@ public class AccountServiceImpl implements AccountService {
                 .orElseThrow(() -> new AccountNotFoundException(userId));
 
         // Check old password
-        if (!passwordEncoder.matches(currentPassword, ((AppUser) user).getPassword())) {
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new IncorrectPasswordException();
         }
 
@@ -87,5 +95,3 @@ public class AccountServiceImpl implements AccountService {
         userRepo.save(user);
     }
 }
-
-

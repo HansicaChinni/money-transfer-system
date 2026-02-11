@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.math.BigDecimal;
 
@@ -26,6 +27,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+// If your GlobalExceptionHandler is in com.money.draft.exception.GlobalExceptionHandler, import it:
+import com.money.draft.exception.GlobalExceptionHandler;
 
 @ExtendWith(MockitoExtension.class)
 class TransferControllerTest {
@@ -41,11 +45,17 @@ class TransferControllerTest {
 
     @BeforeEach
     void setUp() {
-        // If you have a @ControllerAdvice for exceptions, register it here with .setControllerAdvice(...)
+        // Register ControllerAdvice so BusinessExceptions map to proper HTTP statuses,
+        // and register a Validator so @Valid on DTOs triggers Bean Validation errors (400).
+        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+        validator.afterPropertiesSet();
+
         mockMvc = MockMvcBuilders
                 .standaloneSetup(transferController)
-                //.setControllerAdvice(new GlobalExceptionHandler())
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .setValidator(validator)
                 .build();
+
         objectMapper = new ObjectMapper();
     }
 
@@ -67,7 +77,7 @@ class TransferControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status", is("SUCCESS")))
                 .andExpect(jsonPath("$.transactionId", is(1)))
                 .andExpect(jsonPath("$.amount", is(150.00)));
@@ -108,7 +118,7 @@ class TransferControllerTest {
         );
 
         when(transferService.transfer(any(TransferRequest.class)))
-                .thenThrow(new AccountNotFoundException(999L)); // <-- Long, not String
+                .thenThrow(new AccountNotFoundException(999L));
 
         // When & Then
         mockMvc.perform(post("/api/v1/transfers")
@@ -131,9 +141,9 @@ class TransferControllerTest {
 
         when(transferService.transfer(any(TransferRequest.class)))
                 .thenThrow(new InsufficientBalanceException(
-                        100L,                             // fromAccountId
-                        new BigDecimal("500.00"),         // current balance (example)
-                        new BigDecimal("10000.00")        // attempted amount
+                        100L,
+                        new BigDecimal("500.00"),
+                        new BigDecimal("10000.00")
                 ));
 
         // When & Then
@@ -156,7 +166,7 @@ class TransferControllerTest {
         );
 
         when(transferService.transfer(any(TransferRequest.class)))
-                .thenThrow(new SelfTransferNotAllowedException(100L)); // <-- Long
+                .thenThrow(new SelfTransferNotAllowedException(100L));
 
         // When & Then
         mockMvc.perform(post("/api/v1/transfers")
@@ -261,7 +271,7 @@ class TransferControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.status", is("FAILED")))
                 .andExpect(jsonPath("$.message", is("Internal error occurred")));
 
