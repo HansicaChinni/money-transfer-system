@@ -1,10 +1,10 @@
- .login-container {
+.login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   padding: 24px 16px;
-  background: linear-gradient(135deg, var(--midnight-navy) 0%, #0D1B2A 50%, #1a0033 100%);
+  background: linear-gradient(135deg, var(--soft-cream) 0%, var(--warm-beige) 50%, var(--light-blush) 100%);
   position: relative;
   overflow: hidden;
 }
@@ -14,7 +14,7 @@
   position: absolute;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(0, 215, 255, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(139, 41, 82, 0.08) 0%, transparent 70%);
   top: -200px;
   right: -200px;
   pointer-events: none;
@@ -25,7 +25,7 @@
   position: absolute;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(160, 32, 240, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(166, 77, 121, 0.08) 0%, transparent 70%);
   bottom: -200px;
   left: -200px;
   pointer-events: none;
@@ -43,16 +43,16 @@ mat-card {
   padding: 0;
   overflow: hidden;
   background-color: var(--card-bg) !important;
-  border: 1px solid rgba(0, 215, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 215, 255, 0.1), 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(107, 27, 61, 0.15);
+  box-shadow: 0 8px 32px var(--shadow-wine), 0 2px 8px var(--shadow-soft);
 }
 
 mat-card-header {
-  background: linear-gradient(135deg, var(--deep-ultraviolet) 0%, var(--cyber-purple) 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--wine-red) 0%, var(--burgundy) 100%);
+  color: var(--ivory);
   padding: 40px 32px;
   margin-bottom: 0;
-  border-bottom: 1px solid rgba(0, 215, 255, 0.2);
+  border-bottom: 1px solid rgba(107, 27, 61, 0.2);
 }
 
 .header-content {
@@ -75,28 +75,28 @@ mat-card-header {
   align-items: center;
   justify-content: center;
   padding: 8px;
-  background-color: rgba(0, 215, 255, 0.2);
-  color: var(--electric-cyan);
-  box-shadow: 0 0 20px rgba(0, 215, 255, 0.4);
+  background-color: rgba(255, 255, 240, 0.15);
+  color: var(--ivory);
+  box-shadow: 0 0 20px rgba(255, 255, 240, 0.3);
 }
 
 .logo-image {
   width: 56px;
   height: 56px;
   border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0, 215, 255, 0.4);
+  box-shadow: 0 0 20px rgba(255, 255, 240, 0.3);
 }
 
 mat-card-title {
   font-size: 24px;
   font-weight: 600;
   margin: 8px 0 4px 0;
-  color: white;
+  color: var(--ivory);
 }
 
 mat-card-subtitle {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 240, 0.85);
   margin: 0;
 }
 
@@ -115,7 +115,7 @@ mat-form-field {
   width: 100%;
   
   ::ng-deep .mat-mdc-text-field-wrapper {
-    background: rgba(0, 215, 255, 0.05);
+    background: rgba(139, 41, 82, 0.03);
   }
 
   ::ng-deep .mat-mdc-form-field-label {
@@ -123,7 +123,7 @@ mat-form-field {
   }
 
   ::ng-deep.mat-focused .mat-mdc-form-field-label {
-    color: var(--electric-cyan) !important;
+    color: var(--wine-red) !important;
   }
 }
 
@@ -137,11 +137,11 @@ mat-form-field {
   position: absolute;
   right: 12px;
   cursor: pointer;
-  color: var(--cool-slate-grey);
+  color: var(--text-muted);
   transition: color 0.3s ease;
 
   &:hover {
-    color: var(--electric-cyan);
+    color: var(--wine-red);
   }
 }
 
@@ -150,18 +150,19 @@ mat-form-field {
   padding: 12px;
   border: none;
   border-radius: 6px;
-  background: linear-gradient(135deg, var(--cyber-purple) 0%, var(--deep-ultraviolet) 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--wine-red) 0%, var(--burgundy) 100%);
+  color: var(--ivory);
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(160, 32, 240, 0.3);
+  box-shadow: 0 4px 15px var(--shadow-wine);
   margin-top: 8px;
 
   &:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(160, 32, 240, 0.5);
+    box-shadow: 0 8px 25px var(--shadow-wine);
+    background: linear-gradient(135deg, var(--rose-wine) 0%, var(--wine-red) 100%);
   }
 
   &:active:not(:disabled) {
@@ -175,9 +176,9 @@ mat-form-field {
 }
 
 .error-message {
-  color: #FF6B6B;
-  background-color: rgba(255, 107, 107, 0.1);
-  border-left: 3px solid #FF6B6B;
+  color: #DC2626;
+  background-color: rgba(220, 38, 38, 0.08);
+  border-left: 3px solid #DC2626;
   padding: 12px 16px;
   border-radius: 4px;
   font-size: 14px;
@@ -187,12 +188,12 @@ mat-form-field {
 
 .show-password-toggle {
   cursor: pointer;
-  color: var(--cool-slate-grey);
+  color: var(--text-muted);
   user-select: none;
   transition: all 0.3s ease;
 
   &:hover {
-    color: var(--electric-cyan);
+    color: var(--wine-red);
   }
 }
 
@@ -251,12 +252,12 @@ mat-form-field {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: rgba(220, 38, 38, 0.08);
+  color: #DC2626;
   padding: 12px 16px;
   border-radius: 8px;
   margin-bottom: 16px;
-  border-left: 4px solid #dc3545;
+  border-left: 4px solid #DC2626;
 
   mat-icon {
     font-size: 20px;
@@ -268,26 +269,27 @@ mat-form-field {
 .demo-credentials {
   margin-top: 32px;
   padding-top: 24px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid rgba(107, 27, 61, 0.15);
 }
 
 .demo-title {
   font-size: 14px;
   font-weight: 600;
-  color: #666;
+  color: var(--text-muted);
   margin-bottom: 12px;
   text-align: center;
 }
 
 .demo-box {
-  background-color: #f8f9fa;
+  background: linear-gradient(135deg, rgba(139, 41, 82, 0.03) 0%, rgba(166, 77, 121, 0.03) 100%);
   border-radius: 8px;
   padding: 16px;
+  border: 1px solid rgba(107, 27, 61, 0.1);
 }
 
 .demo-item {
   font-size: 13px;
-  color: #555;
+  color: var(--text-dark);
   margin-bottom: 8px;
   font-family: 'Courier New', monospace;
 
@@ -296,7 +298,7 @@ mat-form-field {
   }
 
   strong {
-    color: #333;
+    color: var(--wine-red);
     font-weight: 600;
   }
 }
@@ -306,7 +308,7 @@ mat-form-field {
   margin-top: 24px;
   
   p {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-dark);
     font-size: 13px;
   }
 }

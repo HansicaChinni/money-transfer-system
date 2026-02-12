@@ -4,7 +4,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  background: linear-gradient(135deg, var(--midnight-navy) 0%, var(--dark-bg) 50%, #1a0033 100%);
+  background: linear-gradient(135deg, var(--soft-cream) 0%, var(--warm-beige) 50%, var(--light-blush) 100%);
 }
 
 .history-layout {
@@ -13,9 +13,9 @@
 }
 
 mat-card {
-  background-color: var(--card-bg) !important;
-  box-shadow: 0 8px 32px rgba(0, 215, 255, 0.1), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-  border: 1px solid rgba(0, 215, 255, 0.2) !important;
+  background: linear-gradient(135deg, var(--card-bg) 0%, var(--ivory) 100%) !important;
+  box-shadow: 0 8px 32px var(--shadow-wine), 0 2px 8px var(--shadow-soft) !important;
+  border: 1px solid rgba(107, 27, 61, 0.15) !important;
   border-radius: 12px;
 }
 
@@ -25,20 +25,20 @@ mat-card {
 
 th.mat-header-cell {
   font-weight: 600;
-  color: var(--electric-cyan) !important;
+  color: var(--burgundy) !important;
   background-color: transparent !important;
-  border-bottom: 2px solid rgba(0, 215, 255, 0.2) !important;
+  border-bottom: 2px solid rgba(107, 27, 61, 0.15) !important;
 }
 
 td.mat-cell {
   font-size: 14px;
-  color: var(--text-light) !important;
+  color: var(--text-dark) !important;
   background-color: transparent !important;
-  border-bottom: 1px solid rgba(0, 215, 255, 0.1) !important;
+  border-bottom: 1px solid rgba(107, 27, 61, 0.08) !important;
 }
 
 mat-row:hover td {
-  background-color: rgba(0, 215, 255, 0.05) !important;
+  background: linear-gradient(135deg, rgba(139, 41, 82, 0.03) 0%, rgba(166, 77, 121, 0.03) 100%) !important;
 }
 
 .type-chip {
@@ -60,21 +60,21 @@ mat-row:hover td {
 }
 
 .type-chip.debit {
-  background-color: rgba(255, 107, 107, 0.15);
-  color: #FF6B6B;
-  border: 1px solid rgba(255, 107, 107, 0.3);
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+  color: #DC2626;
+  border: 1px solid rgba(220, 38, 38, 0.25);
 }
 
 .type-chip.credit {
-  background-color: rgba(16, 185, 129, 0.15);
-  color: #10B981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+  color: #059669;
+  border: 1px solid rgba(5, 150, 105, 0.25);
 }
 
 .status-success {
-  background-color: rgba(16, 185, 129, 0.15);
-  color: #10B981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+  color: #059669;
+  border: 1px solid rgba(5, 150, 105, 0.25);
   padding: 4px 12px;
   border-radius: 6px;
   display: inline-block;
@@ -85,9 +85,9 @@ mat-row:hover td {
 }
 
 .status-failed {
-  background-color: rgba(255, 107, 107, 0.15);
-  color: #FF6B6B;
-  border: 1px solid rgba(255, 107, 107, 0.3);
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+  color: #DC2626;
+  border: 1px solid rgba(220, 38, 38, 0.25);
   padding: 4px 12px;
   border-radius: 6px;
   display: inline-block;
@@ -100,8 +100,8 @@ mat-row:hover td {
 .state-card {
   width: 100%;
   max-width: 480px;
-  background-color: var(--card-bg);
-  border: 1px solid rgba(0, 215, 255, 0.2);
+  background: linear-gradient(135deg, var(--card-bg) 0%, var(--ivory) 100%);
+  border: 1px solid rgba(107, 27, 61, 0.15);
   padding: 32px;
   border-radius: 12px;
   text-align: center;
@@ -115,16 +115,16 @@ mat-row:hover td {
   align-items: center;
   justify-content: center;
   margin: 0 auto 16px;
-  background: linear-gradient(135deg, rgba(0, 215, 255, 0.2) 0%, rgba(160, 32, 240, 0.2) 100%);
-  border: 2px solid rgba(0, 215, 255, 0.3);
-  color: var(--electric-cyan);
+  background: linear-gradient(135deg, rgba(139, 41, 82, 0.1) 0%, rgba(166, 77, 121, 0.1) 100%);
+  border: 2px solid rgba(139, 41, 82, 0.2);
+  color: var(--wine-red);
   font-size: 32px;
 }
 
 .state-title {
   font-weight: 600;
   margin-bottom: 8px;
-  color: var(--electric-cyan);
+  color: var(--burgundy);
   font-size: 18px;
 }
 
@@ -138,7 +138,7 @@ mat-row:hover td {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--electric-cyan);
+  color: var(--wine-red);
 }
 
 @media (max-width: 768px) {
@@ -155,4 +155,3 @@ mat-row:hover td {
     padding: 12px 8px !important;
   }
 }
-
