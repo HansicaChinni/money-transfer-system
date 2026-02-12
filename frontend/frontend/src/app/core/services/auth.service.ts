@@ -9,10 +9,15 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private apiUrl = 'http://localhost:8080';
-  private currentUserSubject = new BehaviorSubject<LoginResponse | null>(this.getUserFromStorage());
+  private currentUserSubject = new BehaviorSubject<LoginResponse | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+    // Initialize user from storage in browser environment only
+    if (typeof localStorage !== 'undefined') {
+      this.currentUserSubject.next(this.getUserFromStorage());
+    }
+  }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials).pipe(
@@ -57,6 +62,9 @@ export class AuthService {
   }
 
   private getUserFromStorage(): LoginResponse | null {
+    if (typeof localStorage === 'undefined') {
+      return null;
+    }
     const userStr = localStorage.getItem('currentUser');
     return userStr ? JSON.parse(userStr) : null;
   }
