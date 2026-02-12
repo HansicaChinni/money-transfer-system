@@ -6,10 +6,13 @@
   border-radius: 8px;
   padding: 0.5rem 1.25rem;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.01em;
 }
 
 .btn-outline-light:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
   border-color: white;
+  transform: translateY(-1px);
 }

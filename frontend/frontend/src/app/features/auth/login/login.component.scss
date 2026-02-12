@@ -1,11 +1,12 @@
 .auth-container {
-  animation: fadeIn 0.6s ease-in-out;
+  animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .auth-card {
-  transition: transform 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .auth-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: 0 25px 35px -10px rgba(114, 47, 55, 0.2);
 }
