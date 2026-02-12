@@ -2,11 +2,13 @@ package com.money.draft.controller;
 
 import com.money.draft.domain.enums.AccountStatus;
 import com.money.draft.dto.*;
+import com.money.draft.service.AccountService;
 import com.money.draft.service.AdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,12 +19,14 @@ import java.util.List;
 @RequestMapping("/admin")
 @SecurityRequirement(name = "BearerAuth")
 public class AdminController {
-
     private final AdminService adminService;
+    private AccountService accountService;
 
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, AccountService accountService) {
         this.adminService = adminService;
+        this.accountService = accountService;
     }
+
 
     @Operation(summary = "List all accounts (privacy-safe: no holder names)")
     @GetMapping("/accounts")
@@ -35,6 +39,12 @@ public class AdminController {
 // Change AccountResponse -> AdminAccountDetailResponse
     public ResponseEntity<AdminAccountDetailResponse> getAccountDetails(@PathVariable Long id) {
         return ResponseEntity.ok(adminService.getAccountDetails(id));
+    }
+
+    @Operation(summary = "Get transaction history of given account id")
+    @GetMapping("/transactions/{id}")
+    public ResponseEntity<List<TransactionLogResponse>> getAccountTransactions(@PathVariable Long id) {
+        return ResponseEntity.ok(accountService.getTransactions(id));
     }
 
     @Operation(summary = "Create a new account and associated user login")

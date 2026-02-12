@@ -1,6 +1,7 @@
 
 package com.money.draft.service.impl;
 
+
 import com.money.draft.domain.repository.AccountRepository;
 import com.money.draft.domain.repository.AppUserRepository;
 import com.money.draft.domain.repository.TransactionLogRepository;
@@ -8,11 +9,13 @@ import com.money.draft.dto.AdminAccountDetailResponse;
 import com.money.draft.dto.AdminAccountView;
 import com.money.draft.dto.AdminCreateAccountRequest;
 import com.money.draft.dto.TransactionLogResponse;
+import com.money.draft.exception.ValidationException;
 import com.money.draft.service.AdminService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -47,7 +50,7 @@ public class AdminServiceImpl implements AdminService {
                         a.getStatus().name(),
                         toLocalDateTime(a.getLastUpdated()) // works for Instant or LocalDateTime
                 ))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -64,7 +67,7 @@ public class AdminServiceImpl implements AdminService {
                         tx.getIdempotencyKey(),
                         toLocalDateTime(tx.getCreatedOn()) // typically Instant -> LocalDateTime (UTC)
                 ))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // --- Helpers ---
@@ -90,6 +93,12 @@ public class AdminServiceImpl implements AdminService {
         // 2. Create and Save Account (image_9cc5f4.png fields)
         com.money.draft.domain.entity.Account account = new com.money.draft.domain.entity.Account();
         account.setHolderName(req.holderName());
+        if (req.initialBalance().compareTo(new BigDecimal("1000")) < 0) {
+            throw new ValidationException(
+                    "Initial deposit must be at least ₹1000"
+            );
+        }
+
         account.setBalance(req.initialBalance());
         account.setStatus(com.money.draft.domain.enums.AccountStatus.ACTIVE);
 
