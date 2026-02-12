@@ -1,40 +1,78 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './component/login-component/login-component.component';
-import { DashboardComponent } from './component/dashboard-component/dashboard-component.component';
-import { TransferComponent } from './component/transfer-component/transfer-component.component';
-import { HistoryComponent } from './component/history-component/history-component.component';
-import { AdminComponent } from './component/admin-component/admin-component.component';
-import { ChangePasswordComponent } from './component/change-password-component/change-password-component.component';
-import { authGuard } from './guards/auth-guard.guard';
-import { adminGuard } from './guards/admin-guard.guard';
+import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
+import { userGuard } from './core/guards/user.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { 
-    path: 'dashboard', 
-    component: DashboardComponent,
-    canActivate: [authGuard]
-  },
-  { 
-    path: 'transfer', 
-    component: TransferComponent,
-    canActivate: [authGuard]
-  },
-  { 
-    path: 'history', 
-    component: HistoryComponent,
-    canActivate: [authGuard]
+  {
+    path: '',
+    redirectTo: '/login',
+    pathMatch: 'full'
   },
   {
-    path: 'change-password',
-    component: ChangePasswordComponent,
-    canActivate: [authGuard]
+    path: 'login',
+    loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent)
   },
-  { 
-    path: 'admin', 
-    component: AdminComponent,
-    canActivate: [authGuard, adminGuard]
+  {
+    path: 'user',
+    canActivate: [authGuard, userGuard],
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/user/dashboard/dashboard.component').then(m => m.DashboardComponent)
+      },
+      {
+        path: 'transfer',
+        loadComponent: () => import('./features/user/transfer/transfer.component').then(m => m.TransferComponent)
+      },
+      {
+        path: 'transactions',
+        loadComponent: () => import('./features/user/transactions/transactions.component').then(m => m.TransactionsComponent)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./features/user/profile/profile.component').then(m => m.ProfileComponent)
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      }
+    ]
   },
-  { path: '**', redirectTo: '/login' }
+  {
+    path: 'admin',
+    canActivate: [authGuard, adminGuard],
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/admin/dashboard/dashboard.component').then(m => m.AdminDashboardComponent)
+      },
+      {
+        path: 'accounts',
+        loadComponent: () => import('./features/admin/accounts/accounts.component').then(m => m.AccountsComponent)
+      },
+      {
+        path: 'accounts/:id',
+        loadComponent: () => import('./features/admin/account-detail/account-detail.component').then(m => m.AccountDetailComponent)
+      },
+      {
+        path: 'transactions',
+        loadComponent: () => import('./features/admin/transactions/transactions.component').then(m => m.AdminTransactionsComponent)
+      },
+      {
+        path: 'create-account',
+        loadComponent: () => import('./features/admin/create-account/create-account.component').then(m => m.CreateAccountComponent)
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      }
+    ]
+  },
+  {
+    path: '**',
+    redirectTo: '/login'
+  }
 ];

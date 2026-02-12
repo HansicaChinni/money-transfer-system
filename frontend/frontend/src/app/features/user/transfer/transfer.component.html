@@ -1,0 +1,95 @@
+<app-navbar></app-navbar>
+
+<div class="container-custom fade-in">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="text-primary" style="font-weight: 700;">Make Transfer</h2>
+      <p class="text-muted">Send money to another account securely.</p>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card" *ngIf="accountInfo">
+        <div class="card-header">
+          <h5 class="mb-0">Transfer Funds</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-4 p-3 rounded" style="background: linear-gradient(135deg, var(--primary-purple-lightest), var(--accent-orange-lightest));">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <small class="text-muted">Available Balance</small>
+                <h4 class="mb-0 text-primary" style="font-weight: 700;">${{ accountInfo.balance | number:'1.2-2' }}</h4>
+              </div>
+              <div class="text-end">
+                <small class="text-muted">Account #{{ accountInfo.id }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="successMessage" class="alert alert-success" role="alert">
+            {{ successMessage }}
+          </div>
+
+          <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+            {{ errorMessage }}
+          </div>
+
+          <form [formGroup]="transferForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="toAccountId" class="form-label">Recipient Account ID</label>
+              <input
+                type="number"
+                class="form-control"
+                id="toAccountId"
+                formControlName="toAccountId"
+                placeholder="Enter recipient account ID"
+                [class.is-invalid]="transferForm.get('toAccountId')?.invalid && transferForm.get('toAccountId')?.touched"
+              />
+              <div class="invalid-feedback" *ngIf="transferForm.get('toAccountId')?.invalid && transferForm.get('toAccountId')?.touched">
+                Please enter a valid account ID
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="amount" class="form-label">Amount ($)</label>
+              <input
+                type="number"
+                step="0.01"
+                class="form-control"
+                id="amount"
+                formControlName="amount"
+                placeholder="0.00"
+                [class.is-invalid]="transferForm.get('amount')?.invalid && transferForm.get('amount')?.touched"
+              />
+              <div class="invalid-feedback" *ngIf="transferForm.get('amount')?.invalid && transferForm.get('amount')?.touched">
+                Amount must be at least $0.01
+              </div>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="loading || transferForm.invalid"
+              >
+                <span *ngIf="!loading">Transfer Funds</span>
+                <span *ngIf="loading">
+                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Processing...
+                </span>
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                routerLink="/user/dashboard"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

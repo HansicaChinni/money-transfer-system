@@ -1,0 +1,17 @@
+.container-custom {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.table {
+  font-size: 0.95rem;
+}
+
+.badge {
+  font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .table {
+    font-size: 0.85rem;
+  }
+}

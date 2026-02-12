@@ -1,0 +1,103 @@
+<app-navbar></app-navbar>
+
+<div class="container-custom fade-in">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="text-primary" style="font-weight: 700;">Dashboard</h2>
+      <p class="text-muted">Welcome back! Here's your account overview.</p>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && accountInfo">
+    <!-- Account Information -->
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <div class="stat-card">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <p class="text-muted mb-1" style="font-size: 0.9rem;">Account Balance</p>
+              <h2 class="text-primary mb-0" style="font-weight: 700;">${{ accountInfo.balance | number:'1.2-2' }}</h2>
+            </div>
+            <span class="badge {{ getStatusBadgeClass(accountInfo.status) }}">
+              {{ accountInfo.status }}
+            </span>
+          </div>
+          <p class="text-muted mb-0" style="font-size: 0.85rem;">Account #{{ accountInfo.id }}</p>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="stat-card stat-card-orange">
+          <p class="text-muted mb-1" style="font-size: 0.9rem;">Account Holder</p>
+          <h4 class="mb-2" style="font-weight: 600; color: var(--accent-orange-dark);">{{ accountInfo.holderName }}</h4>
+          <div class="mt-3">
+            <a routerLink="/user/transfer" class="btn btn-secondary btn-sm me-2">Make Transfer</a>
+            <a routerLink="/user/transactions" class="btn btn-outline-secondary btn-sm">View History</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Recent Transactions</h5>
+      </div>
+      <div class="card-body">
+        <div *ngIf="recentTransactions.length === 0" class="text-center py-4 text-muted">
+          <p class="mb-0">No transactions yet</p>
+        </div>
+        <div *ngIf="recentTransactions.length > 0" class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Account</th>
+                <th class="text-end">Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let tx of recentTransactions">
+                <td>{{ tx.createdOn | date:'short' }}</td>
+                <td>
+                  <span *ngIf="tx.fromAccountId === accountInfo!.id" class="text-danger">Sent</span>
+                  <span *ngIf="tx.toAccountId === accountInfo!.id" class="text-success">Received</span>
+                </td>
+                <td>
+                  <span *ngIf="tx.fromAccountId === accountInfo!.id">To: #{{ tx.toAccountId }}</span>
+                  <span *ngIf="tx.toAccountId === accountInfo!.id">From: #{{ tx.fromAccountId }}</span>
+                </td>
+                <td class="text-end">
+                  <strong 
+                    [class.text-danger]="tx.fromAccountId === accountInfo!.id"
+                    [class.text-success]="tx.toAccountId === accountInfo!.id">
+                    {{ tx.fromAccountId === accountInfo!.id ? '-' : '+' }}${{ tx.amount | number:'1.2-2' }}
+                  </strong>
+                </td>
+                <td>
+                  <span class="badge {{ getTransactionStatusBadge(tx.status) }}">
+                    {{ tx.status }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="recentTransactions.length > 0" class="mt-3 text-center">
+          <a routerLink="/user/transactions" class="btn btn-outline-primary btn-sm">View All Transactions</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

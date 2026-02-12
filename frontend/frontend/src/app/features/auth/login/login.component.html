@@ -1,0 +1,59 @@
+<div class="auth-container">
+  <div class="auth-card fade-in">
+    <div class="auth-header">
+      <h2 class="mb-0">💰 Money Transfer</h2>
+      <p class="mb-0 mt-2" style="font-size: 0.95rem; opacity: 0.9;">Secure & Fast Transfers</p>
+    </div>
+    <div class="auth-body">
+      <h4 class="text-center mb-4" style="color: var(--text-dark); font-weight: 600;">Welcome Back</h4>
+      
+      <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+        {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input
+            type="text"
+            class="form-control"
+            id="username"
+            formControlName="username"
+            placeholder="Enter your username"
+            [class.is-invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+          />
+          <div class="invalid-feedback" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+            Username is required
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="password" class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            formControlName="password"
+            placeholder="Enter your password"
+            [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          />
+          <div class="invalid-feedback" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            Password is required
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary w-100"
+          [disabled]="loading || loginForm.invalid"
+        >
+          <span *ngIf="!loading">Login</span>
+          <span *ngIf="loading">
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Logging in...
+          </span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

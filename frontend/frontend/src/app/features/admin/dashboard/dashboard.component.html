@@ -1,0 +1,142 @@
+<app-navbar></app-navbar>
+
+<div class="container-custom fade-in">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="text-primary" style="font-weight: 700;">Admin Dashboard</h2>
+      <p class="text-muted">System overview and management.</p>
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading">
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+      <div class="col-md-3 mb-3">
+        <div class="stat-card">
+          <p class="text-muted mb-1" style="font-size: 0.9rem;">Total Accounts</p>
+          <h2 class="text-primary mb-0" style="font-weight: 700;">{{ totalAccounts }}</h2>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="stat-card stat-card-orange">
+          <p class="text-muted mb-1" style="font-size: 0.9rem;">Active Accounts</p>
+          <h2 class="mb-0" style="font-weight: 700; color: var(--accent-orange-dark);">{{ activeAccounts }}</h2>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="stat-card">
+          <p class="text-muted mb-1" style="font-size: 0.9rem;">Total Balance</p>
+          <h2 class="text-primary mb-0" style="font-weight: 700;">${{ totalBalance | number:'1.2-2' }}</h2>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="stat-card stat-card-orange">
+          <p class="text-muted mb-1" style="font-size: 0.9rem;">Successful Transfers</p>
+          <h2 class="mb-0" style="font-weight: 700; color: var(--accent-orange-dark);">{{ recentTransactionCount }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Recent Transactions</h5>
+            <a routerLink="/admin/transactions" class="btn btn-sm btn-outline-primary">View All</a>
+          </div>
+          <div class="card-body">
+            <div *ngIf="recentTransactions.length === 0" class="text-center py-4 text-muted">
+              <p class="mb-0">No transactions yet</p>
+            </div>
+            <div *ngIf="recentTransactions.length > 0" class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th class="text-end">Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let tx of recentTransactions">
+                    <td><strong>#{{ tx.id }}</strong></td>
+                    <td>{{ tx.createdOn | date:'short' }}</td>
+                    <td>Acc #{{ tx.fromAccountId }}</td>
+                    <td>Acc #{{ tx.toAccountId }}</td>
+                    <td class="text-end"><strong>${{ tx.amount | number:'1.2-2' }}</strong></td>
+                    <td>
+                      <span class="badge {{ getTransactionStatusBadge(tx.status) }}">
+                        {{ tx.status }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Accounts -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Recent Accounts</h5>
+            <div>
+              <a routerLink="/admin/create-account" class="btn btn-sm btn-secondary me-2">Create New</a>
+              <a routerLink="/admin/accounts" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th>Account ID</th>
+                    <th class="text-end">Balance</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let account of accounts.slice(0, 5)">
+                    <td><strong>#{{ account.id }}</strong></td>
+                    <td class="text-end">${{ account.balance | number:'1.2-2' }}</td>
+                    <td>
+                      <span class="badge {{ getStatusBadgeClass(account.status) }}">
+                        {{ account.status }}
+                      </span>
+                    </td>
+                    <td>{{ account.lastUpdated | date:'short' }}</td>
+                    <td>
+                      <a [routerLink]="['/admin/accounts', account.id]" class="btn btn-sm btn-outline-primary">
+                        View Details
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

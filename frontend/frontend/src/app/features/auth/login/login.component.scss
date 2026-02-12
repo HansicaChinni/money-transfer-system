@@ -1,0 +1,11 @@
+.auth-container {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.auth-card {
+  transition: transform 0.3s ease;
+}
+
+.auth-card:hover {
+  transform: translateY(-5px);
+}
