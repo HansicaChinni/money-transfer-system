@@ -1,5 +1,6 @@
 <app-navbar></app-navbar>
-<div class="container-custom fade-in">
+<div class="navbar-spacing">
+  <div class="container-custom fade-in">
   <div class="row mb-4">
     <div class="col-12"><h2 class="text-primary" style="font-weight: 700;">All Transactions</h2><p class="text-muted">Complete transaction history across all accounts.</p></div>
   </div>
@@ -17,7 +18,7 @@
               <td>{{ tx.createdOn | date:'medium' }}</td>
               <td>Acc #{{ tx.fromAccountId }}</td>
               <td>Acc #{{ tx.toAccountId }}</td>
-              <td class="text-end"><strong>${{ tx.amount | number:'1.2-2' }}</strong></td>
+              <td class="text-end"><strong>₹{{ tx.amount | number:'1.2-2' }}</strong></td>
               <td><span class="badge {{ getStatusBadgeClass(tx.status) }}">{{ tx.status }}</span><div *ngIf="tx.failureReason" class="text-danger small mt-1">{{ tx.failureReason }}</div></td>
               <td><small class="text-muted">{{ tx.idempotencyKey }}</small></td>
             </tr>
@@ -25,5 +26,6 @@
         </table>
       </div>
     </div>
+  </div>
   </div>
 </div>

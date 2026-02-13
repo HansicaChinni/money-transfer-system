@@ -1,9 +1,18 @@
 <div class="auth-container">
   <div class="auth-card fade-in">
     <div class="auth-header">
-      <h2 class="mb-0">💰 Money Transfer</h2>
-      <p class="mb-0 mt-2" style="font-size: 0.95rem; opacity: 0.9;">Secure & Fast Transfers</p>
+      <div class="logo-wrapper mb-2">
+        <img 
+          src="assets/logo.png" 
+          alt="FlowPay Logo"
+          class="login-logo"
+        />
+      </div>
+      <p class="mb-0 mt-2 auth-tagline">
+        Secure & Fast Transfers
+      </p>
     </div>
+    
     <div class="auth-body">
       <h4 class="text-center mb-4" style="color: var(--text-dark); font-weight: 600;">Welcome Back</h4>
       
@@ -23,7 +32,8 @@
             [class.is-invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
           />
           <div class="invalid-feedback" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
-            Username is required
+            <span *ngIf="loginForm.get('username')?.errors?.['required']">Username is required</span>
+            <span *ngIf="loginForm.get('username')?.errors?.['minlength']">Username must be at least 3 characters</span>
           </div>
         </div>
 
@@ -38,7 +48,8 @@
             [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
           />
           <div class="invalid-feedback" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-            Password is required
+            <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
+            <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
           </div>
         </div>
 

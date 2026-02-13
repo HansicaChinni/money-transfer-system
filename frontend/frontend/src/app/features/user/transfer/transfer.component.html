@@ -1,6 +1,7 @@
 <app-navbar></app-navbar>
 
-<div class="container-custom fade-in">
+<div class="navbar-spacing">
+  <div class="container-custom fade-in">
   <div class="row mb-4">
     <div class="col-12">
       <h2 class="text-primary" style="font-weight: 700;">Make Transfer</h2>
@@ -19,7 +20,7 @@
             <div class="d-flex justify-content-between align-items-center">
               <div>
                 <small class="text-muted">Available Balance</small>
-                <h4 class="mb-0 text-primary" style="font-weight: 700;">${{ accountInfo.balance | number:'1.2-2' }}</h4>
+                <h4 class="mb-0 text-primary" style="font-weight: 700;">₹{{ accountInfo.balance | number:'1.2-2' }}</h4>
               </div>
               <div class="text-end">
                 <small class="text-muted">Account #{{ accountInfo.id }}</small>
@@ -52,7 +53,7 @@
             </div>
 
             <div class="mb-4">
-              <label for="amount" class="form-label">Amount ($)</label>
+              <label for="amount" class="form-label">Amount (₹)</label>
               <input
                 type="number"
                 step="0.01"
@@ -63,7 +64,7 @@
                 [class.is-invalid]="transferForm.get('amount')?.invalid && transferForm.get('amount')?.touched"
               />
               <div class="invalid-feedback" *ngIf="transferForm.get('amount')?.invalid && transferForm.get('amount')?.touched">
-                Amount must be at least $0.01
+                Amount must be at least ₹0.01
               </div>
             </div>
 

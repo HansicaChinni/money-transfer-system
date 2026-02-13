@@ -1,12 +1,27 @@
-<nav class="navbar navbar-expand-lg navbar-dark">
+<nav class="navbar navbar-expand-lg navbar-dark glass-navbar fixed-top">
   <div class="container">
-    <a class="navbar-brand" routerLink="/">
-      💰 Money Transfer
+    
+    <!-- Logo + Brand -->
+    <a class="navbar-brand d-flex align-items-center" routerLink="/">
+      <img 
+        src="assets/logo1.png" 
+        alt="FlowPay Logo"
+        class="navbar-logo me-2"
+      />
+      <span class="brand-text">FlowPay</span>
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+    <button 
+      class="navbar-toggler" 
+      type="button" 
+      data-bs-toggle="collapse" 
+      data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="navbarNav">
+
+      <!-- Admin Links -->
       <ul class="navbar-nav ms-auto" *ngIf="isAdmin">
         <li class="nav-item">
           <a class="nav-link" routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
@@ -21,6 +36,8 @@
           <a class="nav-link" routerLink="/admin/create-account" routerLinkActive="active">Create Account</a>
         </li>
       </ul>
+
+      <!-- User Links -->
       <ul class="navbar-nav ms-auto" *ngIf="!isAdmin">
         <li class="nav-item">
           <a class="nav-link" routerLink="/user/dashboard" routerLinkActive="active">Dashboard</a>
@@ -35,11 +52,16 @@
           <a class="nav-link" routerLink="/user/profile" routerLinkActive="active">Profile</a>
         </li>
       </ul>
+
+      <!-- Logout -->
       <ul class="navbar-nav ms-3">
         <li class="nav-item">
-          <button class="btn btn-outline-light btn-sm" (click)="logout()">Logout</button>
+          <button class="btn btn-outline-light btn-sm logout-btn" (click)="logout()">
+            Logout
+          </button>
         </li>
       </ul>
+
     </div>
   </div>
 </nav>

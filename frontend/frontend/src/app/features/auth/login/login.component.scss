@@ -10,3 +10,31 @@
   transform: translateY(-4px);
   box-shadow: 0 25px 35px -10px rgba(114, 47, 55, 0.2);
 }
+
+.logo-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;   // prevents cropping issues
+}
+
+.login-logo {
+  max-width: 100%;     // prevents overflow
+  height: auto;        // keeps aspect ratio
+  max-height: 85px;    // desktop size cap
+  object-fit: contain;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.35));
+  transition: transform 0.3s ease;
+}
+
+.login-logo:hover {
+  transform: scale(1.03);
+}
+
+.auth-tagline {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  color: white;
+}
+

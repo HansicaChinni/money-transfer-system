@@ -1,18 +1,81 @@
+/* Fixed + Glass Navbar */
 .navbar {
-  margin-bottom: 2rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin-bottom: 0;
+  padding: 0.75rem 0;
+  transition: all 0.3s ease;
+  z-index: 1030;
+  width: 100%;
 }
 
-.btn-outline-light {
-  border-radius: 8px;
-  padding: 0.5rem 1.25rem;
+/* Glass Effect */
+.glass-navbar {
+  background: rgba(128, 6, 36, 0.8); /* Based on --wine-dark */
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 25px rgba(110, 20, 43, 0.35);
+}
+
+/* Brand Styling */
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+}
+
+.brand-text {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.navbar-logo {
+  height: 40px;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
+}
+
+
+.navbar-brand:hover .navbar-logo {
+  transform: scale(1.05);
+}
+
+/* Nav Links */
+.navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
   font-weight: 500;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1.5px solid rgba(255, 255, 255, 0.5);
-  letter-spacing: 0.01em;
+  margin: 0 0.25rem;
+  border-radius: 6px;
+  padding: 0.5rem 1rem !important;
+  transition: all 0.25s ease;
 }
 
-.btn-outline-light:hover {
+.navbar-nav .nav-link:hover {
   background: rgba(255, 255, 255, 0.15);
+  color: white !important;
+}
+
+.navbar-nav .nav-link.active {
+  background: rgba(255, 255, 255, 0.25);
+  color: white !important;
+  font-weight: 600;
+}
+
+/* Logout Button */
+.logout-btn {
+  border-radius: 8px;
+  padding: 0.45rem 1.2rem;
+  font-weight: 500;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.25s ease;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
   border-color: white;
   transform: translateY(-1px);
 }

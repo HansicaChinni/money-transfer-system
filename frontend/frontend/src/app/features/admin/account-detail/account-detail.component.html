@@ -1,5 +1,6 @@
 <app-navbar></app-navbar>
-<div class="container-custom fade-in">
+<div class="navbar-spacing">
+  <div class="container-custom fade-in">
   <div class="row mb-4">
     <div class="col-12">
       <a routerLink="/admin/accounts" class="btn btn-outline-secondary mb-3">← Back to Accounts</a>
@@ -17,7 +18,7 @@
           <div class="card-body">
             <div class="mb-2"><strong>Account ID:</strong> #{{ account.id }}</div>
             <div class="mb-2"><strong>Holder Name:</strong> {{ account.holderName }}</div>
-            <div class="mb-2"><strong>Balance:</strong> <span class="text-primary" style="font-size: 1.5rem; font-weight: 700;">${{ account.balance | number:'1.2-2' }}</span></div>
+            <div class="mb-2"><strong>Balance:</strong> <span class="text-primary" style="font-size: 1.5rem; font-weight: 700;">₹{{ account.balance | number:'1.2-2' }}</span></div>
             <div class="mb-2"><strong>Status:</strong> <span class="badge {{ getStatusBadgeClass(account.status) }}">{{ account.status }}</span></div>
             <div class="mb-2"><strong>Version:</strong> {{ account.version }}</div>
             <div class="mb-2"><strong>Last Updated:</strong> {{ account.lastUpdated | date:'medium' }}</div>
@@ -51,7 +52,7 @@
                 <td>{{ tx.createdOn | date:'short' }}</td>
                 <td>Acc #{{ tx.fromAccountId }}</td>
                 <td>Acc #{{ tx.toAccountId }}</td>
-                <td class="text-end">${{ tx.amount | number:'1.2-2' }}</td>
+                <td class="text-end">₹{{ tx.amount | number:'1.2-2' }}</td>
                 <td><span class="badge {{ getTransactionStatusBadge(tx.status) }}">{{ tx.status }}</span></td>
               </tr>
             </tbody>
@@ -59,5 +60,6 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 </div>
