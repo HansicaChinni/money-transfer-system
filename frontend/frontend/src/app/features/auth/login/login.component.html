@@ -31,9 +31,8 @@
             placeholder="Enter your username"
             [class.is-invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
           />
-          <div class="invalid-feedback" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
-            <span *ngIf="loginForm.get('username')?.errors?.['required']">Username is required</span>
-            <span *ngIf="loginForm.get('username')?.errors?.['minlength']">Username must be at least 3 characters</span>
+          <div class="invalid-feedback" *ngIf="loginForm.get('username')?.errors?.['pattern']">
+            Username can only contain letters and numbers.
           </div>
         </div>
 

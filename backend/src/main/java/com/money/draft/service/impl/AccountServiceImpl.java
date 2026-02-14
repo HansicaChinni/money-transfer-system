@@ -45,7 +45,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional(readOnly = true)
     public AccountResponse getAccount(Long id) {
         Account a = accountRepo.findById(id).orElseThrow(() -> new AccountNotFoundException(id));
-        return new AccountResponse(a.getId(), a.getHolderName(), a.getBalance(), a.getStatus().name());
+        return new AccountResponse(a.getId(),a.getAccountNumber(), a.getHolderName(), a.getBalance(), a.getStatus().name());
     }
 
     @Override

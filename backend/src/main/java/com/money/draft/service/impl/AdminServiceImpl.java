@@ -2,6 +2,7 @@
 package com.money.draft.service.impl;
 
 
+import com.money.draft.domain.entity.Account;
 import com.money.draft.domain.repository.AccountRepository;
 import com.money.draft.domain.repository.AppUserRepository;
 import com.money.draft.domain.repository.TransactionLogRepository;
@@ -46,6 +47,7 @@ public class AdminServiceImpl implements AdminService {
         return accountRepo.findAll().stream()
                 .map(a -> new AdminAccountView(
                         a.getId(),
+                        a.getAccountNumber(),
                         a.getBalance(),
                         a.getStatus().name(),
                         toLocalDateTime(a.getLastUpdated()) // works for Instant or LocalDateTime
@@ -102,18 +104,25 @@ public class AdminServiceImpl implements AdminService {
         account.setBalance(req.initialBalance());
         account.setStatus(com.money.draft.domain.enums.AccountStatus.ACTIVE);
 
-        com.money.draft.domain.entity.Account savedAccount = accountRepo.save(account);
+        Account saved = accountRepo.save(account);
+
+        // Generate formatted account number
+        saved.setAccountNumber(
+                Account.generateAccountNumber(saved.getId())
+        );
+
+        accountRepo.save(saved);
 
         // 3. Create and Save User (image_9cc8d6.png fields)
         com.money.draft.domain.entity.AppUser user = new com.money.draft.domain.entity.AppUser();
         user.setUsername(req.username());
         user.setPassword(passwordEncoder.encode(req.password()));
         user.setRole(com.money.draft.domain.enums.Role.USER);
-        user.setAccountId(savedAccount.getId());
+        user.setAccountId(saved.getId());
 
         userRepo.save(user);
 
-        return mapToAdminDetailResponse(savedAccount);
+        return mapToAdminDetailResponse(saved);
     }
 
     @Override
@@ -138,6 +147,7 @@ public class AdminServiceImpl implements AdminService {
     private AdminAccountDetailResponse mapToAdminDetailResponse(com.money.draft.domain.entity.Account a) {
         return new AdminAccountDetailResponse(
                 a.getId(),
+                a.getAccountNumber(),
                 a.getHolderName(),
                 a.getBalance(),
                 a.getStatus().name(),

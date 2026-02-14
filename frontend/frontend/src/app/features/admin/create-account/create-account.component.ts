@@ -19,18 +19,53 @@ export class CreateAccountComponent {
 
   constructor(private fb: FormBuilder, private adminService: AdminService, private router: Router) {
     this.createForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      holderName: ['', [Validators.required]],
-      initialBalance: [0, [Validators.required, Validators.min(0)]]
+      holderName: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^[A-Za-z\s]+$/)
+        ]
+      ],
+      username: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^[A-Za-z0-9]+$/)
+        ]
+      ],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.pattern(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/
+          )
+        ]
+      ],
+      initialBalance: [
+        '',
+        [
+          Validators.required,
+          Validators.min(1000)
+        ]
+      ]
     });
+
   }
 
   onSubmit(): void {
     if (this.createForm.invalid) return;
+
+    const formValue = {
+      ...this.createForm.value,
+      holderName: this.createForm.value.holderName.trim()
+    };
+
     this.loading = true;
     this.errorMessage = '';
-    this.adminService.createAccount(this.createForm.value).subscribe({
+
+    this.adminService.createAccount(formValue).subscribe({
       next: (account) => {
         this.router.navigate(['/admin/accounts', account.id]);
       },

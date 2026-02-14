@@ -13,38 +13,64 @@
           <form [formGroup]="createForm" (ngSubmit)="onSubmit()">
             <div class="mb-3">
               <label class="form-label">Username</label>
-              <input type="text" class="form-control" formControlName="username" [class.is-invalid]="createForm.get('username')?.invalid && createForm.get('username')?.touched"/>
-              <div class="invalid-feedback">Username must be at least 3 characters</div>
-                <div class="invalid-feedback" *ngIf="createForm.get('username')?.invalid && createForm.get('username')?.touched">
-                  <span *ngIf="createForm.get('username')?.errors?.['required']">Username is required</span>
-                  <span *ngIf="createForm.get('username')?.errors?.['minlength']">Username must be at least 3 characters</span>
-                </div>
+              <input type="text" class="form-control" formControlName="username"
+              [class.is-invalid]="createForm.get('username')?.invalid && (createForm.get('username')?.dirty || createForm.get('username')?.touched)"
+              />
+              <div class="invalid-feedback"
+              *ngIf="createForm.get('username')?.invalid && (createForm.get('username')?.dirty || createForm.get('username')?.touched)">
+                Username can only contain letters and numbers.
+              </div>
             </div>
             <div class="mb-3">
               <label class="form-label">Password</label>
               <input type="password" class="form-control" formControlName="password" [class.is-invalid]="createForm.get('password')?.invalid && createForm.get('password')?.touched"/>
-              <div class="invalid-feedback">Password must be at least 8 characters</div>
-                <div class="invalid-feedback" *ngIf="createForm.get('password')?.invalid && createForm.get('password')?.touched">
-                  <span *ngIf="createForm.get('password')?.errors?.['required']">Password is required</span>
-                  <span *ngIf="createForm.get('password')?.errors?.['minlength']">Password must be at least 8 characters</span>
-                </div>
+              <div class="invalid-feedback" *ngIf="createForm.get('password')?.errors">
+                <ul class="mb-0">
+                  <li *ngIf="createForm.get('password')?.errors?.['minlength']">
+                    Minimum 8 characters
+                  </li>
+                  <li *ngIf="createForm.get('password')?.errors?.['pattern']">
+                    Must include uppercase, lowercase, number & special character
+                  </li>
+                </ul>
+              </div>
             </div>
             <div class="mb-3">
               <label class="form-label">Account Holder Name</label>
-              <input type="text" class="form-control" formControlName="holderName" [class.is-invalid]="createForm.get('holderName')?.invalid && createForm.get('holderName')?.touched"/>
-              <div class="invalid-feedback">Holder name is required</div>
-                <div class="invalid-feedback" *ngIf="createForm.get('holderName')?.invalid && createForm.get('holderName')?.touched">
-                  Holder name is required
-                </div>
+              <input type="text" class="form-control" formControlName="holderName" [class.is-invalid]="createForm.get('holderName')?.invalid && (createForm.get('holderName')?.dirty || createForm.get('holderName')?.touched)"/>
+              <div class="invalid-feedback"
+              *ngIf="createForm.get('holderName')?.invalid && (createForm.get('holderName')?.dirty || createForm.get('holderName')?.touched)">
+                <span *ngIf="createForm.get('holderName')?.errors?.['required']">
+                  Holder name is required.
+                </span>
+                <span *ngIf="createForm.get('holderName')?.errors?.['pattern']">
+                  Holder name can only contain letters.
+                </span>
+              </div>
             </div>
             <div class="mb-4">
               <label class="form-label">Initial Balance (₹)</label>
-              <input type="number" step="0.01" class="form-control" formControlName="initialBalance" [class.is-invalid]="createForm.get('initialBalance')?.invalid && createForm.get('initialBalance')?.touched"/>
-              <div class="invalid-feedback">Balance cannot be negative</div>
-                <div class="invalid-feedback" *ngIf="createForm.get('initialBalance')?.invalid && createForm.get('initialBalance')?.touched">
-                  <span *ngIf="createForm.get('initialBalance')?.errors?.['required']">Balance is required</span>
-                  <span *ngIf="createForm.get('initialBalance')?.errors?.['min']">Balance cannot be negative</span>
-                </div>
+
+              <input 
+                type="number"
+                step="0.01"
+                class="form-control"
+                formControlName="initialBalance"
+                [class.is-invalid]="createForm.get('initialBalance')?.invalid && (createForm.get('initialBalance')?.dirty || createForm.get('initialBalance')?.touched)"
+              />
+
+              <div class="invalid-feedback"
+              *ngIf="createForm.get('initialBalance')?.invalid && (createForm.get('initialBalance')?.dirty || createForm.get('initialBalance')?.touched)">
+
+                <span *ngIf="createForm.get('initialBalance')?.errors?.['required']">
+                  Initial deposit is required.
+                </span>
+
+                <span *ngIf="createForm.get('initialBalance')?.errors?.['min']">
+                  Initial deposit must be minimum ₹1000.
+                </span>
+
+              </div>
             </div>
             <div class="d-grid gap-2">
               <button type="submit" class="btn btn-primary" [disabled]="loading || createForm.invalid">

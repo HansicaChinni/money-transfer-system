@@ -19,6 +19,9 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "account_number", unique = true)
+    private String accountNumber;
+
     @Column(nullable = false, length = 100)
     private String holderName;
 
@@ -37,6 +40,10 @@ public class Account {
 
     public Account() {
         // JPA only
+    }
+
+    public static String generateAccountNumber(Long id) {
+        return "ACC-2026-" + String.format("%06d", id);
     }
 
     // ---- Domain methods ----
@@ -111,4 +118,12 @@ public class Account {
 
     public LocalDateTime getLastUpdated() { return lastUpdated; }
     public void setLastUpdated(LocalDateTime lastUpdated) { this.lastUpdated = lastUpdated; }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
 }

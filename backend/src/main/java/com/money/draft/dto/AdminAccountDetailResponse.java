@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
  */
 public record AdminAccountDetailResponse(
         Long id,
+        String accountNumber,
         String holderName,
         BigDecimal balance,
         String status,
