@@ -9,11 +9,14 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "accounts")
 public class Account {
+
+    private static final BigDecimal DEFAULT_DAILY_LIMIT = new BigDecimal("100000.00");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,12 +41,41 @@ public class Account {
     @Column(nullable = false)
     private LocalDateTime lastUpdated;
 
+    @Column(precision = 19, scale = 2)
+    private BigDecimal dailyTransferLimit;
+
+    @Column(precision = 19, scale = 2)
+    private BigDecimal dailyTransferred;
+
+    @Column
+    private LocalDate dailyResetDate;
+
     public Account() {
-        // JPA only
+        this.dailyTransferLimit = DEFAULT_DAILY_LIMIT;
+        this.dailyTransferred = BigDecimal.ZERO;
+        this.dailyResetDate = LocalDate.now();
     }
 
     public static String generateAccountNumber(Long id) {
         return "ACC-2026-" + String.format("%06d", id);
+    }
+
+    public void resetDailyLimitIfNeeded() {
+        LocalDate today = LocalDate.now();
+        if (dailyResetDate == null || !dailyResetDate.equals(today)) {
+            this.dailyTransferred = BigDecimal.ZERO;
+            this.dailyResetDate = today;
+        }
+    }
+
+    public void recordTransfer(BigDecimal amount) {
+        resetDailyLimitIfNeeded();
+        BigDecimal newTotal = this.dailyTransferred.add(amount);
+        if (newTotal.compareTo(this.dailyTransferLimit) > 0) {
+            throw new com.money.draft.exception.DailyLimitExceededException(
+                    this.id, this.dailyTransferLimit, newTotal);
+        }
+        this.dailyTransferred = newTotal;
     }
 
     // ---- Domain methods ----
@@ -126,4 +158,13 @@ public class Account {
     public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
     }
+
+    public BigDecimal getDailyTransferLimit() { return dailyTransferLimit; }
+    public void setDailyTransferLimit(BigDecimal dailyTransferLimit) { this.dailyTransferLimit = dailyTransferLimit; }
+
+    public BigDecimal getDailyTransferred() { return dailyTransferred; }
+    public void setDailyTransferred(BigDecimal dailyTransferred) { this.dailyTransferred = dailyTransferred; }
+
+    public LocalDate getDailyResetDate() { return dailyResetDate; }
+    public void setDailyResetDate(LocalDate dailyResetDate) { this.dailyResetDate = dailyResetDate; }
 }

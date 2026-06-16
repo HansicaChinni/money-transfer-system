@@ -1,7 +1,7 @@
-
 package com.money.draft.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.money.draft.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Component
 public class RestAccessDeniedHandler implements AccessDeniedHandler {
@@ -24,12 +22,12 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", Instant.now().toString());
-        body.put("status", 403);
-        body.put("error", "FORBIDDEN");
-        body.put("message", "You do not have permission to access this resource");
-        body.put("path", request.getRequestURI());
+        ErrorResponse body = new ErrorResponse(
+                "FORBIDDEN",
+                "You do not have permission to access this resource",
+                request.getRequestURI(),
+                Instant.now()
+        );
 
         om.writeValue(response.getOutputStream(), body);
     }

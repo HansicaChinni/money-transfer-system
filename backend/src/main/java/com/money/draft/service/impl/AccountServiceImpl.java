@@ -1,6 +1,8 @@
 
 package com.money.draft.service.impl;
 
+import com.money.draft.domain.audit.AuditLog;
+import com.money.draft.domain.audit.AuditLogRepository;
 import com.money.draft.domain.entity.Account;
 import com.money.draft.domain.entity.AppUser;
 import com.money.draft.domain.entity.TransactionLog;
@@ -30,15 +32,18 @@ public class AccountServiceImpl implements AccountService {
     private final TransactionLogRepository txRepo;
     private final AppUserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final AuditLogRepository auditLogRepo;
 
     public AccountServiceImpl(AccountRepository accountRepo,
                               TransactionLogRepository txRepo,
                               AppUserRepository userRepo,
-                              PasswordEncoder passwordEncoder) {
+                              PasswordEncoder passwordEncoder,
+                              AuditLogRepository auditLogRepo) {
         this.accountRepo = accountRepo;
         this.txRepo = txRepo;
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.auditLogRepo = auditLogRepo;
     }
 
     @Override
@@ -93,5 +98,10 @@ public class AccountServiceImpl implements AccountService {
         // Update
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepo.save(user);
+
+        auditLogRepo.save(new AuditLog(
+                "PASSWORD_CHANGE", "AppUser", userId, user.getUsername(),
+                null, "changed"
+        ));
     }
 }

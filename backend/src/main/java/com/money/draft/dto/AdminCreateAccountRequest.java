@@ -19,6 +19,6 @@ public record AdminCreateAccountRequest(
         String holderName,
 
         @NotNull(message = "Initial balance is required")
-        @DecimalMin(value = "0.00", message = "Balance cannot be negative")
+        @DecimalMin(value = "1000.00", message = "Initial deposit must be at least ₹1000")
         BigDecimal initialBalance
 ) {}

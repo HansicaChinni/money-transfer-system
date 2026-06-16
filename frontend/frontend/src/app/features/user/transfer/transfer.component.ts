@@ -59,7 +59,7 @@ export class TransferComponent implements OnInit {
       next: (response) => {
         this.loading = false;
         if (response.status === 'SUCCESS') {
-          this.successMessage = `Transfer of $${response.amount} completed successfully! Transaction ID: ${response.transactionId}`;
+          this.successMessage = `Transfer of ₹${response.amount} completed successfully! Transaction ID: ${response.transactionId}`;
           this.transferForm.reset();
           this.loadAccountInfo();
           setTimeout(() => {

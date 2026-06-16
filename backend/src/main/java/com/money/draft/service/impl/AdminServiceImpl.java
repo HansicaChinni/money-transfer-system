@@ -2,6 +2,8 @@
 package com.money.draft.service.impl;
 
 
+import com.money.draft.domain.audit.AuditLog;
+import com.money.draft.domain.audit.AuditLogRepository;
 import com.money.draft.domain.entity.Account;
 import com.money.draft.domain.repository.AccountRepository;
 import com.money.draft.domain.repository.AppUserRepository;
@@ -10,6 +12,7 @@ import com.money.draft.dto.AdminAccountDetailResponse;
 import com.money.draft.dto.AdminAccountView;
 import com.money.draft.dto.AdminCreateAccountRequest;
 import com.money.draft.dto.TransactionLogResponse;
+import com.money.draft.exception.AccountClosureException;
 import com.money.draft.exception.ValidationException;
 import com.money.draft.service.AdminService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,15 +33,18 @@ public class AdminServiceImpl implements AdminService {
     private final TransactionLogRepository txRepo;
     private final AppUserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final AuditLogRepository auditLogRepo;
 
     public AdminServiceImpl(AccountRepository accountRepo,
                             TransactionLogRepository txRepo,
                             AppUserRepository userRepo,
-                            PasswordEncoder passwordEncoder) {
+                            PasswordEncoder passwordEncoder,
+                            AuditLogRepository auditLogRepo) {
         this.accountRepo = accountRepo;
         this.txRepo = txRepo;
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.auditLogRepo = auditLogRepo;
     }
 
     @Override
@@ -95,12 +101,6 @@ public class AdminServiceImpl implements AdminService {
         // 2. Create and Save Account (image_9cc5f4.png fields)
         com.money.draft.domain.entity.Account account = new com.money.draft.domain.entity.Account();
         account.setHolderName(req.holderName());
-        if (req.initialBalance().compareTo(new BigDecimal("1000")) < 0) {
-            throw new ValidationException(
-                    "Initial deposit must be at least ₹1000"
-            );
-        }
-
         account.setBalance(req.initialBalance());
         account.setStatus(com.money.draft.domain.enums.AccountStatus.ACTIVE);
 
@@ -139,8 +139,21 @@ public class AdminServiceImpl implements AdminService {
         com.money.draft.domain.entity.Account a = accountRepo.findById(id)
                 .orElseThrow(() -> new com.money.draft.exception.AccountNotFoundException(id));
 
+        if (status == com.money.draft.domain.enums.AccountStatus.CLOSED
+                && a.getBalance().compareTo(BigDecimal.ZERO) != 0) {
+            throw new AccountClosureException(id, a.getBalance());
+        }
+
+        String oldStatus = a.getStatus().name();
         a.setStatus(status);
-        return mapToAdminDetailResponse(accountRepo.save(a));
+        Account saved = accountRepo.save(a);
+
+        auditLogRepo.save(new AuditLog(
+                "STATUS_CHANGE", "Account", id, "admin",
+                oldStatus, status.name()
+        ));
+
+        return mapToAdminDetailResponse(saved);
     }
 
     // Mapper for the Admin-specific detail view

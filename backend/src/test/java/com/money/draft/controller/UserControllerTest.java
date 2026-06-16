@@ -9,6 +9,7 @@ import com.money.draft.dto.AccountResponse;
 import com.money.draft.dto.MeTransferRequest;
 import com.money.draft.dto.TransactionLogResponse;
 import com.money.draft.dto.TransferResponse;
+import com.money.draft.exception.GlobalExceptionHandler;
 import com.money.draft.exception.InsufficientBalanceException;
 import com.money.draft.service.AccountService;
 import com.money.draft.service.TransferService;
@@ -59,7 +60,10 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(userController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
         objectMapper = new ObjectMapper();
         SecurityContextHolder.clearContext();
     }
@@ -88,7 +92,7 @@ class UserControllerTest {
     }
 
     @Test
-    void transfer_ShouldReturn404_WhenUserAccountNotFound() throws Exception {
+    void transfer_ShouldReturn400_WhenUserAccountNotFound() throws Exception {
         setSecurityContext("john.doe");
 
         MeTransferRequest req = new MeTransferRequest(200L, new BigDecimal("50.00"));
@@ -97,7 +101,7 @@ class UserControllerTest {
         mockMvc.perform(post("/me/transfer")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -136,7 +140,7 @@ class UserControllerTest {
         AppUser user = createUser(1L, "john.doe", 100L);
 
         AccountResponse response = new AccountResponse(
-                100L, "John", new BigDecimal("1500"), "ACTIVE"
+                100L, "ACC-2026-000100", "John", new BigDecimal("1500"), "ACTIVE"
         );
 
         when(appUserRepository.findByUsername("john.doe"))
@@ -146,17 +150,17 @@ class UserControllerTest {
         mockMvc.perform(get("/me/balance"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(100)))
-                .andExpect(jsonPath("$.balance", is(1500.00)))
+                .andExpect(jsonPath("$.balance", is(1500)))
                 .andExpect(jsonPath("$.status", is("ACTIVE")));
     }
 
     @Test
-    void getBalance_ShouldReturn404_WhenUserAccountNotFound() throws Exception {
+    void getBalance_ShouldReturn400_WhenUserAccountNotFound() throws Exception {
         setSecurityContext("john.doe");
         when(appUserRepository.findByUsername("john.doe")).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/me/balance"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     /* -------------------- TRANSACTION HISTORY TESTS -------------------- */
@@ -202,13 +206,13 @@ class UserControllerTest {
     }
 
     @Test
-    void getTransactions_ShouldReturn404_WhenUserAccountNotFound() throws Exception {
+    void getTransactions_ShouldReturn400_WhenUserAccountNotFound() throws Exception {
         setSecurityContext("john.doe");
 
         when(appUserRepository.findByUsername("john.doe")).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/me/transactions"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     /* -------------------- HELPERS -------------------- */

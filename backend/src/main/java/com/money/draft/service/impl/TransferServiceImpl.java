@@ -125,6 +125,9 @@ public class TransferServiceImpl implements TransferService {
             throw new InsufficientBalanceException(from.getId(), from.getBalance(), amount);
         }
 
+        // Daily limit check
+        from.recordTransfer(amount);
+
         // Domain operations
         from.debit(amount);
         to.credit(amount);
