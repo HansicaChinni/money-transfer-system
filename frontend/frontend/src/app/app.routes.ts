@@ -34,6 +34,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/user/profile/profile.component').then(m => m.ProfileComponent)
       },
       {
+        path: 'rewards',
+        loadComponent: () => import('./features/user/rewards/rewards.component').then(m => m.RewardsComponent)
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
@@ -63,6 +67,10 @@ export const routes: Routes = [
       {
         path: 'create-account',
         loadComponent: () => import('./features/admin/create-account/create-account.component').then(m => m.CreateAccountComponent)
+      },
+      {
+        path: 'rewards',
+        loadComponent: () => import('./features/admin/rewards/rewards.component').then(m => m.AdminRewardsComponent)
       },
       {
         path: '',

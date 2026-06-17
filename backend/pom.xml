@@ -146,7 +146,55 @@
 							<goal>report</goal>
 						</goals>
 					</execution>
+
+					<!-- Enforce coverage check -->
+					<execution>
+						<id>check</id>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>BUNDLE</element>
+									<limits>
+										<limit>
+											<counter>INSTRUCTION</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.90</minimum>
+										</limit>
+										<limit>
+											<counter>BRANCH</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.90</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+							<excludes>
+								<exclude>com/money/draft/dto/**</exclude>
+								<exclude>com/money/draft/domain/**</exclude>
+								<exclude>com/money/draft/config/**</exclude>
+								<exclude>com/money/draft/DraftApplication.class</exclude>
+								<exclude>com/money/draft/security/SecurityConfig.class</exclude>
+								<exclude>com/money/draft/security/RestAuthenticationEntryPoint.class</exclude>
+								<exclude>com/money/draft/security/RestAccessDeniedHandler.class</exclude>
+								<exclude>com/money/draft/domain/**</exclude>
+							</excludes>
+						</configuration>
+					</execution>
 				</executions>
+				<configuration>
+					<excludes>
+						<exclude>com/money/draft/dto/**</exclude>
+						<exclude>com/money/draft/domain/**</exclude>
+						<exclude>com/money/draft/config/**</exclude>
+						<exclude>com/money/draft/DraftApplication.class</exclude>
+						<exclude>com/money/draft/security/SecurityConfig.class</exclude>
+						<exclude>com/money/draft/security/RestAuthenticationEntryPoint.class</exclude>
+						<exclude>com/money/draft/security/RestAccessDeniedHandler.class</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

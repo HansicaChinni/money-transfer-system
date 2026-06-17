@@ -6,7 +6,11 @@ import {
   AdminAccountDetailResponse,
   TransactionLogResponse,
   AdminCreateAccountRequest,
-  AccountStatus
+  AccountStatus,
+  RedemptionResponse,
+  RewardItemResponse,
+  CreateRewardItemRequest,
+  FulfillRequest
 } from '../models/api.models';
 
 @Injectable({
@@ -14,6 +18,7 @@ import {
 })
 export class AdminService {
   private apiUrl = 'http://localhost:8080/admin';
+  private rewardUrl = 'http://localhost:8080/api/admin/rewards';
 
   constructor(private http: HttpClient) {}
 
@@ -40,5 +45,33 @@ export class AdminService {
 
   getAllTransactions(): Observable<TransactionLogResponse[]> {
     return this.http.get<TransactionLogResponse[]>(`${this.apiUrl}/transactions`);
+  }
+
+  getRedemptions(): Observable<RedemptionResponse[]> {
+    return this.http.get<RedemptionResponse[]>(`${this.rewardUrl}/redemptions`);
+  }
+
+  fulfillRedemption(id: number, request: FulfillRequest): Observable<RedemptionResponse> {
+    return this.http.patch<RedemptionResponse>(`${this.rewardUrl}/redemptions/${id}/fulfill`, request);
+  }
+
+  cancelRedemption(id: number): Observable<RedemptionResponse> {
+    return this.http.patch<RedemptionResponse>(`${this.rewardUrl}/redemptions/${id}/cancel`, {});
+  }
+
+  getRewardItems(): Observable<RewardItemResponse[]> {
+    return this.http.get<RewardItemResponse[]>(`${this.rewardUrl}/items`);
+  }
+
+  createRewardItem(request: CreateRewardItemRequest): Observable<RewardItemResponse> {
+    return this.http.post<RewardItemResponse>(`${this.rewardUrl}/items`, request);
+  }
+
+  updateRewardItem(id: number, request: CreateRewardItemRequest): Observable<RewardItemResponse> {
+    return this.http.put<RewardItemResponse>(`${this.rewardUrl}/items/${id}`, request);
+  }
+
+  deleteRewardItem(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.rewardUrl}/items/${id}`);
   }
 }

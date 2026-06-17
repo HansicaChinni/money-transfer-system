@@ -1,0 +1,151 @@
+<app-navbar></app-navbar>
+
+<div class="navbar-spacing">
+  <div class="container-custom fade-in">
+    <div class="row mb-4">
+      <div class="col-12">
+        <h2 class="text-primary" style="font-weight: 700;">Rewards Management</h2>
+        <p class="text-muted">Manage reward catalog items and process customer redemption requests.</p>
+      </div>
+    </div>
+
+    <div *ngIf="successMessage" class="alert alert-success" role="alert">{{ successMessage }}</div>
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">{{ errorMessage }}</div>
+
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Reward Catalog</h5>
+        <button class="btn btn-primary btn-sm" (click)="openNewItem()">+ New Item</button>
+      </div>
+      <div class="card-body">
+        <div *ngIf="showItemForm" class="mb-4 p-3 border rounded bg-light">
+          <h6>{{ editingItem ? 'Edit' : 'New' }} Reward Item</h6>
+          <div class="row g-2">
+            <div class="col-md-4">
+              <label class="small text-muted">Item Name</label>
+              <input class="form-control form-control-sm" placeholder="e.g. Amazon Gift Card" [(ngModel)]="itemForm.name" />
+            </div>
+            <div class="col-md-4">
+              <label class="small text-muted">Brand</label>
+              <input class="form-control form-control-sm" placeholder="e.g. Amazon" [(ngModel)]="itemForm.brand" />
+            </div>
+            <div class="col-md-2">
+              <label class="small text-muted">Points Required</label>
+              <input class="form-control form-control-sm" type="number" placeholder="e.g. 500" [(ngModel)]="itemForm.pointsRequired" />
+            </div>
+            <div class="col-md-2">
+              <label class="small text-muted">Coupon Value (₹)</label>
+              <input class="form-control form-control-sm" type="number" placeholder="e.g. 250" [(ngModel)]="itemForm.couponValue" />
+            </div>
+            <div class="col-md-6">
+              <label class="small text-muted">Image URL</label>
+              <input class="form-control form-control-sm" placeholder="https://..." [(ngModel)]="itemForm.imageUrl" />
+            </div>
+            <div class="col-md-6">
+              <label class="small text-muted">Description</label>
+              <input class="form-control form-control-sm" placeholder="Brief description" [(ngModel)]="itemForm.description" />
+            </div>
+            <div class="col-12 mt-2">
+              <button class="btn btn-success btn-sm me-2" (click)="saveItem()">Save Item</button>
+              <button class="btn btn-outline-secondary btn-sm" (click)="cancelForm()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Item Name</th>
+                <th>Brand</th>
+                <th class="text-end">Points Required</th>
+                <th class="text-end">Coupon Value</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of items">
+                <td>{{ item.id }}</td>
+                <td>
+                  <img *ngIf="item.imageUrl" [src]="item.imageUrl" alt="{{ item.name }}" class="item-thumb" />
+                  <span *ngIf="!item.imageUrl" class="text-muted small">No image</span>
+                </td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.brand }}</td>
+                <td class="text-end">{{ item.pointsRequired | number }} pts</td>
+                <td class="text-end">₹{{ item.couponValue | number:'1.2-2' }}</td>
+                <td>
+                  <span class="badge" [class.badge-success]="item.isActive" [class.badge-secondary]="!item.isActive">
+                    {{ item.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-outline-primary btn-sm me-1" (click)="openEditItem(item)">Edit</button>
+                  <button class="btn btn-outline-danger btn-sm" (click)="deleteItem(item.id)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Redemption Requests</h5>
+      </div>
+      <div class="card-body">
+        <div *ngIf="loading" class="text-center py-3">
+          <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+        </div>
+        <div *ngIf="!loading && redemptions.length === 0" class="text-center py-4 text-muted">
+          <p class="mb-0">No pending redemption requests from customers.</p>
+        </div>
+        <div class="table-responsive" *ngIf="!loading && redemptions.length > 0">
+          <table class="table table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Request ID</th>
+                <th>Account</th>
+                <th>Item Name</th>
+                <th>Brand</th>
+                <th class="text-end">Points Spent</th>
+                <th>Requested On</th>
+                <th>Status</th>
+                <th>Admin Notes</th>
+                <th>Actions / Coupon Code</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let r of redemptions">
+                <td>#{{ r.id }}</td>
+                <td>#{{ r.rewardItemId }}</td>
+                <td>{{ r.itemName }}</td>
+                <td>{{ r.brand }}</td>
+                <td class="text-end">{{ r.pointsSpent | number }} pts</td>
+                <td>{{ r.createdOn | date:'short' }}</td>
+                <td>
+                  <span class="badge" [class.badge-warning]="r.status === 'PENDING'"
+                    [class.badge-success]="r.status === 'FULFILLED'"
+                    [class.badge-danger]="r.status === 'CANCELLED'">{{ r.status }}</span>
+                </td>
+                <td>
+                  <input class="form-control form-control-sm" placeholder="Add notes..." [(ngModel)]="fulfillNotes" *ngIf="r.status === 'PENDING'" />
+                  <span *ngIf="r.status !== 'PENDING'" class="small">{{ r.notes }}</span>
+                </td>
+                <td>
+                  <button class="btn btn-success btn-sm me-1" *ngIf="r.status === 'PENDING'" (click)="fulfillRedemption(r.id)">Fulfill</button>
+                  <button class="btn btn-danger btn-sm" *ngIf="r.status === 'PENDING'" (click)="cancelRedemption(r.id)">Cancel</button>
+                  <code *ngIf="r.couponCode" class="small">{{ r.couponCode }}</code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

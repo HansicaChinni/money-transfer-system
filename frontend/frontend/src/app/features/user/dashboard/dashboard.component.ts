@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { UserService } from '../../../core/services/user.service';
-import { AccountResponse, TransactionLogResponse } from '../../../core/models/api.models';
+import { AccountResponse, TransactionLogResponse, RewardSummaryResponse } from '../../../core/models/api.models';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,6 +15,7 @@ import { AccountResponse, TransactionLogResponse } from '../../../core/models/ap
 export class DashboardComponent implements OnInit {
   accountInfo: AccountResponse | null = null;
   recentTransactions: TransactionLogResponse[] = [];
+  rewardSummary: RewardSummaryResponse | null = null;
   loading = true;
   errorMessage = '';
 
@@ -26,7 +27,7 @@ export class DashboardComponent implements OnInit {
 
   loadDashboardData(): void {
     this.loading = true;
-    
+
     this.userService.getBalance().subscribe({
       next: (account) => {
         this.accountInfo = account;
@@ -45,6 +46,13 @@ export class DashboardComponent implements OnInit {
       error: (error) => {
         console.error('Failed to load transactions', error);
       }
+    });
+
+    this.userService.getRewardSummary().subscribe({
+      next: (summary) => {
+        this.rewardSummary = summary;
+      },
+      error: () => {}
     });
   }
 

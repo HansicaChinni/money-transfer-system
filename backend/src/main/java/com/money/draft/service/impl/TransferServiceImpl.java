@@ -1,4 +1,3 @@
-
 package com.money.draft.service.impl;
 
 import com.money.draft.domain.entity.Account;
@@ -9,6 +8,7 @@ import com.money.draft.domain.repository.TransactionLogRepository;
 import com.money.draft.dto.TransferRequest;
 import com.money.draft.dto.TransferResponse;
 import com.money.draft.exception.*;
+import com.money.draft.service.RewardService;
 import com.money.draft.service.TransactionLogWriter;
 import com.money.draft.service.TransferService;
 import org.slf4j.Logger;
@@ -29,20 +29,22 @@ public class TransferServiceImpl implements TransferService {
     private final AccountRepository accountRepo;
     private final TransactionLogRepository txRepo;
     private final TransactionLogWriter logWriter;
+    private final RewardService rewardService;
 
     public TransferServiceImpl(AccountRepository accountRepo,
                                TransactionLogRepository txRepo,
-                               TransactionLogWriter logWriter) {
+                               TransactionLogWriter logWriter,
+                               RewardService rewardService) {
         this.accountRepo = accountRepo;
         this.txRepo = txRepo;
         this.logWriter = logWriter;
+        this.rewardService = rewardService;
     }
 
     @Override
     public TransferResponse transfer(TransferRequest req) {
         if (req == null) throw new ValidationException("TransferRequest is required");
 
-        // Normalize idempotency key if missing/blank (records are immutable, so create a new one)
         TransferRequest normalized = (req.idempotencyKey() == null || req.idempotencyKey().isBlank())
                 ? new TransferRequest(
                 req.fromAccountId(),
@@ -51,17 +53,14 @@ public class TransferServiceImpl implements TransferService {
                 "sys-%d-%d-%s".formatted(req.fromAccountId(), req.toAccountId(), UUID.randomUUID()))
                 : req;
 
-        // 1) Idempotency pre-check
         txRepo.findByIdempotencyKey(normalized.idempotencyKey()).ifPresent(existing -> {
             throw new DuplicateTransferException(normalized.idempotencyKey());
         });
 
-        // 2) Self-transfer guard
         if (normalized.isSelfTransfer()) {
             throw new SelfTransferNotAllowedException(normalized.fromAccountId());
         }
 
-        // 3) Optimistic-lock retry loop
         int attempts = 0;
         while (true) {
             attempts++;
@@ -88,7 +87,6 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     public TransferResponse transferForUser(Long fromAccountId, Long toAccountId, BigDecimal amount) {
-        // Controller already validated MeTransferRequest; we assume non-null inputs here.
         TransferRequest req = new TransferRequest(
                 fromAccountId,
                 toAccountId,
@@ -100,13 +98,11 @@ public class TransferServiceImpl implements TransferService {
 
     @Transactional
     protected TransferResponse doTransferOnce(TransferRequest req) {
-        // Load accounts
         Account from = accountRepo.findById(req.fromAccountId())
                 .orElseThrow(() -> new AccountNotFoundException(req.fromAccountId()));
         Account to = accountRepo.findById(req.toAccountId())
                 .orElseThrow(() -> new AccountNotFoundException(req.toAccountId()));
 
-        // Status checks
         if (from.getStatus() != AccountStatus.ACTIVE) {
             throw new AccountNotActiveException(from.getId(), from.getStatus().name());
         }
@@ -114,30 +110,26 @@ public class TransferServiceImpl implements TransferService {
             throw new AccountNotActiveException(to.getId(), to.getStatus().name());
         }
 
-        // Amount rules (DTO already enforces >= 0.01; this is a domain-safety guard)
         BigDecimal amount = req.amount();
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new ValidationException("amount must be greater than zero");
         }
 
-        // Sufficient funds
         if (from.getBalance().compareTo(amount) < 0) {
             throw new InsufficientBalanceException(from.getId(), from.getBalance(), amount);
         }
 
-        // Daily limit check
         from.recordTransfer(amount);
 
-        // Domain operations
         from.debit(amount);
         to.credit(amount);
 
-        // Persist (optimistic lock via @Version)
         accountRepo.save(from);
         accountRepo.save(to);
 
-        // Log success (new transaction)
         TransactionLog tx = logWriter.logSuccess(from.getId(), to.getId(), amount, req.idempotencyKey());
+
+        rewardService.grantRewardIfEligible(from.getId(), to.getId(), tx.getId(), amount);
 
         return TransferResponse.success(tx.getId(), amount);
     }
@@ -146,7 +138,6 @@ public class TransferServiceImpl implements TransferService {
         try {
             logWriter.logFailure(req.fromAccountId(), req.toAccountId(), req.amount(), req.idempotencyKey(), reason);
         } catch (Exception ignored) {
-            // If logging fails, do not shadow the original exception.
         }
     }
 }

@@ -6,7 +6,12 @@ import {
   TransactionLogResponse,
   MeTransferRequest,
   TransferResponse,
-  ChangePasswordRequest
+  ChangePasswordRequest,
+  RewardSummaryResponse,
+  RewardTransactionResponse,
+  RewardItemResponse,
+  RedeemRequest,
+  RedemptionResponse
 } from '../models/api.models';
 
 @Injectable({
@@ -14,6 +19,7 @@ import {
 })
 export class UserService {
   private apiUrl = 'http://localhost:8080/me';
+  private rewardUrl = 'http://localhost:8080/api/user/rewards';
 
   constructor(private http: HttpClient) {}
 
@@ -31,5 +37,25 @@ export class UserService {
 
   changePassword(request: ChangePasswordRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/password`, request);
+  }
+
+  getRewardSummary(): Observable<RewardSummaryResponse> {
+    return this.http.get<RewardSummaryResponse>(`${this.rewardUrl}/summary`);
+  }
+
+  getRewardHistory(): Observable<RewardTransactionResponse[]> {
+    return this.http.get<RewardTransactionResponse[]>(`${this.rewardUrl}/history`);
+  }
+
+  getRewardStore(): Observable<RewardItemResponse[]> {
+    return this.http.get<RewardItemResponse[]>(`${this.rewardUrl}/store`);
+  }
+
+  redeem(request: RedeemRequest): Observable<RedemptionResponse> {
+    return this.http.post<RedemptionResponse>(`${this.rewardUrl}/redeem`, request);
+  }
+
+  getRedemptions(): Observable<RedemptionResponse[]> {
+    return this.http.get<RedemptionResponse[]>(`${this.rewardUrl}/redemptions`);
   }
 }

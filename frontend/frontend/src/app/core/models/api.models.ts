@@ -91,3 +91,60 @@ export enum Role {
   USER = 'USER',
   ADMIN = 'ADMIN'
 }
+
+export interface RewardSummaryResponse {
+  totalPoints: number;
+  lastEarned: number | null;
+  lastEarnedOn: string | null;
+}
+
+export interface RewardTransactionResponse {
+  id: number;
+  transactionId: number;
+  pointsEarned: number;
+  amount: number;
+  reason: string;
+  createdOn: string;
+}
+
+export interface RewardItemResponse {
+  id: number;
+  name: string;
+  description: string;
+  brand: string;
+  pointsRequired: number;
+  couponValue: number;
+  isActive: boolean;
+  imageUrl: string | null;
+}
+
+export interface RedeemRequest {
+  rewardItemId: number;
+}
+
+export interface RedemptionResponse {
+  id: number;
+  rewardItemId: number;
+  itemName: string;
+  brand: string;
+  pointsSpent: number;
+  couponValue: number;
+  status: string;
+  couponCode: string | null;
+  notes: string | null;
+  createdOn: string;
+  fulfilledOn: string | null;
+}
+
+export interface CreateRewardItemRequest {
+  name: string;
+  description: string;
+  brand: string;
+  pointsRequired: number;
+  couponValue: number;
+  imageUrl: string | null;
+}
+
+export interface FulfillRequest {
+  notes: string;
+}

@@ -1,0 +1,158 @@
+<app-navbar></app-navbar>
+
+<div class="navbar-spacing">
+  <div class="container-custom fade-in">
+    <div class="row mb-4">
+      <div class="col-12">
+        <h2 class="text-primary" style="font-weight: 700;">Rewards</h2>
+        <p class="text-muted">Earn 1 point per ₹200 transferred on amounts above ₹100. Redeem points for exclusive brand coupons.</p>
+      </div>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">{{ errorMessage }}</div>
+    <div *ngIf="redeemSuccess" class="alert alert-success" role="alert">{{ redeemSuccess }}</div>
+
+    <div class="row mb-4">
+      <div class="col-md-4 mb-3">
+        <div class="stat-card text-center">
+          <p class="text-muted mb-1" style="font-size: 0.9rem;">Total Reward Points</p>
+          <h2 class="text-primary mb-0" style="font-weight: 700;">{{ summary?.totalPoints ?? 0 }}</h2>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="stat-card stat-card-orange text-center">
+          <p class="text-muted mb-1" style="font-size: 0.9rem;">Points Last Earned</p>
+          <h4 class="mb-0" style="font-weight: 600; color: var(--accent-orange-dark);">
+            {{ summary?.lastEarned ? summary!.lastEarned + ' pts' : 'N/A' }}
+          </h4>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="stat-card text-center">
+          <p class="text-muted mb-1" style="font-size: 0.9rem;">Coupons Claimed</p>
+          <h4 class="mb-0 text-primary" style="font-weight: 600;">{{ redemptions.length }}</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab === 'store'" (click)="setTab('store')" href="javascript:void(0)">Reward Store</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab === 'history'" (click)="setTab('history')" href="javascript:void(0)">Points History</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab === 'coupons'" (click)="setTab('coupons')" href="javascript:void(0)">My Coupons</a>
+          </li>
+        </ul>
+      </div>
+      <div class="card-body">
+        <div *ngIf="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+        </div>
+
+        <div *ngIf="!loading && activeTab === 'store'">
+          <div *ngIf="store.length === 0" class="text-center py-4 text-muted">
+            <p class="mb-0">No reward items currently available. Check back later!</p>
+          </div>
+          <div class="row" *ngIf="store.length > 0">
+            <div class="col-md-6 col-lg-4 mb-3" *ngFor="let item of store">
+              <div class="card h-100 reward-store-card">
+                <div class="card-img-wrapper">
+                  <img *ngIf="item.imageUrl" [src]="item.imageUrl" alt="{{ item.name }}" class="card-img-top store-img" />
+                  <div *ngIf="!item.imageUrl" class="card-img-top store-img-placeholder d-flex align-items-center justify-content-center">
+                    <span class="brand-initial">{{ item.brand.charAt(0) }}</span>
+                  </div>
+                </div>
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title mb-1">{{ item.name }}</h5>
+                  <p class="text-muted small mb-2">{{ item.brand }}</p>
+                  <p class="card-text small text-muted flex-grow-1">{{ item.description }}</p>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge badge-primary fs-6">{{ item.pointsRequired | number }} pts</span>
+                    <span class="small fw-semibold">Worth ₹{{ item.couponValue | number:'1.2-2' }}</span>
+                  </div>
+                  <button class="btn btn-primary w-100 btn-sm"
+                    [disabled]="(summary?.totalPoints ?? 0) < item.pointsRequired"
+                    (click)="redeem(item)">
+                    {{ (summary?.totalPoints ?? 0) >= item.pointsRequired ? 'Redeem Now' : 'Need ' + (item.pointsRequired - (summary?.totalPoints ?? 0)) + ' more points' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="!loading && activeTab === 'history'">
+          <div *ngIf="history.length === 0" class="text-center py-4 text-muted">
+            <p class="mb-0">You haven't earned any reward points yet. Make a transfer of ₹200 or more to start earning!</p>
+          </div>
+          <div class="table-responsive" *ngIf="history.length > 0">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Date Earned</th>
+                  <th>Linked Transaction</th>
+                  <th class="text-end">Transfer Amount</th>
+                  <th class="text-end">Points Earned</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let tx of history">
+                  <td>{{ tx.createdOn | date:'short' }}</td>
+                  <td><a href="javascript:void(0)" class="text-decoration-none">#{{ tx.transactionId }}</a></td>
+                  <td class="text-end">₹{{ tx.amount | number:'1.2-2' }}</td>
+                  <td class="text-end"><span class="badge badge-success fw-bold">+{{ tx.pointsEarned }}</span></td>
+                  <td class="small text-muted">{{ tx.reason }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div *ngIf="!loading && activeTab === 'coupons'">
+          <div *ngIf="redemptions.length === 0" class="text-center py-4 text-muted">
+            <p class="mb-0">You haven't claimed any coupons yet. Browse the Reward Store to spend your points!</p>
+          </div>
+          <div class="table-responsive" *ngIf="redemptions.length > 0">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Date Claimed</th>
+                  <th>Item</th>
+                  <th>Brand</th>
+                  <th class="text-end">Points Spent</th>
+                  <th>Status</th>
+                  <th>Coupon Code</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let r of redemptions">
+                  <td>{{ r.createdOn | date:'short' }}</td>
+                  <td>{{ r.itemName }}</td>
+                  <td>{{ r.brand }}</td>
+                  <td class="text-end">{{ r.pointsSpent | number }} pts</td>
+                  <td>
+                    <span class="badge" [class.badge-warning]="r.status === 'PENDING'"
+                      [class.badge-success]="r.status === 'FULFILLED'"
+                      [class.badge-danger]="r.status === 'CANCELLED'">
+                      {{ r.status === 'PENDING' ? 'Awaiting Fulfillment' : r.status === 'FULFILLED' ? 'Code Issued' : 'Cancelled' }}
+                    </span>
+                  </td>
+                  <td>
+                    <code *ngIf="r.couponCode" class="coupon-code">{{ r.couponCode }}</code>
+                    <span *ngIf="!r.couponCode" class="text-muted small fst-italic">Not yet issued</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

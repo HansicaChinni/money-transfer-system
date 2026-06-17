@@ -20,9 +20,8 @@
   </div>
 
   <div *ngIf="!loading && accountInfo">
-    <!-- Account Information -->
     <div class="row mb-4">
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
         <div class="stat-card">
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
@@ -36,7 +35,7 @@
           <p class="text-muted mb-0" style="font-size: 0.85rem;">Account #{{ accountInfo.id }}</p>
         </div>
       </div>
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
         <div class="stat-card stat-card-orange">
           <p class="text-muted mb-1" style="font-size: 0.9rem;">Account Holder</p>
           <h4 class="mb-2" style="font-weight: 600; color: var(--accent-orange-dark);">{{ accountInfo.holderName }}</h4>
@@ -46,9 +45,17 @@
           </div>
         </div>
       </div>
+      <div class="col-md-4 mb-3">
+        <div class="stat-card text-center" style="background: linear-gradient(135deg, #f0fdf4, #dcfce7);">
+          <p class="text-muted mb-1" style="font-size: 0.9rem;">Reward Points</p>
+          <h2 class="mb-1" style="font-weight: 700; color: #16a34a;">{{ rewardSummary?.totalPoints ?? 0 }}</h2>
+          <div class="mt-2">
+            <a routerLink="/user/rewards" class="btn btn-success btn-sm">View Rewards</a>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Recent Transactions -->
     <div class="card">
       <div class="card-header">
         <h5 class="mb-0">Recent Transactions</h5>

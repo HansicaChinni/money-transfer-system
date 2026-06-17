@@ -1,7 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark glass-navbar fixed-top">
   <div class="container">
     
-    <!-- Logo + Brand -->
     <a class="navbar-brand d-flex align-items-center" routerLink="/">
       <img 
         src="assets/logo1.png" 
@@ -21,7 +20,6 @@
 
     <div class="collapse navbar-collapse" id="navbarNav">
 
-      <!-- Admin Links -->
       <ul class="navbar-nav ms-auto" *ngIf="isAdmin">
         <li class="nav-item">
           <a class="nav-link" routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
@@ -35,9 +33,11 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/admin/create-account" routerLinkActive="active">Create Account</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/rewards" routerLinkActive="active">Rewards</a>
+        </li>
       </ul>
 
-      <!-- User Links -->
       <ul class="navbar-nav ms-auto" *ngIf="!isAdmin">
         <li class="nav-item">
           <a class="nav-link" routerLink="/user/dashboard" routerLinkActive="active">Dashboard</a>
@@ -49,11 +49,13 @@
           <a class="nav-link" routerLink="/user/transactions" routerLinkActive="active">Transactions</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" routerLink="/user/rewards" routerLinkActive="active">Rewards</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" routerLink="/user/profile" routerLinkActive="active">Profile</a>
         </li>
       </ul>
 
-      <!-- Logout -->
       <ul class="navbar-nav ms-3">
         <li class="nav-item">
           <button class="btn btn-outline-light btn-sm logout-btn" (click)="logout()">

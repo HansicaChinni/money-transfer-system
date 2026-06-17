@@ -11,6 +11,10 @@
   --wine-accent: #B4234A;
   --wine-accent-light: #D95C76;
 
+  /* Orange Accent (for variety) */
+  --accent-orange-dark: #D97706;
+  --accent-orange-lightest: #FEF3C7;
+
   /* Backgrounds */
   --bg-light: #FAFAFA;
   --bg-white: #FFFFFF;
@@ -268,6 +272,11 @@ body {
   color: white;
 }
 
+.badge-secondary {
+  background: linear-gradient(135deg, #9CA3AF 0%, #6B7280 100%);
+  color: white;
+}
+
 /* Table Styles */
 .table {
   background: var(--bg-white);
@@ -370,6 +379,15 @@ body {
 
 .stat-card-wine:hover {
   background: linear-gradient(135deg, var(--wine-dark) 0%, #4A151C 100%);
+}
+
+.stat-card-orange {
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  border-color: #FDE68A;
+}
+
+.stat-card-orange:hover {
+  border-color: #F59E0B;
 }
 
 /* Modal Styles */

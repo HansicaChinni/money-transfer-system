@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { UserService } from '../../../core/services/user.service';
-import { AccountResponse } from '../../../core/models/api.models';
+import { AccountResponse, RedemptionResponse } from '../../../core/models/api.models';
 
 @Component({
   selector: 'app-profile',
@@ -14,6 +14,7 @@ import { AccountResponse } from '../../../core/models/api.models';
 })
 export class ProfileComponent implements OnInit {
   accountInfo: AccountResponse | null = null;
+  redemptions: RedemptionResponse[] = [];
   passwordForm: FormGroup;
   loading = false;
   loadingAccount = true;
@@ -65,12 +66,19 @@ export class ProfileComponent implements OnInit {
         this.loadingAccount = false;
       }
     });
+
+    this.userService.getRedemptions().subscribe({
+      next: (redemptions) => {
+        this.redemptions = redemptions.filter(r => r.couponCode != null);
+      },
+      error: () => {}
+    });
   }
 
   passwordMatchValidator(form: FormGroup) {
     const newPassword = form.get('newPassword');
     const confirmPassword = form.get('confirmPassword');
-    
+
     if (newPassword && confirmPassword && newPassword.value !== confirmPassword.value) {
       confirmPassword.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
