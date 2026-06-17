@@ -11,6 +11,7 @@ import com.money.draft.dto.TransferResponse;
 import com.money.draft.exception.*;
 import com.money.draft.service.TransactionLogWriter;
 import com.money.draft.service.TransferService;
+import com.money.draft.service.RewardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -29,13 +30,16 @@ public class TransferServiceImpl implements TransferService {
     private final AccountRepository accountRepo;
     private final TransactionLogRepository txRepo;
     private final TransactionLogWriter logWriter;
+    private final RewardService rewardService;
 
     public TransferServiceImpl(AccountRepository accountRepo,
                                TransactionLogRepository txRepo,
-                               TransactionLogWriter logWriter) {
+                               TransactionLogWriter logWriter,
+                               RewardService rewardService) {
         this.accountRepo = accountRepo;
         this.txRepo = txRepo;
         this.logWriter = logWriter;
+        this.rewardService = rewardService;
     }
 
     @Override
@@ -135,8 +139,9 @@ public class TransferServiceImpl implements TransferService {
 
         // Log success (new transaction)
         TransactionLog tx = logWriter.logSuccess(from.getId(), to.getId(), amount, req.idempotencyKey());
+        int rewardPoints = rewardService.awardForEligibleTransfer(tx);
 
-        return TransferResponse.success(tx.getId(), amount);
+        return TransferResponse.success(tx.getId(), amount, rewardPoints);
     }
 
     private void logFailure(TransferRequest req, String reason) {

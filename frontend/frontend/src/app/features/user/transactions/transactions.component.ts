@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { UserService } from '../../../core/services/user.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { TransactionLogResponse } from '../../../core/models/api.models';
+import { RewardLogResponse, TransactionLogResponse } from '../../../core/models/api.models';
 
 @Component({
   selector: 'app-transactions',
@@ -14,6 +14,7 @@ import { TransactionLogResponse } from '../../../core/models/api.models';
 })
 export class TransactionsComponent implements OnInit {
   transactions: TransactionLogResponse[] = [];
+  rewards: RewardLogResponse[] = [];
   loading = true;
   errorMessage = '';
   accountId: number | null = null;
@@ -33,13 +34,30 @@ export class TransactionsComponent implements OnInit {
     this.userService.getTransactions().subscribe({
       next: (transactions) => {
         this.transactions = transactions;
-        this.loading = false;
+        this.loadRewards();
       },
       error: (error) => {
         this.errorMessage = 'Failed to load transactions';
         this.loading = false;
       }
     });
+  }
+
+  loadRewards(): void {
+    this.userService.getRewards().subscribe({
+      next: (rewards) => {
+        this.rewards = rewards;
+        this.loading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Failed to load rewards';
+        this.loading = false;
+      }
+    });
+  }
+
+  getTotalRewardPoints(): number {
+    return this.rewards.reduce((total, reward) => total + reward.points, 0);
   }
 
   getStatusBadgeClass(status: string): string {

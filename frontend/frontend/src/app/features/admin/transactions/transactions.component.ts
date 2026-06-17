@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { AdminService } from '../../../core/services/admin.service';
-import { TransactionLogResponse } from '../../../core/models/api.models';
+import { RewardLogResponse, TransactionLogResponse } from '../../../core/models/api.models';
 
 @Component({
   selector: 'app-admin-transactions',
@@ -13,6 +13,7 @@ import { TransactionLogResponse } from '../../../core/models/api.models';
 })
 export class AdminTransactionsComponent implements OnInit {
   transactions: TransactionLogResponse[] = [];
+  rewards: RewardLogResponse[] = [];
   loading = true;
   errorMessage = '';
 
@@ -26,13 +27,30 @@ export class AdminTransactionsComponent implements OnInit {
     this.adminService.getAllTransactions().subscribe({
       next: (transactions) => {
         this.transactions = transactions;
-        this.loading = false;
+        this.loadRewards();
       },
       error: (error) => {
         this.errorMessage = 'Failed to load transactions';
         this.loading = false;
       }
     });
+  }
+
+  loadRewards(): void {
+    this.adminService.getAllRewards().subscribe({
+      next: (rewards) => {
+        this.rewards = rewards;
+        this.loading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Failed to load rewards';
+        this.loading = false;
+      }
+    });
+  }
+
+  getTotalRewardPoints(): number {
+    return this.rewards.reduce((total, reward) => total + reward.points, 0);
   }
 
   getStatusBadgeClass(status: string): string {

@@ -9,9 +9,11 @@ import com.money.draft.domain.repository.TransactionLogRepository;
 import com.money.draft.dto.AdminAccountDetailResponse;
 import com.money.draft.dto.AdminAccountView;
 import com.money.draft.dto.AdminCreateAccountRequest;
+import com.money.draft.dto.RewardLogResponse;
 import com.money.draft.dto.TransactionLogResponse;
 import com.money.draft.exception.ValidationException;
 import com.money.draft.service.AdminService;
+import com.money.draft.service.RewardService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,15 +32,18 @@ public class AdminServiceImpl implements AdminService {
     private final TransactionLogRepository txRepo;
     private final AppUserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final RewardService rewardService;
 
     public AdminServiceImpl(AccountRepository accountRepo,
                             TransactionLogRepository txRepo,
                             AppUserRepository userRepo,
-                            PasswordEncoder passwordEncoder) {
+                            PasswordEncoder passwordEncoder,
+                            RewardService rewardService) {
         this.accountRepo = accountRepo;
         this.txRepo = txRepo;
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.rewardService = rewardService;
     }
 
     @Override
@@ -70,6 +75,12 @@ public class AdminServiceImpl implements AdminService {
                         toLocalDateTime(tx.getCreatedOn()) // typically Instant -> LocalDateTime (UTC)
                 ))
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RewardLogResponse> getAllRewards() {
+        return rewardService.getAllRewards();
     }
 
     // --- Helpers ---

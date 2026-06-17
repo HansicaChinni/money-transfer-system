@@ -45,9 +45,9 @@ class AdminControllerTest {
     void allAccountsNoNames_ShouldReturnListOfAccounts() throws Exception {
         LocalDateTime now = LocalDateTime.now();
         List<AdminAccountView> mockAccounts = Arrays.asList(
-                new AdminAccountView(1L, new BigDecimal("1000.00"), "ACTIVE", now),
-                new AdminAccountView(2L, new BigDecimal("2500.50"), "ACTIVE", now),
-                new AdminAccountView(3L, new BigDecimal("500.75"), "LOCKED", now)
+                new AdminAccountView(1L, "ACC001", new BigDecimal("1000.00"), "ACTIVE", now),
+                new AdminAccountView(2L, "ACC002", new BigDecimal("2500.50"), "ACTIVE", now),
+                new AdminAccountView(3L, "ACC003", new BigDecimal("500.75"), "LOCKED", now)
         );
 
         when(adminService.getAllAccounts()).thenReturn(mockAccounts);
@@ -136,9 +136,9 @@ class AdminControllerTest {
     void allAccountsNoNames_ShouldHandleMultipleAccountStatuses() throws Exception {
         LocalDateTime now = LocalDateTime.now();
         List<AdminAccountView> mockAccounts = Arrays.asList(
-                new AdminAccountView(1L, new BigDecimal("1000.00"), "ACTIVE", now),
-                new AdminAccountView(2L, new BigDecimal("2500.50"), "LOCKED", now),
-                new AdminAccountView(3L, new BigDecimal("0.00"), "CLOSED", now)
+                new AdminAccountView(1L, "ACC001", new BigDecimal("1000.00"), "ACTIVE", now),
+                new AdminAccountView(2L, "ACC002", new BigDecimal("2500.50"), "LOCKED", now),
+                new AdminAccountView(3L, "ACC003", new BigDecimal("0.00"), "CLOSED", now)
         );
 
         when(adminService.getAllAccounts()).thenReturn(mockAccounts);

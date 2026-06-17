@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import {
   AccountResponse,
   TransactionLogResponse,
+  RewardLogResponse,
   MeTransferRequest,
   TransferResponse,
   ChangePasswordRequest
@@ -23,6 +24,10 @@ export class UserService {
 
   getTransactions(): Observable<TransactionLogResponse[]> {
     return this.http.get<TransactionLogResponse[]>(`${this.apiUrl}/transactions`);
+  }
+
+  getRewards(): Observable<RewardLogResponse[]> {
+    return this.http.get<RewardLogResponse[]>(`${this.apiUrl}/rewards`);
   }
 
   transfer(request: MeTransferRequest): Observable<TransferResponse> {

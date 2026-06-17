@@ -5,6 +5,7 @@ import {
   AdminAccountView,
   AdminAccountDetailResponse,
   TransactionLogResponse,
+  RewardLogResponse,
   AdminCreateAccountRequest,
   AccountStatus
 } from '../models/api.models';
@@ -40,5 +41,9 @@ export class AdminService {
 
   getAllTransactions(): Observable<TransactionLogResponse[]> {
     return this.http.get<TransactionLogResponse[]>(`${this.apiUrl}/transactions`);
+  }
+
+  getAllRewards(): Observable<RewardLogResponse[]> {
+    return this.http.get<RewardLogResponse[]>(`${this.apiUrl}/rewards`);
   }
 }

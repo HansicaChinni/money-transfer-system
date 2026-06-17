@@ -27,5 +27,47 @@
       </div>
     </div>
   </div>
+
+  <div *ngIf="!loading" class="card mt-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h5 class="mb-1">All Rewards</h5>
+          <p class="text-muted mb-0">Audit trail for points granted on eligible transfers.</p>
+        </div>
+        <div class="text-end">
+          <div class="text-muted small">Total Points</div>
+          <strong class="text-primary">{{ getTotalRewardPoints() }}</strong>
+        </div>
+      </div>
+
+      <div *ngIf="rewards.length === 0" class="text-center py-5 text-muted">No rewards</div>
+
+      <div *ngIf="rewards.length > 0" class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Reward ID</th>
+              <th>Date & Time</th>
+              <th>Account</th>
+              <th>Transaction</th>
+              <th class="text-end">Transfer Amount</th>
+              <th class="text-end">Points</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let reward of rewards">
+              <td><strong>#{{ reward.id }}</strong></td>
+              <td>{{ reward.createdOn | date:'medium' }}</td>
+              <td>Acc #{{ reward.accountId }}</td>
+              <td>#{{ reward.transactionId }}</td>
+              <td class="text-end">₹{{ reward.transactionAmount | number:'1.2-2' }}</td>
+              <td class="text-end"><strong class="text-success">+{{ reward.points }}</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
   </div>
 </div>

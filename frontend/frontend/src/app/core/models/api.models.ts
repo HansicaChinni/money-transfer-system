@@ -18,6 +18,7 @@ export interface AccountResponse {
 
 export interface AdminAccountView {
   id: number;
+  accountNumber: string;
   balance: number;
   status: string;
   lastUpdated: string;
@@ -25,6 +26,7 @@ export interface AdminAccountView {
 
 export interface AdminAccountDetailResponse {
   id: number;
+  accountNumber: string;
   holderName: string;
   balance: number;
   status: string;
@@ -60,6 +62,17 @@ export interface TransferResponse {
   message: string | null;
   transactionId: number | null;
   amount: number | null;
+  rewardPoints: number;
+}
+
+export interface RewardLogResponse {
+  id: number;
+  transactionId: number;
+  accountId: number;
+  transactionAmount: number;
+  points: number;
+  eligibilityReason: string;
+  createdOn: string;
 }
 
 export interface AdminCreateAccountRequest {

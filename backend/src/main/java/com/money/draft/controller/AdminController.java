@@ -67,4 +67,10 @@ public class AdminController {
     public ResponseEntity<List<TransactionLogResponse>> allTransactions() {
         return ResponseEntity.ok(adminService.getAllTransactions());
     }
+
+    @Operation(summary = "List all reward logs")
+    @GetMapping("/rewards")
+    public ResponseEntity<List<RewardLogResponse>> allRewards() {
+        return ResponseEntity.ok(adminService.getAllRewards());
+    }
 }
