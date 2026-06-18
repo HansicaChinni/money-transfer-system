@@ -76,7 +76,7 @@ class AdminServiceImplTest {
     @Test
     void getAllTransactions_ShouldReturnAll() {
         TransactionLog tx = TransactionLog.success(1L, 2L, new BigDecimal("100"), "key-1");
-        when(txRepo.findAll()).thenReturn(List.of(tx));
+        when(txRepo.findAllByOrderByCreatedOnDesc()).thenReturn(List.of(tx));
 
         List<TransactionLogResponse> result = adminService.getAllTransactions();
         assertEquals(1, result.size());
@@ -85,7 +85,7 @@ class AdminServiceImplTest {
 
     @Test
     void getAllTransactions_ShouldReturnEmpty_WhenNone() {
-        when(txRepo.findAll()).thenReturn(List.of());
+        when(txRepo.findAllByOrderByCreatedOnDesc()).thenReturn(List.of());
         assertTrue(adminService.getAllTransactions().isEmpty());
     }
 

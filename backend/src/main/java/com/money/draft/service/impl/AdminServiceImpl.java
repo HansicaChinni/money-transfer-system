@@ -64,7 +64,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional(readOnly = true)
     public List<TransactionLogResponse> getAllTransactions() {
-        return txRepo.findAll().stream()
+        return txRepo.findAllByOrderByCreatedOnDesc().stream()
                 .map(tx -> new TransactionLogResponse(
                         tx.getId(),
                         tx.getFromAccountId(),

@@ -12,4 +12,6 @@ public interface TransactionLogRepository extends JpaRepository<TransactionLog, 
 
     List<TransactionLog> findByFromAccountIdOrToAccountIdOrderByCreatedOnDesc(Long fromId, Long toId);
 
+    List<TransactionLog> findAllByOrderByCreatedOnDesc();
+
 }

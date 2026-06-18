@@ -20,7 +20,6 @@
   </div>
 
   <div *ngIf="!loading">
-    <!-- Statistics Cards -->
     <div class="row mb-4">
       <div class="col-md-3 mb-3">
         <div class="stat-card">
@@ -43,12 +42,94 @@
       <div class="col-md-3 mb-3">
         <div class="stat-card stat-card-orange">
           <p class="text-muted mb-1" style="font-size: 0.9rem;">Successful Transfers</p>
-          <h2 class="mb-0" style="font-weight: 700; color: var(--accent-orange-dark);">{{ recentTransactionCount }}</h2>
+          <h2 class="mb-0" style="font-weight: 700; color: var(--accent-orange-dark);">{{ successCount }}</h2>
         </div>
       </div>
     </div>
 
-    <!-- Recent Transactions -->
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h5 class="mb-0">Account Status Distribution</h5>
+          </div>
+          <div class="card-body d-flex align-items-center gap-4">
+            <div class="donut-chart" [style.background]="donutStyle(activeAccounts, lockedAccounts, closedAccounts)" *ngIf="totalAccounts > 0">
+              <div class="donut-center">
+                <span class="donut-total">{{ totalAccounts }}</span>
+                <small>total</small>
+              </div>
+            </div>
+            <div class="flex-fill">
+              <div class="legend-row">
+                <span class="legend-dot" style="background: var(--wine-primary);"></span>
+                <span>Active</span>
+                <span class="fw-bold ms-auto">{{ activeAccounts }}</span>
+              </div>
+              <div class="legend-row mt-2">
+                <span class="legend-dot" style="background: var(--accent-orange-dark);"></span>
+                <span>Locked</span>
+                <span class="fw-bold ms-auto">{{ lockedAccounts }}</span>
+              </div>
+              <div class="legend-row mt-2">
+                <span class="legend-dot" style="background: var(--text-light);"></span>
+                <span>Closed</span>
+                <span class="fw-bold ms-auto">{{ closedAccounts }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h5 class="mb-0">Transfer Success vs Failure</h5>
+          </div>
+          <div class="card-body d-flex align-items-center gap-4">
+            <div class="donut-chart" [style.background]="transactionDonutStyle()" *ngIf="(successCount + failedCount) > 0">
+              <div class="donut-center">
+                <span class="donut-total">{{ successCount + failedCount }}</span>
+                <small>total</small>
+              </div>
+            </div>
+            <div class="flex-fill">
+              <div class="legend-row">
+                <span class="legend-dot" style="background: #10B981;"></span>
+                <span>Success</span>
+                <span class="fw-bold ms-auto">{{ successCount }}</span>
+              </div>
+              <div class="legend-row mt-2">
+                <span class="legend-dot" style="background: #DC2626;"></span>
+                <span>Failed</span>
+                <span class="fw-bold ms-auto">{{ failedCount }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Top Accounts by Balance</h5>
+          </div>
+          <div class="card-body">
+            <div *ngFor="let acc of topAccounts" class="bar-row">
+              <div class="d-flex justify-content-between mb-1">
+                <small class="text-muted">#{{ acc.id }}</small>
+                <small class="fw-semibold">₹{{ acc.balance | number:'1.2-2' }}</small>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill bar-sent" [style.width.%]="barPercent(acc.balance)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="row mb-4">
       <div class="col-12">
         <div class="card">
@@ -94,7 +175,6 @@
       </div>
     </div>
 
-    <!-- Recent Accounts -->
     <div class="row">
       <div class="col-12">
         <div class="card">

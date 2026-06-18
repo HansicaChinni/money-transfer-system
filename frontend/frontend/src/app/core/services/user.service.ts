@@ -27,6 +27,10 @@ export class UserService {
     return this.http.get<AccountResponse>(`${this.apiUrl}/balance`);
   }
 
+  getAccountById(id: number): Observable<AccountResponse> {
+    return this.http.get<AccountResponse>(`${this.apiUrl}/account/${id}`);
+  }
+
   getTransactions(): Observable<TransactionLogResponse[]> {
     return this.http.get<TransactionLogResponse[]>(`${this.apiUrl}/transactions`);
   }

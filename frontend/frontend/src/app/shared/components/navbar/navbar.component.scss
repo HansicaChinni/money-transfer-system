@@ -79,3 +79,27 @@
   border-color: white;
   transform: translateY(-1px);
 }
+
+/* Session Timer */
+.session-timer {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.session-timer.timer-low {
+  color: #FF6B6B;
+  background: rgba(255, 107, 107, 0.15);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}

@@ -14,10 +14,16 @@ import { AccountResponse, TransactionLogResponse, RewardSummaryResponse } from '
 })
 export class DashboardComponent implements OnInit {
   accountInfo: AccountResponse | null = null;
+  allTransactions: TransactionLogResponse[] = [];
   recentTransactions: TransactionLogResponse[] = [];
   rewardSummary: RewardSummaryResponse | null = null;
   loading = true;
   errorMessage = '';
+
+  sentCount = 0;
+  receivedCount = 0;
+  sentTotal = 0;
+  receivedTotal = 0;
 
   constructor(private userService: UserService) {}
 
@@ -41,7 +47,9 @@ export class DashboardComponent implements OnInit {
 
     this.userService.getTransactions().subscribe({
       next: (transactions) => {
+        this.allTransactions = transactions;
         this.recentTransactions = transactions.slice(0, 5);
+        this.computeAnalytics();
       },
       error: (error) => {
         console.error('Failed to load transactions', error);
@@ -54,6 +62,19 @@ export class DashboardComponent implements OnInit {
       },
       error: () => {}
     });
+  }
+
+  computeAnalytics(): void {
+    if (!this.accountInfo) return;
+    const accId = this.accountInfo.id;
+    this.sentCount = this.allTransactions.filter(t => t.fromAccountId === accId).length;
+    this.receivedCount = this.allTransactions.filter(t => t.toAccountId === accId).length;
+    this.sentTotal = this.allTransactions
+      .filter(t => t.fromAccountId === accId && t.status === 'SUCCESS')
+      .reduce((s, t) => s + Number(t.amount), 0);
+    this.receivedTotal = this.allTransactions
+      .filter(t => t.toAccountId === accId && t.status === 'SUCCESS')
+      .reduce((s, t) => s + Number(t.amount), 0);
   }
 
   getStatusBadgeClass(status: string): string {
@@ -71,5 +92,21 @@ export class DashboardComponent implements OnInit {
 
   getTransactionStatusBadge(status: string): string {
     return status === 'SUCCESS' ? 'badge-success' : 'badge-danger';
+  }
+
+  maxBarValue(): number {
+    if (this.recentTransactions.length === 0) return 1;
+    return Math.max(...this.recentTransactions.map(t => Number(t.amount)));
+  }
+
+  barPercent(amount: any): number {
+    return (Number(amount) / this.maxBarValue()) * 100;
+  }
+
+  donutStyle(sent: number, received: number): string {
+    const total = sent + received;
+    if (total === 0) return '';
+    const sentPct = (sent / total) * 100;
+    return `conic-gradient(var(--wine-primary) 0% ${sentPct}%, var(--wine-light) ${sentPct}% 100%)`;
   }
 }

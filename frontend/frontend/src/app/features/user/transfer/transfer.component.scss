@@ -9,3 +9,52 @@
 .form-group {
   margin-bottom: 1.25rem;
 }
+
+.balance-card {
+  background: linear-gradient(135deg, var(--wine-lightest), var(--accent-orange-lightest));
+  border: 1px solid var(--border-color);
+}
+
+.review-card {
+  max-width: 100%;
+}
+
+.review-section {
+  background: var(--bg-light);
+  border-radius: 10px;
+  padding: 1.25rem;
+  border: 1px solid var(--border-light);
+}
+
+.review-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+}
+
+.review-label {
+  font-weight: 600;
+  color: var(--text-gray);
+  min-width: 80px;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.review-value {
+  text-align: right;
+  flex: 1;
+}
+
+.review-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 0.25rem 0;
+}
+
+.amount-display {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--wine-primary);
+}

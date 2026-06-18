@@ -72,6 +72,24 @@
 
               </div>
             </div>
+            <div class="mb-4" *ngIf="captcha">
+              <label class="form-label">Human Verification</label>
+              <div class="captcha-box">
+                <span class="captcha-question">{{ captcha.question }} = ?</span>
+                <button type="button" class="btn btn-sm btn-outline-secondary ms-2" (click)="loadCaptcha()" title="Refresh captcha">&#8635;</button>
+              </div>
+              <input
+                type="text"
+                class="form-control mt-2"
+                id="captchaAnswer"
+                formControlName="captchaAnswer"
+                placeholder="Enter your answer"
+                [class.is-invalid]="createForm.get('captchaAnswer')?.invalid && (createForm.get('captchaAnswer')?.dirty || createForm.get('captchaAnswer')?.touched)"
+              />
+              <div class="invalid-feedback" *ngIf="createForm.get('captchaAnswer')?.invalid && (createForm.get('captchaAnswer')?.dirty || createForm.get('captchaAnswer')?.touched)">
+                Captcha answer is required.
+              </div>
+            </div>
             <div class="d-grid gap-2">
               <button type="submit" class="btn btn-primary" [disabled]="loading || createForm.invalid">
                 <span *ngIf="!loading">Create Account</span>

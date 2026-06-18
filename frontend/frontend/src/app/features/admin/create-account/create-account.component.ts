@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { AdminService } from '../../../core/services/admin.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { CaptchaChallenge } from '../../../core/models/api.models';
 
 @Component({
   selector: 'app-create-account',
@@ -12,12 +14,18 @@ import { AdminService } from '../../../core/services/admin.service';
   templateUrl: './create-account.component.html',
   styleUrl: './create-account.component.scss'
 })
-export class CreateAccountComponent {
+export class CreateAccountComponent implements OnInit {
   createForm: FormGroup;
   loading = false;
   errorMessage = '';
+  captcha: CaptchaChallenge | null = null;
 
-  constructor(private fb: FormBuilder, private adminService: AdminService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private adminService: AdminService,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.createForm = this.fb.group({
       holderName: [
         '',
@@ -49,17 +57,37 @@ export class CreateAccountComponent {
           Validators.required,
           Validators.min(1000)
         ]
+      ],
+      captchaAnswer: [
+        '',
+        [
+          Validators.required
+        ]
       ]
     });
+  }
 
+  ngOnInit(): void {
+    this.loadCaptcha();
+  }
+
+  loadCaptcha(): void {
+    this.authService.getCaptcha().subscribe({
+      next: (c) => {
+        this.captcha = c;
+        this.createForm.patchValue({ captchaAnswer: '' });
+      }
+    });
   }
 
   onSubmit(): void {
-    if (this.createForm.invalid) return;
+    if (this.createForm.invalid || !this.captcha) return;
 
     const formValue = {
       ...this.createForm.value,
-      holderName: this.createForm.value.holderName.trim()
+      holderName: this.createForm.value.holderName.trim(),
+      captchaToken: this.captcha.token,
+      captchaAnswer: this.createForm.value.captchaAnswer
     };
 
     this.loading = true;
@@ -71,7 +99,12 @@ export class CreateAccountComponent {
       },
       error: (error) => {
         this.loading = false;
-        this.errorMessage = error.error?.message || 'Failed to create account';
+        if (error.error?.code === 'INVALID_CAPTCHA') {
+          this.errorMessage = 'Incorrect captcha answer. Please try again.';
+          this.loadCaptcha();
+        } else {
+          this.errorMessage = error.error?.message || 'Failed to create account';
+        }
       }
     });
   }

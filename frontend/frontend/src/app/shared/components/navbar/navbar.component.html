@@ -56,7 +56,12 @@
         </li>
       </ul>
 
-      <ul class="navbar-nav ms-3">
+      <ul class="navbar-nav ms-3 align-items-center">
+        <li class="nav-item me-2">
+          <span class="session-timer" [class.timer-low]="isLow">
+            ⏱ {{ formattedTime }}
+          </span>
+        </li>
         <li class="nav-item">
           <button class="btn btn-outline-light btn-sm logout-btn" (click)="logout()">
             Logout

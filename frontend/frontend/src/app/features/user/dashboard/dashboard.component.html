@@ -56,6 +56,64 @@
       </div>
     </div>
 
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h5 class="mb-0">Send / Receive Split</h5>
+          </div>
+          <div class="card-body d-flex align-items-center gap-4">
+            <div class="donut-chart" [style.background]="donutStyle(sentCount, receivedCount)" *ngIf="(sentCount + receivedCount) > 0">
+              <div class="donut-center">
+                <span class="donut-total">{{ allTransactions.length }}</span>
+                <small>total</small>
+              </div>
+            </div>
+            <div class="flex-fill">
+              <div class="legend-row">
+                <span class="legend-dot" style="background: var(--wine-primary);"></span>
+                <span>Sent</span>
+                <span class="fw-bold ms-auto">{{ sentCount }} txns</span>
+                <span class="text-muted ms-2">₹{{ sentTotal | number:'1.2-2' }}</span>
+              </div>
+              <div class="legend-row mt-2">
+                <span class="legend-dot" style="background: var(--wine-light);"></span>
+                <span>Received</span>
+                <span class="fw-bold ms-auto">{{ receivedCount }} txns</span>
+                <span class="text-muted ms-2">₹{{ receivedTotal | number:'1.2-2' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h5 class="mb-0">Recent Activity</h5>
+          </div>
+          <div class="card-body">
+            <div *ngIf="recentTransactions.length === 0" class="text-center py-3 text-muted">
+              <small>No transactions yet</small>
+            </div>
+            <div *ngFor="let tx of recentTransactions" class="bar-row">
+              <div class="d-flex justify-content-between mb-1">
+                <small class="text-muted">{{ tx.createdOn | date:'MMM d' }}</small>
+                <small [class.text-danger]="tx.fromAccountId === accountInfo!.id" [class.text-success]="tx.toAccountId === accountInfo!.id">
+                  {{ tx.fromAccountId === accountInfo!.id ? '-' : '+' }}₹{{ tx.amount | number:'1.2-2' }}
+                </small>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width.%]="barPercent(tx.amount)"
+                  [class.bar-sent]="tx.fromAccountId === accountInfo!.id"
+                  [class.bar-received]="tx.toAccountId === accountInfo!.id">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-header">
         <h5 class="mb-0">Recent Transactions</h5>

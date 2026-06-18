@@ -1,6 +1,14 @@
+export interface CaptchaChallenge {
+  token: string;
+  question: string;
+  hint: string;
+}
+
 export interface LoginRequest {
   username: string;
   password: string;
+  captchaToken?: string;
+  captchaAnswer?: string;
 }
 
 export interface LoginResponse {
@@ -67,6 +75,8 @@ export interface AdminCreateAccountRequest {
   password: string;
   holderName: string;
   initialBalance: number;
+  captchaToken?: string;
+  captchaAnswer?: string;
 }
 
 export interface ChangePasswordRequest {

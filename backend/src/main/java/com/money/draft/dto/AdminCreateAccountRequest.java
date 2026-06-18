@@ -20,5 +20,13 @@ public record AdminCreateAccountRequest(
 
         @NotNull(message = "Initial balance is required")
         @DecimalMin(value = "1000.00", message = "Initial deposit must be at least ₹1000")
-        BigDecimal initialBalance
-) {}
+        BigDecimal initialBalance,
+
+        String captchaToken,
+
+        String captchaAnswer
+) {
+    public AdminCreateAccountRequest(String username, String password, String holderName, BigDecimal initialBalance) {
+        this(username, password, holderName, initialBalance, null, null);
+    }
+}

@@ -4,14 +4,17 @@ import com.money.draft.domain.enums.AccountStatus;
 import com.money.draft.dto.*;
 import com.money.draft.service.AccountService;
 import com.money.draft.service.AdminService;
+import com.money.draft.service.CaptchaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 
 @Tag(name = "Admin", description = "Admin portal: Account management and transaction oversight")
@@ -21,10 +24,12 @@ import java.util.List;
 public class AdminController {
     private final AdminService adminService;
     private AccountService accountService;
+    private final CaptchaService captchaService;
 
-    public AdminController(AdminService adminService, AccountService accountService) {
+    public AdminController(AdminService adminService, AccountService accountService, CaptchaService captchaService) {
         this.adminService = adminService;
         this.accountService = accountService;
+        this.captchaService = captchaService;
     }
 
 
@@ -50,7 +55,16 @@ public class AdminController {
     @Operation(summary = "Create a new account and associated user login")
     @PostMapping("/accounts")
 // Change AccountResponse -> AdminAccountDetailResponse
-    public ResponseEntity<AdminAccountDetailResponse> createAccount(@Valid @RequestBody AdminCreateAccountRequest req) {
+    public ResponseEntity<?> createAccount(@Valid @RequestBody AdminCreateAccountRequest req, HttpServletRequest httpReq) {
+        if (!captchaService.validateCaptcha(req.captchaToken(), req.captchaAnswer())) {
+            ErrorResponse body = new ErrorResponse(
+                    "INVALID_CAPTCHA",
+                    "Invalid or expired captcha. Please refresh and try again.",
+                    httpReq.getRequestURI(),
+                    Instant.now()
+            );
+            return ResponseEntity.status(400).body(body);
+        }
         return ResponseEntity.ok(adminService.createAccount(req));
     }
 

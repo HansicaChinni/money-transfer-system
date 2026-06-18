@@ -6,6 +6,7 @@ import com.money.draft.domain.enums.Role;
 import com.money.draft.domain.repository.AppUserRepository;
 import com.money.draft.dto.LoginRequest;
 import com.money.draft.security.JwtService;
+import com.money.draft.service.CaptchaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +38,9 @@ class AuthControllerTest {
     @Mock
     private JwtService jwtService;
 
+    @Mock
+    private CaptchaService captchaService;
+
     @InjectMocks
     private AuthController authController;
 
@@ -47,6 +51,7 @@ class AuthControllerTest {
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(authController).build();
         objectMapper = new ObjectMapper();
+        lenient().when(captchaService.validateCaptcha(any(), any())).thenReturn(true);
     }
 
 

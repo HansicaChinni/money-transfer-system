@@ -52,6 +52,12 @@ public class UserController {
         return ResponseEntity.ok(accountService.getAccount(user.getAccountId()));
     }
 
+    @Operation(summary = "Look up any account by ID (for transfer recipient preview)")
+    @GetMapping("/account/{id}")
+    public ResponseEntity<?> lookupAccount(@PathVariable Long id) {
+        return ResponseEntity.ok(accountService.getAccount(id));
+    }
+
     @Operation(summary = "Get my transaction history (DESC)")
     @GetMapping("/transactions")
     public ResponseEntity<List<TransactionLogResponse>> transactions() {

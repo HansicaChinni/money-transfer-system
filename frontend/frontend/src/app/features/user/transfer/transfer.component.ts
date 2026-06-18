@@ -16,9 +16,11 @@ import { AccountResponse } from '../../../core/models/api.models';
 export class TransferComponent implements OnInit {
   transferForm: FormGroup;
   loading = false;
+  confirming = false;
   successMessage = '';
   errorMessage = '';
   accountInfo: AccountResponse | null = null;
+  recipientInfo: AccountResponse | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -27,7 +29,8 @@ export class TransferComponent implements OnInit {
   ) {
     this.transferForm = this.fb.group({
       toAccountId: ['', [Validators.required, Validators.min(1)]],
-      amount: ['', [Validators.required, Validators.min(0.01)]]
+      amount: ['', [Validators.required, Validators.min(0.01)]],
+      notes: ['']
     });
   }
 
@@ -47,20 +50,41 @@ export class TransferComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.transferForm.invalid) {
-      return;
-    }
+    if (this.transferForm.invalid || !this.accountInfo) return;
 
     this.loading = true;
-    this.successMessage = '';
     this.errorMessage = '';
 
-    this.userService.transfer(this.transferForm.value).subscribe({
+    this.userService.getAccountById(this.transferForm.value.toAccountId).subscribe({
+      next: (recipient) => {
+        this.loading = false;
+        this.recipientInfo = recipient;
+        this.confirming = true;
+      },
+      error: () => {
+        this.loading = false;
+        this.errorMessage = 'Could not find recipient account. Please check the account ID.';
+      }
+    });
+  }
+
+  confirmTransfer(): void {
+    if (!this.accountInfo || !this.recipientInfo) return;
+
+    this.loading = true;
+    this.confirming = false;
+    this.errorMessage = '';
+
+    this.userService.transfer({
+      toAccountId: this.recipientInfo.id,
+      amount: this.transferForm.value.amount
+    }).subscribe({
       next: (response) => {
         this.loading = false;
         if (response.status === 'SUCCESS') {
           this.successMessage = `Transfer of ₹${response.amount} completed successfully! Transaction ID: ${response.transactionId}`;
           this.transferForm.reset();
+          this.recipientInfo = null;
           this.loadAccountInfo();
           setTimeout(() => {
             this.router.navigate(['/user/transactions']);
@@ -74,5 +98,10 @@ export class TransferComponent implements OnInit {
         this.errorMessage = error.error?.message || 'Transfer failed. Please try again.';
       }
     });
+  }
+
+  cancelReview(): void {
+    this.confirming = false;
+    this.recipientInfo = null;
   }
 }

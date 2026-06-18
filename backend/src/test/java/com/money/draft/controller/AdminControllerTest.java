@@ -4,6 +4,7 @@ package com.money.draft.controller;
 import com.money.draft.dto.AdminAccountView;
 import com.money.draft.dto.TransactionLogResponse;
 import com.money.draft.service.AdminService;
+import com.money.draft.service.CaptchaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,9 @@ class AdminControllerTest {
 
     @Mock
     private AdminService adminService;
+
+    @Mock
+    private CaptchaService captchaService;
 
     @InjectMocks
     private AdminController adminController;
