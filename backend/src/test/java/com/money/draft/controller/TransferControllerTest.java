@@ -66,9 +66,10 @@ class TransferControllerTest {
                 100L,
                 200L,
                 new BigDecimal("150.00"),
-                "transfer-key-123"
+                "transfer-key-123",
+                false
         );
-        TransferResponse expectedResponse = TransferResponse.success(1L, new BigDecimal("150.00"));
+        TransferResponse expectedResponse = TransferResponse.success(1L, new BigDecimal("150.00"), 0, 0);
 
         when(transferService.transfer(any(TransferRequest.class))).thenReturn(expectedResponse);
 
@@ -92,7 +93,8 @@ class TransferControllerTest {
                 100L,
                 200L,
                 new BigDecimal("150.00"),
-                "duplicate-key"
+                "duplicate-key",
+                false
         );
 
         when(transferService.transfer(any(TransferRequest.class)))
@@ -114,7 +116,8 @@ class TransferControllerTest {
                 999L,
                 200L,
                 new BigDecimal("150.00"),
-                "key-123"
+                "key-123",
+                false
         );
 
         when(transferService.transfer(any(TransferRequest.class)))
@@ -136,7 +139,8 @@ class TransferControllerTest {
                 100L,
                 200L,
                 new BigDecimal("10000.00"),
-                "key-123"
+                "key-123",
+                false
         );
 
         when(transferService.transfer(any(TransferRequest.class)))
@@ -162,7 +166,8 @@ class TransferControllerTest {
                 100L,
                 100L,
                 new BigDecimal("50.00"),
-                "key-123"
+                "key-123",
+                false
         );
 
         when(transferService.transfer(any(TransferRequest.class)))
@@ -184,7 +189,8 @@ class TransferControllerTest {
                 100L,
                 200L,
                 new BigDecimal("-50.00"),
-                "key-123"
+                "key-123",
+                false
         );
 
         // When & Then
@@ -203,7 +209,8 @@ class TransferControllerTest {
                 null,
                 200L,
                 new BigDecimal("50.00"),
-                "key-123"
+                "key-123",
+                false
         );
 
         // When & Then
@@ -222,7 +229,8 @@ class TransferControllerTest {
                 100L,
                 null,
                 new BigDecimal("50.00"),
-                "key-123"
+                "key-123",
+                false
         );
 
         // When & Then
@@ -241,7 +249,8 @@ class TransferControllerTest {
                 100L,
                 200L,
                 new BigDecimal("50.00"),
-                ""
+                "",
+                false
         );
 
         // When & Then
@@ -260,7 +269,8 @@ class TransferControllerTest {
                 100L,
                 200L,
                 new BigDecimal("50.00"),
-                "key-123"
+                "key-123",
+                false
         );
         TransferResponse failureResponse = TransferResponse.failure("Internal error occurred");
 

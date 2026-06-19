@@ -1,0 +1,13 @@
+
+package com.money.draft.dto;
+
+import java.time.LocalDateTime;
+
+public record RewardTransactionResponse(
+        Long id,
+        Long accountId,
+        String type,
+        int points,
+        Long referenceTransactionId,
+        LocalDateTime createdOn
+) {}

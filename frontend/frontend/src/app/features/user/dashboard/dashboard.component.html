@@ -22,7 +22,7 @@
   <div *ngIf="!loading && accountInfo">
     <!-- Account Information -->
     <div class="row mb-4">
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
         <div class="stat-card">
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
@@ -36,7 +36,16 @@
           <p class="text-muted mb-0" style="font-size: 0.85rem;">Account #{{ accountInfo.id }}</p>
         </div>
       </div>
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
+        <div class="stat-card" style="border-left: 4px solid var(--bs-success);">
+          <p class="text-muted mb-1" style="font-size: 0.9rem;">Reward Points</p>
+          <h2 class="mb-0" style="font-weight: 700; color: var(--bs-success);">{{ accountInfo.rewardPoints }}</h2>
+          <div class="mt-2">
+            <a routerLink="/user/rewards" class="btn btn-sm" style="background-color: var(--bs-success); color: white;">View Rewards</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
         <div class="stat-card stat-card-orange">
           <p class="text-muted mb-1" style="font-size: 0.9rem;">Account Holder</p>
           <h4 class="mb-2" style="font-weight: 600; color: var(--accent-orange-dark);">{{ accountInfo.holderName }}</h4>

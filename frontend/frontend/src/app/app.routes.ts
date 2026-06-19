@@ -30,6 +30,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/user/transactions/transactions.component').then(m => m.TransactionsComponent)
       },
       {
+        path: 'rewards',
+        loadComponent: () => import('./features/user/rewards/rewards.component').then(m => m.RewardsComponent)
+      },
+      {
         path: 'profile',
         loadComponent: () => import('./features/user/profile/profile.component').then(m => m.ProfileComponent)
       },

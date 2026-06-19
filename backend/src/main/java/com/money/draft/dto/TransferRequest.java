@@ -16,7 +16,8 @@ public record TransferRequest(
         @NotNull(message = "toAccountId is required") Long toAccountId,
         @NotNull(message = "amount is required")
         @DecimalMin(value = "0.01", inclusive = true, message = "amount must be at least 0.01") BigDecimal amount,
-        @NotBlank(message = "idempotencyKey is required") String idempotencyKey
+        @NotBlank(message = "idempotencyKey is required") String idempotencyKey,
+        boolean useRewardPoints
 ) {
     /** Helper for service-level cross-field guard (in addition to validations). */
     public boolean isSelfTransfer() {

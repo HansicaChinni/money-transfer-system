@@ -12,5 +12,6 @@ public record AccountResponse(
         String accountNumber,
         String holderName,
         BigDecimal balance,
-        String status
+        String status,
+        int rewardPoints
 ) {}

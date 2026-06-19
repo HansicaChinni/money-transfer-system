@@ -9,5 +9,6 @@ import java.math.BigDecimal;
 public record MeTransferRequest(
         @NotNull Long toAccountId,
         @NotNull @DecimalMin(value = "0.01", inclusive = true)
-        BigDecimal amount
+        BigDecimal amount,
+        boolean useRewardPoints
 ) {}

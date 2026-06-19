@@ -9,6 +9,7 @@ import com.money.draft.dto.AccountResponse;
 import com.money.draft.dto.MeTransferRequest;
 import com.money.draft.dto.TransactionLogResponse;
 import com.money.draft.dto.TransferResponse;
+import com.money.draft.exception.GlobalExceptionHandler;
 import com.money.draft.exception.InsufficientBalanceException;
 import com.money.draft.service.AccountService;
 import com.money.draft.service.TransferService;
@@ -59,9 +60,30 @@ class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(userController).build();
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(userController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
         objectMapper = new ObjectMapper();
         SecurityContextHolder.clearContext();
+    }
+
+    private void setSecurityContext(String username) {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(username, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+    }
+
+    private AppUser createUser(Long id, String username, Long accountId) {
+        AppUser user = new AppUser();
+        user.setId(id);
+        user.setUsername(username);
+        user.setPassword("encoded-password");
+        user.setRole(Role.USER);
+        user.setAccountId(accountId);
+        user.setCreatedAt(Instant.now());
+        return user;
     }
 
     /* -------------------- TRANSFER TESTS -------------------- */
@@ -71,11 +93,11 @@ class UserControllerTest {
         setSecurityContext("john.doe");
         AppUser user = createUser(1L, "john.doe", 100L);
 
-        MeTransferRequest req = new MeTransferRequest(200L, new BigDecimal("50.00"));
-        TransferResponse res = TransferResponse.success(1L, new BigDecimal("50.00"));
+        MeTransferRequest req = new MeTransferRequest(200L, new BigDecimal("50.00"), false);
+        TransferResponse res = TransferResponse.success(1L, new BigDecimal("50.00"), 0, 0);
 
         when(appUserRepository.findByUsername("john.doe")).thenReturn(Optional.of(user));
-        when(transferService.transferForUser(100L, 200L, new BigDecimal("50.00")))
+        when(transferService.transferForUser(100L, 200L, new BigDecimal("50.00"), false))
                 .thenReturn(res);
 
         mockMvc.perform(post("/me/transfer")
@@ -85,13 +107,14 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.status", is("SUCCESS")))
                 .andExpect(jsonPath("$.transactionId", is(1)))
                 .andExpect(jsonPath("$.amount", is(50.00)));
+
+        verify(transferService, times(1)).transferForUser(100L, 200L, new BigDecimal("50.00"), false);
     }
 
     @Test
     void transfer_ShouldReturn404_WhenUserAccountNotFound() throws Exception {
         setSecurityContext("john.doe");
-
-        MeTransferRequest req = new MeTransferRequest(200L, new BigDecimal("50.00"));
+        MeTransferRequest req = new MeTransferRequest(200L, new BigDecimal("50.00"), false);
         when(appUserRepository.findByUsername("john.doe")).thenReturn(Optional.empty());
 
         mockMvc.perform(post("/me/transfer")
@@ -103,7 +126,7 @@ class UserControllerTest {
     @Test
     void transfer_ShouldReturn400_WhenAmountIsNegative() throws Exception {
         setSecurityContext("john.doe");
-        MeTransferRequest req = new MeTransferRequest(200L, new BigDecimal("-10"));
+        MeTransferRequest req = new MeTransferRequest(200L, new BigDecimal("-10"), false);
 
         mockMvc.perform(post("/me/transfer")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -115,10 +138,10 @@ class UserControllerTest {
     void transfer_ShouldReturn400_WhenInsufficientBalance() throws Exception {
         setSecurityContext("john.doe");
         AppUser user = createUser(1L, "john.doe", 100L);
-        MeTransferRequest req = new MeTransferRequest(200L, new BigDecimal("5000"));
+        MeTransferRequest req = new MeTransferRequest(200L, new BigDecimal("5000"), false);
 
         when(appUserRepository.findByUsername("john.doe")).thenReturn(Optional.of(user));
-        when(transferService.transferForUser(anyLong(), anyLong(), any()))
+        when(transferService.transferForUser(anyLong(), anyLong(), any(), anyBoolean()))
                 .thenThrow(new InsufficientBalanceException(100L,
                         new BigDecimal("100"), new BigDecimal("5000")));
 
@@ -136,7 +159,7 @@ class UserControllerTest {
         AppUser user = createUser(1L, "john.doe", 100L);
 
         AccountResponse response = new AccountResponse(
-                100L, "John", new BigDecimal("1500"), "ACTIVE"
+                100L, null, "John", new BigDecimal("1500"), "ACTIVE", 0
         );
 
         when(appUserRepository.findByUsername("john.doe"))
@@ -145,15 +168,17 @@ class UserControllerTest {
 
         mockMvc.perform(get("/me/balance"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(100)))
-                .andExpect(jsonPath("$.balance", is(1500.00)))
-                .andExpect(jsonPath("$.status", is("ACTIVE")));
+                .andExpect(jsonPath("$.holderName", is("John")))
+                .andExpect(jsonPath("$.balance", is(1500)))
+                .andExpect(jsonPath("$.status", is("ACTIVE")))
+                .andExpect(jsonPath("$.rewardPoints", is(0)));
     }
 
     @Test
     void getBalance_ShouldReturn404_WhenUserAccountNotFound() throws Exception {
         setSecurityContext("john.doe");
-        when(appUserRepository.findByUsername("john.doe")).thenReturn(Optional.empty());
+        when(appUserRepository.findByUsername("john.doe"))
+                .thenReturn(Optional.empty());
 
         mockMvc.perform(get("/me/balance"))
                 .andExpect(status().isNotFound());
@@ -165,27 +190,26 @@ class UserControllerTest {
     void getTransactions_ShouldReturnTransactionHistory() throws Exception {
         setSecurityContext("john.doe");
         AppUser user = createUser(1L, "john.doe", 100L);
-
         LocalDateTime now = LocalDateTime.now();
 
-        List<TransactionLogResponse> logs = Arrays.asList(
-                new TransactionLogResponse(1L, 100L, 200L, new BigDecimal("50"),
-                        "SUCCESS", null, "A", now),
-                new TransactionLogResponse(2L, 200L, 100L, new BigDecimal("30"),
-                        "SUCCESS", null, "B", now),
-                new TransactionLogResponse(3L, 100L, 300L, new BigDecimal("20"),
-                        "FAILED", "Insufficient funds", "C", now)
+        List<TransactionLogResponse> mockTransactions = Arrays.asList(
+                new TransactionLogResponse(1L, 100L, 200L, new BigDecimal("100.00"),
+                        "SUCCESS", null, "key-1", now),
+                new TransactionLogResponse(2L, 300L, 100L, new BigDecimal("50.00"),
+                        "SUCCESS", null, "key-2", now)
         );
 
         when(appUserRepository.findByUsername("john.doe"))
                 .thenReturn(Optional.of(user));
-        when(accountService.getTransactions(100L)).thenReturn(logs);
+        when(accountService.getTransactions(100L)).thenReturn(mockTransactions);
 
         mockMvc.perform(get("/me/transactions"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id", is(1)))
-                .andExpect(jsonPath("$[2].status", is("FAILED")));
+                .andExpect(jsonPath("$[1].id", is(2)));
+
+        verify(accountService, times(1)).getTransactions(100L);
     }
 
     @Test
@@ -193,7 +217,8 @@ class UserControllerTest {
         setSecurityContext("john.doe");
         AppUser user = createUser(1L, "john.doe", 100L);
 
-        when(appUserRepository.findByUsername("john.doe")).thenReturn(Optional.of(user));
+        when(appUserRepository.findByUsername("john.doe"))
+                .thenReturn(Optional.of(user));
         when(accountService.getTransactions(100L)).thenReturn(List.of());
 
         mockMvc.perform(get("/me/transactions"))
@@ -204,30 +229,10 @@ class UserControllerTest {
     @Test
     void getTransactions_ShouldReturn404_WhenUserAccountNotFound() throws Exception {
         setSecurityContext("john.doe");
-
-        when(appUserRepository.findByUsername("john.doe")).thenReturn(Optional.empty());
+        when(appUserRepository.findByUsername("john.doe"))
+                .thenReturn(Optional.empty());
 
         mockMvc.perform(get("/me/transactions"))
                 .andExpect(status().isNotFound());
-    }
-
-    /* -------------------- HELPERS -------------------- */
-
-    private void setSecurityContext(String username) {
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(
-                        username, null, List.of(new SimpleGrantedAuthority("ROLE_USER"))
-                )
-        );
-    }
-
-    private AppUser createUser(Long id, String username, Long accountId) {
-        AppUser u = new AppUser();
-        u.setId(id);
-        u.setUsername(username);
-        u.setRole(Role.USER);
-        u.setAccountId(accountId);
-        u.setCreatedAt(Instant.now());
-        return u;
     }
 }

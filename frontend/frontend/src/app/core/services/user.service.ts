@@ -6,7 +6,8 @@ import {
   TransactionLogResponse,
   MeTransferRequest,
   TransferResponse,
-  ChangePasswordRequest
+  ChangePasswordRequest,
+  TransactionDetailResponse
 } from '../models/api.models';
 
 @Injectable({
@@ -27,6 +28,10 @@ export class UserService {
 
   transfer(request: MeTransferRequest): Observable<TransferResponse> {
     return this.http.post<TransferResponse>(`${this.apiUrl}/transfer`, request);
+  }
+
+  getTransactionDetail(id: number): Observable<TransactionDetailResponse> {
+    return this.http.get<TransactionDetailResponse>(`${this.apiUrl}/transactions/${id}`);
   }
 
   changePassword(request: ChangePasswordRequest): Observable<any> {

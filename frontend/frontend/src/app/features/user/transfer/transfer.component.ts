@@ -4,7 +4,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { UserService } from '../../../core/services/user.service';
-import { AccountResponse } from '../../../core/models/api.models';
+import { AccountResponse, RewardSummaryResponse } from '../../../core/models/api.models';
+import { RewardService } from '../../../core/services/reward.service';
 
 @Component({
   selector: 'app-transfer',
@@ -19,20 +20,27 @@ export class TransferComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
   accountInfo: AccountResponse | null = null;
+  rewardSummary: RewardSummaryResponse | null = null;
+  rewardEstimate: { used: number; cashDebit: number } | null = null;
 
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
+    private rewardService: RewardService,
     private router: Router
   ) {
     this.transferForm = this.fb.group({
       toAccountId: ['', [Validators.required, Validators.min(1)]],
-      amount: ['', [Validators.required, Validators.min(0.01)]]
+      amount: ['', [Validators.required, Validators.min(0.01)]],
+      useRewardPoints: [false]
     });
   }
 
   ngOnInit(): void {
     this.loadAccountInfo();
+    this.loadRewardSummary();
+    this.transferForm.get('amount')?.valueChanges.subscribe(() => this.updateRewardEstimate());
+    this.transferForm.get('useRewardPoints')?.valueChanges.subscribe(() => this.updateRewardEstimate());
   }
 
   loadAccountInfo(): void {
@@ -44,6 +52,31 @@ export class TransferComponent implements OnInit {
         console.error('Failed to load account info', error);
       }
     });
+  }
+
+  loadRewardSummary(): void {
+    this.rewardService.getRewardSummary().subscribe({
+      next: (summary) => {
+        this.rewardSummary = summary;
+      },
+      error: () => {
+        this.rewardSummary = null;
+      }
+    });
+  }
+
+  updateRewardEstimate(): void {
+    this.rewardEstimate = null;
+    const useRewards = this.transferForm.get('useRewardPoints')?.value;
+    if (!useRewards || !this.rewardSummary) return;
+
+    const amountVal = parseFloat(this.transferForm.get('amount')?.value);
+    if (!amountVal || amountVal <= 0) return;
+
+    const available = this.rewardSummary.currentPoints;
+    const used = Math.min(available, Math.floor(amountVal));
+    const cashDebit = amountVal - used;
+    this.rewardEstimate = { used, cashDebit };
   }
 
   onSubmit(): void {
@@ -59,9 +92,18 @@ export class TransferComponent implements OnInit {
       next: (response) => {
         this.loading = false;
         if (response.status === 'SUCCESS') {
-          this.successMessage = `Transfer of $${response.amount} completed successfully! Transaction ID: ${response.transactionId}`;
-          this.transferForm.reset();
+          let msg = `Transfer of ₹${response.amount} completed successfully! Transaction ID: ${response.transactionId}`;
+          if (response.rewardPointsUsed) {
+            msg += ` | Reward points used: ${response.rewardPointsUsed}`;
+          }
+          if (response.rewardPointsEarned) {
+            msg += ` | Reward points earned: ${response.rewardPointsEarned}`;
+          }
+          this.successMessage = msg;
+          this.transferForm.reset({ useRewardPoints: false });
+          this.rewardEstimate = null;
           this.loadAccountInfo();
+          this.loadRewardSummary();
           setTimeout(() => {
             this.router.navigate(['/user/transactions']);
           }, 2000);

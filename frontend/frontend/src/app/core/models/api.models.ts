@@ -14,6 +14,7 @@ export interface AccountResponse {
   holderName: string;
   balance: number;
   status: string;
+  rewardPoints: number;
 }
 
 export interface AdminAccountView {
@@ -48,11 +49,13 @@ export interface TransferRequest {
   toAccountId: number;
   amount: number;
   idempotencyKey: string;
+  useRewardPoints: boolean;
 }
 
 export interface MeTransferRequest {
   toAccountId: number;
   amount: number;
+  useRewardPoints: boolean;
 }
 
 export interface TransferResponse {
@@ -60,6 +63,8 @@ export interface TransferResponse {
   message: string | null;
   transactionId: number | null;
   amount: number | null;
+  rewardPointsUsed: number | null;
+  rewardPointsEarned: number | null;
 }
 
 export interface AdminCreateAccountRequest {
@@ -79,6 +84,34 @@ export interface ErrorResponse {
   message: string;
   path: string;
   timestamp: string;
+}
+
+export interface RewardTransactionResponse {
+  id: number;
+  accountId: number;
+  type: string;
+  points: number;
+  referenceTransactionId: number | null;
+  createdOn: string;
+}
+
+export interface RewardSummaryResponse {
+  currentPoints: number;
+  totalEarned: number;
+  totalRedeemed: number;
+}
+
+export interface TransactionDetailResponse {
+  id: number;
+  fromAccountId: number;
+  toAccountId: number;
+  amount: number;
+  status: string;
+  failureReason: string | null;
+  idempotencyKey: string;
+  createdOn: string;
+  rewardPointsEarned: number | null;
+  rewardPointsUsed: number | null;
 }
 
 export enum AccountStatus {

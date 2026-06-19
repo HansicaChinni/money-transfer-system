@@ -4,6 +4,7 @@ package com.money.draft.domain.entity;
 import com.money.draft.domain.enums.AccountStatus;
 import com.money.draft.exception.AccountNotActiveException;
 import com.money.draft.exception.InsufficientBalanceException;
+import com.money.draft.exception.InsufficientRewardPointsException;
 import com.money.draft.exception.ValidationException;
 import jakarta.persistence.*;
 
@@ -34,6 +35,9 @@ public class Account {
 
     @Version
     private Long version;
+
+    @Column(nullable = false)
+    private int rewardPoints;
 
     @Column(nullable = false)
     private LocalDateTime lastUpdated;
@@ -100,6 +104,23 @@ public class Account {
         this.lastUpdated = LocalDateTime.now();
     }
 
+    public void creditRewardPoints(int points) {
+        requireActive();
+        if (points <= 0) throw new ValidationException("reward points must be positive");
+        this.rewardPoints += points;
+        touch();
+    }
+
+    public void debitRewardPoints(int points) {
+        requireActive();
+        if (points <= 0) throw new ValidationException("reward points must be positive");
+        if (this.rewardPoints < points) {
+            throw new InsufficientRewardPointsException(this.id, this.rewardPoints, points);
+        }
+        this.rewardPoints -= points;
+        touch();
+    }
+
     // ---- Getters & Setters ----
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -112,6 +133,9 @@ public class Account {
 
     public AccountStatus getStatus() { return status; }
     public void setStatus(AccountStatus status) { this.status = status; }
+
+    public int getRewardPoints() { return rewardPoints; }
+    public void setRewardPoints(int rewardPoints) { this.rewardPoints = rewardPoints; }
 
     public Long getVersion() { return version; }
     public void setVersion(Long version) { this.version = version; }
