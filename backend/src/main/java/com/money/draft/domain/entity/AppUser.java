@@ -21,7 +21,7 @@ public class AppUser {
     private String username;
 
     @Column(nullable=false, length=255)
-    private String password; // DEV: plaintext with NoOp; switch to BCrypt later
+    private String password; // BCrypt-hashed
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false, length=10)
