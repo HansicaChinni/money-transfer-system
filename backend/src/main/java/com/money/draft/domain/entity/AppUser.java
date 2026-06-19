@@ -21,7 +21,7 @@ public class AppUser {
     private String username;
 
     @Column(nullable=false, length=255)
-    private String password; // SHA-256 hashed by MySQL trigger
+    private String password; // BCrypt-hashed
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false, length=10)

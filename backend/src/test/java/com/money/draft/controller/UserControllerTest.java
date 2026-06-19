@@ -136,7 +136,7 @@ class UserControllerTest {
         AppUser user = createUser(1L, "john.doe", 100L);
 
         AccountResponse response = new AccountResponse(
-                100L, "ACC-100", "John", new BigDecimal("1500"), "ACTIVE"
+                100L, "John", new BigDecimal("1500"), "ACTIVE"
         );
 
         when(appUserRepository.findByUsername("john.doe"))
