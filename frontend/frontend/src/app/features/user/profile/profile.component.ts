@@ -105,11 +105,11 @@ export class ProfileComponent implements OnInit {
   getStatusBadgeClass(status: string): string {
     switch (status?.toUpperCase()) {
       case 'ACTIVE':
-        return 'badge-success';
+        return 'badge-active';
       case 'LOCKED':
-        return 'badge-warning';
+        return 'badge-locked';
       case 'CLOSED':
-        return 'badge-danger';
+        return 'badge-closed';
       default:
         return 'badge-primary';
     }

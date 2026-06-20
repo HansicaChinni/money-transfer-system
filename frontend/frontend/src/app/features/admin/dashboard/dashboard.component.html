@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+  <div *ngIf="errorMessage" class="alert alert-wine" role="alert">
     {{ errorMessage }}
   </div>
 
@@ -29,9 +29,9 @@
         </div>
       </div>
       <div class="col-md-3 mb-3">
-        <div class="stat-card stat-card-orange">
+        <div class="stat-card">
           <p class="text-muted mb-1" style="font-size: 0.9rem;">Active Accounts</p>
-          <h2 class="mb-0" style="font-weight: 700; color: var(--accent-orange-dark);">{{ activeAccounts }}</h2>
+          <h2 class="text-primary mb-0" style="font-weight: 700;">{{ activeAccounts }}</h2>
         </div>
       </div>
       <div class="col-md-3 mb-3">
@@ -41,9 +41,25 @@
         </div>
       </div>
       <div class="col-md-3 mb-3">
-        <div class="stat-card stat-card-orange">
+        <div class="stat-card">
           <p class="text-muted mb-1" style="font-size: 0.9rem;">Successful Transfers</p>
-          <h2 class="mb-0" style="font-weight: 700; color: var(--accent-orange-dark);">{{ recentTransactionCount }}</h2>
+          <h2 class="text-primary mb-0" style="font-weight: 700;">{{ recentTransactionCount }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reward Statistics -->
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <div class="stat-card stat-card-wine">
+          <p class="mb-1" style="font-size: 0.9rem; opacity: 0.9;">Total Points Earned</p>
+          <h2 class="mb-0" style="font-weight: 700;">{{ totalPointsEarned }}</h2>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div class="stat-card stat-card-wine">
+          <p class="mb-1" style="font-size: 0.9rem; opacity: 0.9;">Total Points Redeemed</p>
+          <h2 class="mb-0" style="font-weight: 700;">{{ totalPointsRedeemed }}</h2>
         </div>
       </div>
     </div>
@@ -70,6 +86,7 @@
                     <th>From</th>
                     <th>To</th>
                     <th class="text-end">Amount</th>
+                    <th>Points</th>
                     <th>Status</th>
                   </tr>
                 </thead>
@@ -80,6 +97,11 @@
                     <td>Acc #{{ tx.fromAccountId }}</td>
                     <td>Acc #{{ tx.toAccountId }}</td>
                     <td class="text-end"><strong>₹{{ tx.amount | number:'1.2-2' }}</strong></td>
+                    <td>
+                      <span *ngIf="tx.rewardPointsEarned" class="text-wine">+{{ tx.rewardPointsEarned }}</span>
+                      <span *ngIf="tx.rewardPointsUsed" class="text-wine-light">-{{ tx.rewardPointsUsed }}</span>
+                      <span *ngIf="!tx.rewardPointsEarned && !tx.rewardPointsUsed">-</span>
+                    </td>
                     <td>
                       <span class="badge {{ getTransactionStatusBadge(tx.status) }}">
                         {{ tx.status }}

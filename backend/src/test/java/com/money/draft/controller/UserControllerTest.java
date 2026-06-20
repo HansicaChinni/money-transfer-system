@@ -194,9 +194,9 @@ class UserControllerTest {
 
         List<TransactionLogResponse> mockTransactions = Arrays.asList(
                 new TransactionLogResponse(1L, 100L, 200L, new BigDecimal("100.00"),
-                        "SUCCESS", null, "key-1", now),
+                        "SUCCESS", null, "key-1", now, null, null),
                 new TransactionLogResponse(2L, 300L, 100L, new BigDecimal("50.00"),
-                        "SUCCESS", null, "key-2", now)
+                        "SUCCESS", null, "key-2", now, null, null)
         );
 
         when(appUserRepository.findByUsername("john.doe"))

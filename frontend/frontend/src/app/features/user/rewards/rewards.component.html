@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+  <div *ngIf="errorMessage" class="alert alert-wine" role="alert">
     {{ errorMessage }}
   </div>
 
@@ -29,17 +29,22 @@
         </div>
       </div>
       <div class="col-md-4 mb-3">
-        <div class="stat-card stat-card-green">
+        <div class="stat-card">
           <p class="text-muted mb-1" style="font-size: 0.9rem;">Total Earned</p>
-          <h2 class="mb-0" style="font-weight: 700; color: var(--bs-success);">+{{ summary.totalEarned }}</h2>
+          <h2 class="mb-0" style="font-weight: 700; color: var(--wine-primary);">+{{ summary.totalEarned }}</h2>
         </div>
       </div>
       <div class="col-md-4 mb-3">
-        <div class="stat-card stat-card-orange">
+        <div class="stat-card">
           <p class="text-muted mb-1" style="font-size: 0.9rem;">Total Redeemed</p>
-          <h2 class="mb-0" style="font-weight: 700; color: var(--accent-orange-dark);">-{{ summary.totalRedeemed }}</h2>
+          <h2 class="mb-0" style="font-weight: 700; color: var(--wine-accent);">-{{ summary.totalRedeemed }}</h2>
         </div>
       </div>
+    </div>
+
+    <!-- Expiry Warning -->
+    <div *ngIf="summary.expiringPoints > 0" class="alert alert-info mb-4">
+      <strong>⚠️ {{ summary.expiringPoints }}</strong> reward point{{ summary.expiringPoints === 1 ? '' : 's' }} will expire in 2 days or less.
     </div>
 
     <div class="card">
@@ -67,12 +72,12 @@
                   <span class="badge {{ getTypeBadge(rw.type) }}">{{ rw.type }}</span>
                 </td>
                 <td>
-                  <strong [class.text-success]="rw.type === 'EARNED'" [class.text-warning]="rw.type === 'REDEEMED'">
+                  <strong [class.text-wine]="rw.type === 'EARNED'" [class.text-wine-light]="rw.type === 'REDEEMED'">
                     {{ rw.type === 'EARNED' ? '+' : '-' }}{{ rw.points }}
                   </strong>
                 </td>
                 <td>
-                  <a *ngIf="rw.referenceTransactionId" (click)="openTxDetail(rw.referenceTransactionId)" class="tx-link" style="cursor: pointer; text-decoration: underline; color: var(--primary-purple);">
+                  <a *ngIf="rw.referenceTransactionId" (click)="openTxDetail(rw.referenceTransactionId)" class="tx-link" style="cursor: pointer; text-decoration: underline; color: var(--wine-accent);">
                     #{{ rw.referenceTransactionId }}
                   </a>
                   <span *ngIf="!rw.referenceTransactionId" class="text-muted">-</span>
@@ -127,18 +132,18 @@
           </div>
           <div class="row mb-2" *ngIf="txDetail.failureReason">
             <div class="col-5 text-muted">Reason</div>
-            <div class="col-7 text-danger">{{ txDetail.failureReason }}</div>
+            <div class="col-7 text-wine-dark">{{ txDetail.failureReason }}</div>
           </div>
         </div>
         <hr />
         <h6>Reward Details</h6>
         <div class="row mb-2" *ngIf="txDetail.rewardPointsEarned">
           <div class="col-5 text-muted">Points Earned</div>
-          <div class="col-7 text-success">+{{ txDetail.rewardPointsEarned }}</div>
+          <div class="col-7 text-wine">+{{ txDetail.rewardPointsEarned }}</div>
         </div>
         <div class="row mb-2" *ngIf="txDetail.rewardPointsUsed">
           <div class="col-5 text-muted">Points Used</div>
-          <div class="col-7 text-warning">-{{ txDetail.rewardPointsUsed }}</div>
+          <div class="col-7 text-wine-light">-{{ txDetail.rewardPointsUsed }}</div>
         </div>
         <div class="row mb-2" *ngIf="!txDetail.rewardPointsEarned && !txDetail.rewardPointsUsed">
           <div class="col-12 text-muted">No reward points associated with this transaction.</div>

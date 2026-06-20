@@ -9,7 +9,8 @@ import java.time.Instant;
 @Entity
 @Table(name = "reward_transactions", indexes = {
         @Index(name = "idx_rw_account_id", columnList = "accountId"),
-        @Index(name = "idx_rw_reference_tx", columnList = "referenceTransactionId")
+        @Index(name = "idx_rw_reference_tx", columnList = "referenceTransactionId"),
+        @Index(name = "idx_rw_expires_on", columnList = "expiresOn")
 })
 public class RewardTransaction {
 
@@ -33,6 +34,9 @@ public class RewardTransaction {
     @Column(nullable = false)
     private Instant createdOn;
 
+    @Column
+    private Instant expiresOn;
+
     protected RewardTransaction() {}
 
     private RewardTransaction(Long accountId, RewardTransactionType type, int points, Long referenceTransactionId) {
@@ -46,7 +50,9 @@ public class RewardTransaction {
         if (accountId == null) throw new IllegalArgumentException("accountId is required");
         if (points <= 0) throw new IllegalArgumentException("points must be positive");
         if (referenceTransactionId == null) throw new IllegalArgumentException("referenceTransactionId is required");
-        return new RewardTransaction(accountId, RewardTransactionType.EARNED, points, referenceTransactionId);
+        RewardTransaction t = new RewardTransaction(accountId, RewardTransactionType.EARNED, points, referenceTransactionId);
+        t.expiresOn = Instant.now().plusSeconds(2 * 24 * 60 * 60);
+        return t;
     }
 
     public static RewardTransaction redeemed(Long accountId, int points, Long referenceTransactionId) {
@@ -66,4 +72,5 @@ public class RewardTransaction {
     public int getPoints() { return points; }
     public Long getReferenceTransactionId() { return referenceTransactionId; }
     public Instant getCreatedOn() { return createdOn; }
+    public Instant getExpiresOn() { return expiresOn; }
 }

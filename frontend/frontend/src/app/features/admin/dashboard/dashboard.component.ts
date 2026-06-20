@@ -17,11 +17,13 @@ export class AdminDashboardComponent implements OnInit {
   recentTransactions: TransactionLogResponse[] = [];
   loading = true;
   errorMessage = '';
-  
+
   totalAccounts = 0;
   activeAccounts = 0;
   totalBalance = 0;
   recentTransactionCount = 0;
+  totalPointsEarned = 0;
+  totalPointsRedeemed = 0;
 
   constructor(private adminService: AdminService) {}
 
@@ -31,7 +33,7 @@ export class AdminDashboardComponent implements OnInit {
 
   loadDashboardData(): void {
     this.loading = true;
-    
+
     this.adminService.getAllAccounts().subscribe({
       next: (accounts) => {
         this.accounts = accounts;
@@ -40,7 +42,7 @@ export class AdminDashboardComponent implements OnInit {
         this.totalBalance = accounts.reduce((sum, acc) => sum + Number(acc.balance), 0);
         this.loading = false;
       },
-      error: (error) => {
+      error: () => {
         this.errorMessage = 'Failed to load accounts';
         this.loading = false;
       }
@@ -51,8 +53,18 @@ export class AdminDashboardComponent implements OnInit {
         this.recentTransactions = transactions.slice(0, 5);
         this.recentTransactionCount = transactions.filter(t => t.status === 'SUCCESS').length;
       },
-      error: (error) => {
-        console.error('Failed to load transactions', error);
+      error: () => {
+        console.error('Failed to load transactions');
+      }
+    });
+
+    this.adminService.getRewardDashboard().subscribe({
+      next: (data) => {
+        this.totalPointsEarned = data.totalPointsEarned;
+        this.totalPointsRedeemed = data.totalPointsRedeemed;
+      },
+      error: () => {
+        console.error('Failed to load reward dashboard');
       }
     });
   }
@@ -60,17 +72,17 @@ export class AdminDashboardComponent implements OnInit {
   getStatusBadgeClass(status: string): string {
     switch (status?.toUpperCase()) {
       case 'ACTIVE':
-        return 'badge-success';
+        return 'badge-active';
       case 'LOCKED':
-        return 'badge-warning';
+        return 'badge-locked';
       case 'CLOSED':
-        return 'badge-danger';
+        return 'badge-closed';
       default:
         return 'badge-primary';
     }
   }
 
   getTransactionStatusBadge(status: string): string {
-    return status === 'SUCCESS' ? 'badge-success' : 'badge-danger';
+    return status === 'SUCCESS' ? 'badge-tx-success' : 'badge-tx-failed';
   }
 }

@@ -151,13 +151,15 @@ public class TransferServiceImpl implements TransferService {
             rewardRepo.save(RewardTransaction.redeemed(from.getId(), rewardPointsUsed, null));
         }
 
-        TransactionLog tx = logWriter.logSuccess(from.getId(), to.getId(), amount, req.idempotencyKey());
-
         BigDecimal grantBase = req.useRewardPoints() ? actualDebit : amount;
-        int pointsEarned = 0;
+        int pointsEarned = grantBase.compareTo(new BigDecimal("100")) > 0
+                ? grantBase.divide(new BigDecimal("100"), RoundingMode.DOWN).intValue() : 0;
+
+        TransactionLog tx = logWriter.logSuccess(from.getId(), to.getId(), amount, req.idempotencyKey(),
+                pointsEarned > 0 ? pointsEarned : null, rewardPointsUsed > 0 ? rewardPointsUsed : null);
+
         try {
             if (grantBase.compareTo(new BigDecimal("100")) > 0) {
-                pointsEarned = grantBase.divide(new BigDecimal("100"), RoundingMode.DOWN).intValue();
                 rewardGrantWriter.grantPoints(from.getId(), tx.getId(), grantBase);
             }
         } catch (Exception e) {

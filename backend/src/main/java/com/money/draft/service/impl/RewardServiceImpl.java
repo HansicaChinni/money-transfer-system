@@ -8,11 +8,15 @@ import com.money.draft.domain.enums.RewardTransactionType;
 import com.money.draft.domain.repository.AccountRepository;
 import com.money.draft.domain.repository.RewardTransactionRepository;
 import com.money.draft.domain.repository.TransactionLogRepository;
+import com.money.draft.dto.AdminRewardDashboardResponse;
 import com.money.draft.dto.RewardSummaryResponse;
 import com.money.draft.dto.RewardTransactionResponse;
 import com.money.draft.dto.TransactionDetailResponse;
 import com.money.draft.exception.AccountNotFoundException;
 import com.money.draft.service.RewardService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +25,15 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class RewardServiceImpl implements RewardService {
+
+    private static final Logger log = LoggerFactory.getLogger(RewardServiceImpl.class);
 
     private final AccountRepository accountRepo;
     private final RewardTransactionRepository rewardRepo;
@@ -63,14 +71,25 @@ public class RewardServiceImpl implements RewardService {
         rewardRepo.save(RewardTransaction.earned(accountId, points, transactionId));
     }
 
+    private int calculateExpiringPoints(Long accountId) {
+        Instant now = Instant.now();
+        Instant threshold = now.plus(2, ChronoUnit.DAYS);
+        int raw = rewardRepo.sumPointsExpiringBetween(accountId, now, threshold);
+        Account account = accountRepo.findById(accountId).orElse(null);
+        if (account == null) return 0;
+        return Math.min(raw, account.getRewardPoints());
+    }
+
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public RewardSummaryResponse getRewardSummary(Long accountId) {
+        processExpiredPoints(accountId);
         Account account = accountRepo.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException(accountId));
         int earned = rewardRepo.sumPointsByAccountIdAndType(accountId, RewardTransactionType.EARNED);
         int redeemed = rewardRepo.sumPointsByAccountIdAndType(accountId, RewardTransactionType.REDEEMED);
-        return new RewardSummaryResponse(account.getRewardPoints(), earned, redeemed);
+        int expiring = calculateExpiringPoints(accountId);
+        return new RewardSummaryResponse(account.getRewardPoints(), earned, redeemed, expiring);
     }
 
     @Override
@@ -121,6 +140,14 @@ public class RewardServiceImpl implements RewardService {
         return getRewardSummary(accountId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public AdminRewardDashboardResponse getAdminRewardDashboard() {
+        int totalEarned = rewardRepo.sumPointsByType(RewardTransactionType.EARNED);
+        int totalRedeemed = rewardRepo.sumPointsByType(RewardTransactionType.REDEEMED);
+        return new AdminRewardDashboardResponse(totalEarned, totalRedeemed);
+    }
+
     private RewardTransactionResponse toRewardTransactionResponse(RewardTransaction r) {
         return new RewardTransactionResponse(
                 r.getId(),
@@ -128,11 +155,75 @@ public class RewardServiceImpl implements RewardService {
                 r.getType().name(),
                 r.getPoints(),
                 r.getReferenceTransactionId(),
-                toLocalDateTime(r.getCreatedOn())
+                toLocalDateTime(r.getCreatedOn()),
+                toLocalDateTime(r.getExpiresOn())
         );
     }
 
     private static LocalDateTime toLocalDateTime(Instant instant) {
         return instant == null ? null : instant.atOffset(ZoneOffset.UTC).toLocalDateTime();
+    }
+
+    @Transactional
+    public void processExpiredPoints(Long accountId) {
+        List<RewardTransaction> earnedList = rewardRepo.findEarnedByAccountIdOrderByCreatedOnAsc(accountId);
+        if (earnedList.isEmpty()) return;
+
+        List<RewardTransaction> redeemedList = rewardRepo.findRedeemedByAccountIdOrderByCreatedOnAsc(accountId);
+
+        int totalUnredeemedExpired = 0;
+        int redeemedSoFar = 0;
+
+        for (RewardTransaction earned : earnedList) {
+            int earnedPoints = earned.getPoints();
+            int consumed = 0;
+
+            while (consumed < earnedPoints && redeemedSoFar < redeemedList.size()) {
+                RewardTransaction redeemed = redeemedList.get(redeemedSoFar);
+                int availableInThisRedeemed = redeemed.getPoints();
+                int canConsume = Math.min(earnedPoints - consumed, availableInThisRedeemed);
+
+                consumed += canConsume;
+                if (canConsume >= availableInThisRedeemed) {
+                    redeemedSoFar++;
+                } else {
+                    redeemedList.set(redeemedSoFar,
+                            RewardTransaction.redeemed(redeemed.getAccountId(),
+                                    availableInThisRedeemed - canConsume, redeemed.getReferenceTransactionId()));
+                }
+            }
+
+            if (earned.getExpiresOn() != null && earned.getExpiresOn().compareTo(Instant.now()) <= 0) {
+                int unconsumed = earnedPoints - consumed;
+                if (unconsumed > 0) {
+                    totalUnredeemedExpired += unconsumed;
+                }
+            }
+        }
+
+        if (totalUnredeemedExpired > 0) {
+            Account account = accountRepo.findById(accountId)
+                    .orElseThrow(() -> new AccountNotFoundException(accountId));
+            int toDeduct = Math.min(totalUnredeemedExpired, account.getRewardPoints());
+            if (toDeduct > 0) {
+                account.setRewardPoints(account.getRewardPoints() - toDeduct);
+                accountRepo.save(account);
+                log.info("Deducted {} expired reward points from account {}", toDeduct, accountId);
+            }
+        }
+    }
+
+    @Scheduled(fixedRate = 3600000)
+    @Transactional
+    public void expirePointsScheduled() {
+        Instant now = Instant.now();
+        List<Long> accountIds = rewardRepo.findAccountIdsWithExpiredEarnings(now);
+        for (Long accountId : accountIds) {
+            try {
+                processExpiredPoints(accountId);
+            } catch (Exception e) {
+                log.error("Failed to process expired points for account {}: {}", accountId, e.getMessage());
+            }
+        }
     }
 }

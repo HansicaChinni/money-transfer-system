@@ -9,5 +9,6 @@ public record RewardTransactionResponse(
         String type,
         int points,
         Long referenceTransactionId,
-        LocalDateTime createdOn
+        LocalDateTime createdOn,
+        LocalDateTime expiresOn
 ) {}

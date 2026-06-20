@@ -1,10 +1,11 @@
 
 package com.money.draft.service.impl;
 
-
 import com.money.draft.domain.entity.Account;
+import com.money.draft.domain.enums.RewardTransactionType;
 import com.money.draft.domain.repository.AccountRepository;
 import com.money.draft.domain.repository.AppUserRepository;
+import com.money.draft.domain.repository.RewardTransactionRepository;
 import com.money.draft.domain.repository.TransactionLogRepository;
 import com.money.draft.dto.AdminAccountDetailResponse;
 import com.money.draft.dto.AdminAccountView;
@@ -21,7 +22,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -30,15 +30,18 @@ public class AdminServiceImpl implements AdminService {
     private final TransactionLogRepository txRepo;
     private final AppUserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final RewardTransactionRepository rewardRepo;
 
     public AdminServiceImpl(AccountRepository accountRepo,
                             TransactionLogRepository txRepo,
                             AppUserRepository userRepo,
-                            PasswordEncoder passwordEncoder) {
+                            PasswordEncoder passwordEncoder,
+                            RewardTransactionRepository rewardRepo) {
         this.accountRepo = accountRepo;
         this.txRepo = txRepo;
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.rewardRepo = rewardRepo;
     }
 
     @Override
@@ -50,7 +53,7 @@ public class AdminServiceImpl implements AdminService {
                         a.getAccountNumber(),
                         a.getBalance(),
                         a.getStatus().name(),
-                        toLocalDateTime(a.getLastUpdated()) // works for Instant or LocalDateTime
+                        toLocalDateTime(a.getLastUpdated())
                 ))
                 .toList();
     }
@@ -67,19 +70,17 @@ public class AdminServiceImpl implements AdminService {
                         tx.getStatus().name(),
                         tx.getFailureReason(),
                         tx.getIdempotencyKey(),
-                        toLocalDateTime(tx.getCreatedOn()) // typically Instant -> LocalDateTime (UTC)
+                        toLocalDateTime(tx.getCreatedOn()),
+                        tx.getRewardPointsEarned(),
+                        tx.getRewardPointsUsed()
                 ))
                 .toList();
     }
 
-    // --- Helpers ---
-
-    // Convert Instant -> LocalDateTime (UTC)
     private static LocalDateTime toLocalDateTime(Instant instant) {
         return instant == null ? null : instant.atOffset(ZoneOffset.UTC).toLocalDateTime();
     }
 
-    // Pass-through when already LocalDateTime
     private static LocalDateTime toLocalDateTime(LocalDateTime ldt) {
         return ldt;
     }
@@ -87,18 +88,14 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public AdminAccountDetailResponse createAccount(AdminCreateAccountRequest req) {
-        // 1. Prevent duplicate usernames
         if (userRepo.findByUsername(req.username()).isPresent()) {
             throw new com.money.draft.exception.BusinessException("DUPLICATE_USER", "Username already exists");
         }
 
-        // 2. Create and Save Account (image_9cc5f4.png fields)
-        com.money.draft.domain.entity.Account account = new com.money.draft.domain.entity.Account();
+        Account account = new Account();
         account.setHolderName(req.holderName());
         if (req.initialBalance().compareTo(new BigDecimal("1000")) < 0) {
-            throw new ValidationException(
-                    "Initial deposit must be at least ₹1000"
-            );
+            throw new ValidationException("Initial deposit must be at least \u20B91000");
         }
 
         account.setBalance(req.initialBalance());
@@ -106,14 +103,9 @@ public class AdminServiceImpl implements AdminService {
 
         Account saved = accountRepo.save(account);
 
-        // Generate formatted account number
-        saved.setAccountNumber(
-                Account.generateAccountNumber(saved.getId())
-        );
-
+        saved.setAccountNumber(Account.generateAccountNumber(saved.getId()));
         accountRepo.save(saved);
 
-        // 3. Create and Save User (image_9cc8d6.png fields)
         com.money.draft.domain.entity.AppUser user = new com.money.draft.domain.entity.AppUser();
         user.setUsername(req.username());
         user.setPassword(passwordEncoder.encode(req.password()));
@@ -128,7 +120,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional(readOnly = true)
     public AdminAccountDetailResponse getAccountDetails(Long id) {
-        com.money.draft.domain.entity.Account a = accountRepo.findById(id)
+        Account a = accountRepo.findById(id)
                 .orElseThrow(() -> new com.money.draft.exception.AccountNotFoundException(id));
         return mapToAdminDetailResponse(a);
     }
@@ -136,15 +128,15 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public AdminAccountDetailResponse updateAccountStatus(Long id, com.money.draft.domain.enums.AccountStatus status) {
-        com.money.draft.domain.entity.Account a = accountRepo.findById(id)
+        Account a = accountRepo.findById(id)
                 .orElseThrow(() -> new com.money.draft.exception.AccountNotFoundException(id));
 
         a.setStatus(status);
         return mapToAdminDetailResponse(accountRepo.save(a));
     }
 
-    // Mapper for the Admin-specific detail view
-    private AdminAccountDetailResponse mapToAdminDetailResponse(com.money.draft.domain.entity.Account a) {
+    private AdminAccountDetailResponse mapToAdminDetailResponse(Account a) {
+        int totalRedeemed = rewardRepo.sumPointsByAccountIdAndType(a.getId(), RewardTransactionType.REDEEMED);
         return new AdminAccountDetailResponse(
                 a.getId(),
                 a.getAccountNumber(),
@@ -152,7 +144,9 @@ public class AdminServiceImpl implements AdminService {
                 a.getBalance(),
                 a.getStatus().name(),
                 a.getVersion(),
-                toLocalDateTime(a.getLastUpdated())
+                toLocalDateTime(a.getLastUpdated()),
+                a.getRewardPoints(),
+                totalRedeemed
         );
     }
 }

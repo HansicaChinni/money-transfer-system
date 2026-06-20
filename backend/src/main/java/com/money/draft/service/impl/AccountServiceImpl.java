@@ -70,7 +70,9 @@ public class AccountServiceImpl implements AccountService {
                         tx.getStatus().name(),
                         tx.getFailureReason(),
                         tx.getIdempotencyKey(),
-                        toLocalDateTime(tx.getCreatedOn()) // Instant -> LocalDateTime (UTC)
+                        toLocalDateTime(tx.getCreatedOn()),
+                        tx.getRewardPointsEarned(),
+                        tx.getRewardPointsUsed()
                 ))
                 .collect(Collectors.toList());
     }
@@ -85,12 +87,10 @@ public class AccountServiceImpl implements AccountService {
         AppUser user = userRepo.findById(userId)
                 .orElseThrow(() -> new AccountNotFoundException(userId));
 
-        // Check old password
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new IncorrectPasswordException();
         }
 
-        // Update
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepo.save(user);
     }

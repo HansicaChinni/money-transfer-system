@@ -36,6 +36,6 @@ export class AdminTransactionsComponent implements OnInit {
   }
 
   getStatusBadgeClass(status: string): string {
-    return status === 'SUCCESS' ? 'badge-success' : 'badge-danger';
+    return status === 'SUCCESS' ? 'badge-tx-success' : 'badge-tx-failed';
   }
 }

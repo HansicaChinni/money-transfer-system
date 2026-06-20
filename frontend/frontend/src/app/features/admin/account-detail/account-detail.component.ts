@@ -42,7 +42,7 @@ export class AccountDetailComponent implements OnInit {
         this.account = account;
         this.loading = false;
       },
-      error: (error) => {
+      error: () => {
         this.errorMessage = 'Failed to load account details';
         this.loading = false;
       }
@@ -54,8 +54,8 @@ export class AccountDetailComponent implements OnInit {
       next: (transactions) => {
         this.transactions = transactions;
       },
-      error: (error) => {
-        console.error('Failed to load transactions', error);
+      error: () => {
+        console.error('Failed to load transactions');
       }
     });
   }
@@ -67,7 +67,7 @@ export class AccountDetailComponent implements OnInit {
         this.successMessage = `Account status updated to ${status}`;
         setTimeout(() => this.successMessage = '', 3000);
       },
-      error: (error) => {
+      error: () => {
         this.errorMessage = 'Failed to update account status';
       }
     });
@@ -75,10 +75,10 @@ export class AccountDetailComponent implements OnInit {
 
   getStatusBadgeClass(status: string): string {
     const s = status?.toUpperCase();
-    return s === 'ACTIVE' ? 'badge-success' : s === 'LOCKED' ? 'badge-warning' : 'badge-danger';
+    return s === 'ACTIVE' ? 'badge-active' : s === 'LOCKED' ? 'badge-locked' : 'badge-closed';
   }
 
   getTransactionStatusBadge(status: string): string {
-    return status === 'SUCCESS' ? 'badge-success' : 'badge-danger';
+    return status === 'SUCCESS' ? 'badge-tx-success' : 'badge-tx-failed';
   }
 }

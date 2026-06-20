@@ -88,11 +88,11 @@ class AdminControllerTest {
         LocalDateTime now = LocalDateTime.now();
         List<TransactionLogResponse> mockTransactions = Arrays.asList(
                 new TransactionLogResponse(1L, 1L, 2L, new BigDecimal("500.00"),
-                        "SUCCESS", null, "key-1", now),
+                        "SUCCESS", null, "key-1", now, null, null),
                 new TransactionLogResponse(2L, 2L, 3L, new BigDecimal("200.00"),
-                        "SUCCESS", null, "key-2", now),
+                        "SUCCESS", null, "key-2", now, null, null),
                 new TransactionLogResponse(3L, 1L, 3L, new BigDecimal("300.00"),
-                        "FAILED", "Insufficient funds", "key-3", now)
+                        "FAILED", "Insufficient funds", "key-3", now, null, null)
         );
 
         when(adminService.getAllTransactions()).thenReturn(mockTransactions);
@@ -159,9 +159,9 @@ class AdminControllerTest {
         LocalDateTime now = LocalDateTime.now();
         List<TransactionLogResponse> mockTransactions = Arrays.asList(
                 new TransactionLogResponse(1L, 1L, 2L, new BigDecimal("100.00"),
-                        "SUCCESS", null, "success-key", now),
+                        "SUCCESS", null, "success-key", now, null, null),
                 new TransactionLogResponse(2L, 3L, 4L, new BigDecimal("50.00"),
-                        "FAILED", "Account not active", "failed-key", now)
+                        "FAILED", "Account not active", "failed-key", now, null, null)
         );
 
         when(adminService.getAllTransactions()).thenReturn(mockTransactions);

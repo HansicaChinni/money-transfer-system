@@ -1,6 +1,7 @@
 
 package com.money.draft.controller;
 
+import com.money.draft.dto.AdminRewardDashboardResponse;
 import com.money.draft.dto.RewardSummaryResponse;
 import com.money.draft.dto.RewardTransactionResponse;
 import com.money.draft.service.RewardService;
@@ -34,5 +35,11 @@ public class AdminRewardController {
     @GetMapping("/{accountId}")
     public ResponseEntity<RewardSummaryResponse> rewardSummaryForAccount(@PathVariable Long accountId) {
         return ResponseEntity.ok(rewardService.getRewardSummaryForAdmin(accountId));
+    }
+
+    @Operation(summary = "Get aggregate reward dashboard data for admin")
+    @GetMapping("/dashboard")
+    public ResponseEntity<AdminRewardDashboardResponse> rewardDashboard() {
+        return ResponseEntity.ok(rewardService.getAdminRewardDashboard());
     }
 }

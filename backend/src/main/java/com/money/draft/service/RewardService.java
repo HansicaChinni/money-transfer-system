@@ -2,6 +2,7 @@
 package com.money.draft.service;
 
 import com.money.draft.domain.entity.Account;
+import com.money.draft.dto.AdminRewardDashboardResponse;
 import com.money.draft.dto.RewardSummaryResponse;
 import com.money.draft.dto.RewardTransactionResponse;
 import com.money.draft.dto.TransactionDetailResponse;
@@ -17,4 +18,5 @@ public interface RewardService {
     TransactionDetailResponse getTransactionDetail(Long accountId, Long transactionId);
     List<RewardTransactionResponse> getAllRewardTransactions();
     RewardSummaryResponse getRewardSummaryForAdmin(Long accountId);
+    AdminRewardDashboardResponse getAdminRewardDashboard();
 }

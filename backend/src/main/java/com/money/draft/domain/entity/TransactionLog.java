@@ -27,7 +27,6 @@ public class TransactionLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // We store only IDs (not @ManyToOne) to keep the log immutable and simple.
     @Column(nullable = false)
     private Long fromAccountId;
 
@@ -42,13 +41,19 @@ public class TransactionLog {
     private TransactionStatus status;
 
     @Column(length = 255)
-    private String failureReason;    // null for SUCCESS
+    private String failureReason;
 
     @Column(nullable = false, length = 64)
     private String idempotencyKey;
 
     @Column(nullable = false)
     private Instant createdOn;
+
+    @Column
+    private Integer rewardPointsEarned;
+
+    @Column
+    private Integer rewardPointsUsed;
 
     protected TransactionLog() { }
 
@@ -58,7 +63,9 @@ public class TransactionLog {
             BigDecimal amount,
             TransactionStatus status,
             String failureReason,
-            String idempotencyKey
+            String idempotencyKey,
+            Integer rewardPointsEarned,
+            Integer rewardPointsUsed
     ) {
         this.fromAccountId = fromAccountId;
         this.toAccountId = toAccountId;
@@ -66,12 +73,12 @@ public class TransactionLog {
         this.status = status;
         this.failureReason = truncate(failureReason, 255);
         this.idempotencyKey = idempotencyKey;
+        this.rewardPointsEarned = rewardPointsEarned;
+        this.rewardPointsUsed = rewardPointsUsed;
     }
 
-    /**
-     * Success logs enforce strict domain constraints.
-     */
-    public static TransactionLog success(Long fromAccountId, Long toAccountId, BigDecimal amount, String idempotencyKey) {
+    public static TransactionLog success(Long fromAccountId, Long toAccountId, BigDecimal amount, String idempotencyKey,
+                                          Integer rewardPointsEarned, Integer rewardPointsUsed) {
         if (fromAccountId == null) throw new ValidationException("fromAccountId is required");
         if (toAccountId == null) throw new ValidationException("toAccountId is required");
         if (idempotencyKey == null || idempotencyKey.isBlank()) throw new ValidationException("idempotencyKey is required");
@@ -87,14 +94,12 @@ public class TransactionLog {
                 normalizedMoney(amount),
                 TransactionStatus.SUCCESS,
                 null,
-                idempotencyKey
+                idempotencyKey,
+                rewardPointsEarned != null && rewardPointsEarned > 0 ? rewardPointsEarned : null,
+                rewardPointsUsed != null && rewardPointsUsed > 0 ? rewardPointsUsed : null
         );
     }
 
-    /**
-     * Failure logs are more permissive to ensure we can always record failed attempts.
-     * We still require non-null amount and idempotencyKey due to NOT NULL columns.
-     */
     public static TransactionLog failure(Long fromAccountId, Long toAccountId, BigDecimal amount, String idempotencyKey, String reason) {
         if (fromAccountId == null) throw new ValidationException("fromAccountId is required");
         if (toAccountId == null) throw new ValidationException("toAccountId is required");
@@ -107,7 +112,9 @@ public class TransactionLog {
                 normalizedMoney(amount),
                 TransactionStatus.FAILED,
                 reason,
-                idempotencyKey
+                idempotencyKey,
+                null,
+                null
         );
     }
 
@@ -125,7 +132,6 @@ public class TransactionLog {
         if (this.createdOn == null) this.createdOn = Instant.now();
     }
 
-    // ---- Getters (no setters to keep logs immutable) ----
     public Long getId() { return id; }
     public Long getFromAccountId() { return fromAccountId; }
     public Long getToAccountId() { return toAccountId; }
@@ -134,4 +140,6 @@ public class TransactionLog {
     public String getFailureReason() { return failureReason; }
     public String getIdempotencyKey() { return idempotencyKey; }
     public Instant getCreatedOn() { return createdOn; }
+    public Integer getRewardPointsEarned() { return rewardPointsEarned; }
+    public Integer getRewardPointsUsed() { return rewardPointsUsed; }
 }

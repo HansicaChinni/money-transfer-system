@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+  <div *ngIf="errorMessage" class="alert alert-wine" role="alert">
     {{ errorMessage }}
   </div>
 
@@ -35,6 +35,7 @@
               <th>Type</th>
               <th>Account</th>
               <th class="text-end">Amount</th>
+              <th>Points</th>
               <th>Status</th>
               <th>Idempotency Key</th>
             </tr>
@@ -44,25 +45,30 @@
               <td><strong>#{{ tx.id }}</strong></td>
               <td>{{ tx.createdOn | date:'medium' }}</td>
               <td>
-                <span *ngIf="isOutgoing(tx)" class="badge badge-warning">Sent</span>
-                <span *ngIf="isIncoming(tx)" class="badge badge-success">Received</span>
+                <span *ngIf="isOutgoing(tx)" class="badge badge-redeemed">Sent</span>
+                <span *ngIf="isIncoming(tx)" class="badge badge-earned">Received</span>
               </td>
               <td>
                 <span *ngIf="isOutgoing(tx)">To: <strong>#{{ tx.toAccountId }}</strong></span>
                 <span *ngIf="isIncoming(tx)">From: <strong>#{{ tx.fromAccountId }}</strong></span>
               </td>
               <td class="text-end">
-                <strong 
-                  [class.text-danger]="isOutgoing(tx)"
-                  [class.text-success]="isIncoming(tx)">
+                <strong
+                  [class.text-wine-dark]="isOutgoing(tx)"
+                  [class.text-wine]="isIncoming(tx)">
                   {{ isOutgoing(tx) ? '-' : '+' }}₹{{ tx.amount | number:'1.2-2' }}
                 </strong>
+              </td>
+              <td>
+                <span *ngIf="tx.rewardPointsEarned" class="text-wine">+{{ tx.rewardPointsEarned }}</span>
+                <span *ngIf="tx.rewardPointsUsed" class="text-wine-light">-{{ tx.rewardPointsUsed }}</span>
+                <span *ngIf="!tx.rewardPointsEarned && !tx.rewardPointsUsed">-</span>
               </td>
               <td>
                 <span class="badge {{ getStatusBadgeClass(tx.status) }}">
                   {{ tx.status }}
                 </span>
-                <div *ngIf="tx.failureReason" class="text-danger small mt-1">
+                <div *ngIf="tx.failureReason" class="text-wine-dark small mt-1">
                   {{ tx.failureReason }}
                 </div>
               </td>
@@ -75,4 +81,5 @@
       </div>
     </div>
   </div>
+</div>
 </div>

@@ -32,7 +32,7 @@
             {{ successMessage }}
           </div>
 
-          <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+          <div *ngIf="errorMessage" class="alert alert-wine" role="alert">
             {{ errorMessage }}
           </div>
 
@@ -83,7 +83,7 @@
               <div class="mt-2">
                 <small class="text-muted">Available: <strong>{{ rewardSummary.currentPoints }} pts</strong> (worth ₹{{ rewardSummary.currentPoints }}) | Total Earned: {{ rewardSummary.totalEarned }} | Redeemed: {{ rewardSummary.totalRedeemed }}</small>
               </div>
-              <div *ngIf="rewardEstimate" class="mt-2 p-2 rounded" style="background-color: #e8f5e9;">
+              <div *ngIf="rewardEstimate" class="mt-2 p-2 rounded" style="background-color: var(--wine-lightest);">
                 <small>
                   Using <strong>{{ rewardEstimate.used }}</strong> reward points (₹{{ rewardEstimate.used }})
                   | Cash debit: <strong>₹{{ rewardEstimate.cashDebit | number:'1.2-2' }}</strong>

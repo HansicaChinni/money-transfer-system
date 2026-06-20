@@ -19,8 +19,9 @@ public class TransactionLogWriter {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public TransactionLog logSuccess(Long fromId, Long toId, BigDecimal amount, String idempotencyKey) {
-        return txRepo.save(TransactionLog.success(fromId, toId, amount, idempotencyKey));
+    public TransactionLog logSuccess(Long fromId, Long toId, BigDecimal amount, String idempotencyKey,
+                                      Integer rewardPointsEarned, Integer rewardPointsUsed) {
+        return txRepo.save(TransactionLog.success(fromId, toId, amount, idempotencyKey, rewardPointsEarned, rewardPointsUsed));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

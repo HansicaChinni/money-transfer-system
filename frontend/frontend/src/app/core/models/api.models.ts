@@ -31,6 +31,8 @@ export interface AdminAccountDetailResponse {
   status: string;
   version: number;
   lastUpdated: string;
+  rewardPoints: number;
+  totalRewardsRedeemed: number;
 }
 
 export interface TransactionLogResponse {
@@ -42,6 +44,8 @@ export interface TransactionLogResponse {
   failureReason: string | null;
   idempotencyKey: string;
   createdOn: string;
+  rewardPointsEarned: number | null;
+  rewardPointsUsed: number | null;
 }
 
 export interface TransferRequest {
@@ -93,12 +97,19 @@ export interface RewardTransactionResponse {
   points: number;
   referenceTransactionId: number | null;
   createdOn: string;
+  expiresOn: string | null;
 }
 
 export interface RewardSummaryResponse {
   currentPoints: number;
   totalEarned: number;
   totalRedeemed: number;
+  expiringPoints: number;
+}
+
+export interface AdminRewardDashboardResponse {
+  totalPointsEarned: number;
+  totalPointsRedeemed: number;
 }
 
 export interface TransactionDetailResponse {

@@ -158,18 +158,35 @@ body {
   transform: translateY(-1px);
 }
 
-.btn-danger {
-  background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+.btn-wine-dark {
+  background: linear-gradient(135deg, var(--wine-dark) 0%, #4A151C 100%);
   border: none;
   border-radius: 8px;
   padding: 0.625rem 1.5rem;
   font-weight: 500;
+  color: white;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   letter-spacing: 0.01em;
 }
 
-.btn-danger:hover {
-  background: linear-gradient(135deg, #991B1B 0%, #7F1D1D 100%);
+.btn-wine-dark:hover {
+  background: linear-gradient(135deg, #4A151C 0%, #3A0E14 100%);
+  transform: translateY(-1px);
+}
+
+.btn-wine-light {
+  background: linear-gradient(135deg, var(--wine-light) 0%, var(--wine-medium) 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 0.625rem 1.5rem;
+  font-weight: 500;
+  color: white;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.01em;
+}
+
+.btn-wine-light:hover {
+  background: linear-gradient(135deg, var(--wine-medium) 0%, var(--wine-primary) 100%);
   transform: translateY(-1px);
 }
 
@@ -216,24 +233,30 @@ body {
 }
 
 .alert-success {
-  background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
-  color: #065F46;
-  border-left: 4px solid #10B981;
+  background: linear-gradient(135deg, var(--wine-lightest) 0%, #F5E6E8 100%);
+  color: var(--wine-primary);
+  border-left: 4px solid var(--wine-primary);
 }
 
 .alert-danger {
-  background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
-  color: #991B1B;
-  border-left: 4px solid #DC2626;
+  background: linear-gradient(135deg, var(--wine-lightest) 0%, #F5E6E8 100%);
+  color: var(--wine-dark);
+  border-left: 4px solid var(--wine-accent);
 }
 
 .alert-warning {
-  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
-  color: #92400E;
-  border-left: 4px solid #F59E0B;
+  background: linear-gradient(135deg, #FDF2F4 0%, #F5E6E8 100%);
+  color: var(--wine-accent);
+  border-left: 4px solid var(--wine-accent);
 }
 
 .alert-info {
+  background: linear-gradient(135deg, var(--wine-lightest) 0%, #F5E6E8 100%);
+  color: var(--wine-dark);
+  border-left: 4px solid var(--wine-primary);
+}
+
+.alert-wine {
   background: linear-gradient(135deg, var(--wine-lightest) 0%, #F5E6E8 100%);
   color: var(--wine-dark);
   border-left: 4px solid var(--wine-primary);
@@ -248,18 +271,41 @@ body {
   letter-spacing: 0.02em;
 }
 
-.badge-success {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+/* Status badges (account status) */
+.badge-active {
+  background: linear-gradient(135deg, var(--wine-primary) 0%, var(--wine-dark) 100%);
   color: white;
 }
 
-.badge-warning {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+.badge-locked {
+  background: linear-gradient(135deg, var(--wine-light) 0%, var(--wine-medium) 100%);
   color: white;
 }
 
-.badge-danger {
-  background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%);
+.badge-closed {
+  background: linear-gradient(135deg, var(--wine-dark) 0%, #4A151C 100%);
+  color: white;
+}
+
+/* Transaction status badges */
+.badge-tx-success {
+  background: linear-gradient(135deg, var(--wine-primary) 0%, var(--wine-dark) 100%);
+  color: white;
+}
+
+.badge-tx-failed {
+  background: linear-gradient(135deg, var(--wine-accent) 0%, var(--wine-dark) 100%);
+  color: white;
+}
+
+/* Reward type badges */
+.badge-earned {
+  background: linear-gradient(135deg, var(--wine-primary) 0%, var(--wine-dark) 100%);
+  color: white;
+}
+
+.badge-redeemed {
+  background: linear-gradient(135deg, var(--wine-accent) 0%, var(--wine-light) 100%);
   color: white;
 }
 
@@ -363,6 +409,18 @@ body {
   transform: translateY(-2px);
 }
 
+.stat-card-clickable {
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+
+.stat-card-clickable:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
 .stat-card-wine {
   background: linear-gradient(135deg, var(--wine-primary) 0%, var(--wine-dark) 100%);
   color: white;
@@ -370,6 +428,18 @@ body {
 
 .stat-card-wine:hover {
   background: linear-gradient(135deg, var(--wine-dark) 0%, #4A151C 100%);
+}
+
+.text-wine {
+  color: var(--wine-primary) !important;
+}
+
+.text-wine-dark {
+  color: var(--wine-dark) !important;
+}
+
+.text-wine-light {
+  color: var(--wine-light) !important;
 }
 
 /* Modal Styles */

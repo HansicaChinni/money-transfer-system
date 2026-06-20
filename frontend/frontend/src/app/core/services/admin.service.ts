@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import {
   AdminAccountView,
   AdminAccountDetailResponse,
+  AdminRewardDashboardResponse,
   TransactionLogResponse,
   AdminCreateAccountRequest,
   AccountStatus
@@ -40,5 +41,9 @@ export class AdminService {
 
   getAllTransactions(): Observable<TransactionLogResponse[]> {
     return this.http.get<TransactionLogResponse[]>(`${this.apiUrl}/transactions`);
+  }
+
+  getRewardDashboard(): Observable<AdminRewardDashboardResponse> {
+    return this.http.get<AdminRewardDashboardResponse>(`${this.apiUrl}/rewards/dashboard`);
   }
 }

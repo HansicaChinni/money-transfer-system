@@ -26,13 +26,13 @@ export class DashboardComponent implements OnInit {
 
   loadDashboardData(): void {
     this.loading = true;
-    
+
     this.userService.getBalance().subscribe({
       next: (account) => {
         this.accountInfo = account;
         this.loading = false;
       },
-      error: (error) => {
+      error: () => {
         this.errorMessage = 'Failed to load account information';
         this.loading = false;
       }
@@ -42,8 +42,8 @@ export class DashboardComponent implements OnInit {
       next: (transactions) => {
         this.recentTransactions = transactions.slice(0, 5);
       },
-      error: (error) => {
-        console.error('Failed to load transactions', error);
+      error: () => {
+        console.error('Failed to load transactions');
       }
     });
   }
@@ -51,17 +51,17 @@ export class DashboardComponent implements OnInit {
   getStatusBadgeClass(status: string): string {
     switch (status?.toUpperCase()) {
       case 'ACTIVE':
-        return 'badge-success';
+        return 'badge-active';
       case 'LOCKED':
-        return 'badge-warning';
+        return 'badge-locked';
       case 'CLOSED':
-        return 'badge-danger';
+        return 'badge-closed';
       default:
         return 'badge-primary';
     }
   }
 
   getTransactionStatusBadge(status: string): string {
-    return status === 'SUCCESS' ? 'badge-success' : 'badge-danger';
+    return status === 'SUCCESS' ? 'badge-tx-success' : 'badge-tx-failed';
   }
 }

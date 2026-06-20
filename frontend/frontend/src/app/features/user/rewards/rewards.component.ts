@@ -77,10 +77,10 @@ export class RewardsComponent implements OnInit {
   }
 
   getTypeBadge(type: string): string {
-    return type === 'EARNED' ? 'badge-success' : 'badge-warning';
+    return type === 'EARNED' ? 'badge-earned' : 'badge-redeemed';
   }
 
   getStatusBadge(status: string): string {
-    return status === 'SUCCESS' ? 'badge-success' : 'badge-danger';
+    return status === 'SUCCESS' ? 'badge-tx-success' : 'badge-tx-failed';
   }
 }
