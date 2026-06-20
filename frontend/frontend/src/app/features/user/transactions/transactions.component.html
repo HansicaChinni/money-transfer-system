@@ -49,8 +49,8 @@
                 <span *ngIf="isIncoming(tx)" class="badge badge-earned">Received</span>
               </td>
               <td>
-                <span *ngIf="isOutgoing(tx)">To: <strong>#{{ tx.toAccountId }}</strong></span>
-                <span *ngIf="isIncoming(tx)">From: <strong>#{{ tx.fromAccountId }}</strong></span>
+                <span *ngIf="isOutgoing(tx)">To: <strong>{{ tx.toAccountNumber }}</strong></span>
+                <span *ngIf="isIncoming(tx)">From: <strong>{{ tx.fromAccountNumber }}</strong></span>
               </td>
               <td class="text-end">
                 <strong

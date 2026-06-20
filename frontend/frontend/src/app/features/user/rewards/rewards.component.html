@@ -62,6 +62,7 @@
                 <th>Date</th>
                 <th>Type</th>
                 <th>Points</th>
+                <th>Expires</th>
                 <th>Reference Transaction</th>
               </tr>
             </thead>
@@ -75,6 +76,10 @@
                   <strong [class.text-wine]="rw.type === 'EARNED'" [class.text-wine-light]="rw.type === 'REDEEMED'">
                     {{ rw.type === 'EARNED' ? '+' : '-' }}{{ rw.points }}
                   </strong>
+                </td>
+                <td>
+                  <span *ngIf="rw.type === 'EARNED' && rw.expiresOn">{{ rw.expiresOn | date:'short' }}</span>
+                  <span *ngIf="rw.type !== 'EARNED'" class="text-muted">-</span>
                 </td>
                 <td>
                   <a *ngIf="rw.referenceTransactionId" (click)="openTxDetail(rw.referenceTransactionId)" class="tx-link" style="cursor: pointer; text-decoration: underline; color: var(--wine-accent);">
@@ -120,11 +125,11 @@
           </div>
           <div class="row mb-2">
             <div class="col-5 text-muted">From Account</div>
-            <div class="col-7">#{{ txDetail.fromAccountId }}</div>
+            <div class="col-7">{{ txDetail.fromAccountNumber }}</div>
           </div>
           <div class="row mb-2">
             <div class="col-5 text-muted">To Account</div>
-            <div class="col-7">#{{ txDetail.toAccountId }}</div>
+            <div class="col-7">{{ txDetail.toAccountNumber }}</div>
           </div>
           <div class="row mb-2">
             <div class="col-5 text-muted">Date</div>

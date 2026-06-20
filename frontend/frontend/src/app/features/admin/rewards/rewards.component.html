@@ -1,0 +1,122 @@
+<app-navbar></app-navbar>
+<div class="navbar-spacing">
+  <div class="container-custom fade-in">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="text-primary" style="font-weight: 700;">Reward Transactions</h2>
+      <p class="text-muted">All reward transactions across accounts.</p>
+    </div>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-wine">{{ errorMessage }}</div>
+  <div *ngIf="loading" class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+  <div *ngIf="!loading" class="card">
+    <div class="card-body">
+      <div *ngIf="rewardTransactions.length === 0" class="text-center py-5 text-muted">No reward transactions</div>
+      <div *ngIf="rewardTransactions.length > 0" class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Account #</th>
+              <th>Holder Name</th>
+              <th>Type</th>
+              <th>Points</th>
+              <th>Reference Tx</th>
+              <th>Created On</th>
+              <th>Expires On</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rw of rewardTransactions">
+              <td><strong>#{{ rw.id }}</strong></td>
+              <td>{{ rw.accountNumber }}</td>
+              <td>{{ rw.holderName }}</td>
+              <td><span class="badge {{ getTypeBadge(rw.type) }}">{{ rw.type }}</span></td>
+              <td>
+                <strong [class.text-wine]="rw.type === 'EARNED'" [class.text-wine-light]="rw.type === 'REDEEMED'">
+                  {{ rw.type === 'EARNED' ? '+' : '-' }}{{ rw.points }}
+                </strong>
+              </td>
+              <td>
+                <a *ngIf="rw.referenceTransactionId" (click)="openTxDetail(rw.referenceTransactionId)" class="tx-link" style="cursor: pointer; text-decoration: underline; color: var(--wine-accent);">
+                  #{{ rw.referenceTransactionId }}
+                </a>
+                <span *ngIf="!rw.referenceTransactionId" class="text-muted">-</span>
+              </td>
+              <td>{{ rw.createdOn | date:'short' }}</td>
+              <td>
+                <span *ngIf="rw.expiresOn">{{ rw.expiresOn | date:'short' }}</span>
+                <span *ngIf="!rw.expiresOn" class="text-muted">-</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- Transaction Detail Modal -->
+<div class="modal-backdrop" *ngIf="showTxModal" (click)="closeTxModal()"></div>
+<div class="modal d-block" *ngIf="showTxModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Transaction #{{ txDetail?.id }}</h5>
+        <button type="button" class="btn-close" (click)="closeTxModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="txDetailLoading">
+        <div class="text-center py-3">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-body" *ngIf="!txDetailLoading && txDetail">
+        <div class="mb-3">
+          <div class="row mb-2">
+            <div class="col-5 text-muted">Status</div>
+            <div class="col-7"><span class="badge {{ getStatusBadge(txDetail.status) }}">{{ txDetail.status }}</span></div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-5 text-muted">Amount</div>
+            <div class="col-7"><strong>₹{{ txDetail.amount | number:'1.2-2' }}</strong></div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-5 text-muted">From Account</div>
+            <div class="col-7">{{ txDetail.fromAccountNumber }}</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-5 text-muted">To Account</div>
+            <div class="col-7">{{ txDetail.toAccountNumber }}</div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-5 text-muted">Date</div>
+            <div class="col-7">{{ txDetail.createdOn | date:'medium' }}</div>
+          </div>
+          <div class="row mb-2" *ngIf="txDetail.failureReason">
+            <div class="col-5 text-muted">Reason</div>
+            <div class="col-7 text-wine-dark">{{ txDetail.failureReason }}</div>
+          </div>
+        </div>
+        <hr />
+        <h6>Reward Details</h6>
+        <div class="row mb-2" *ngIf="txDetail.rewardPointsEarned">
+          <div class="col-5 text-muted">Points Earned</div>
+          <div class="col-7 text-wine">+{{ txDetail.rewardPointsEarned }}</div>
+        </div>
+        <div class="row mb-2" *ngIf="txDetail.rewardPointsUsed">
+          <div class="col-5 text-muted">Points Used</div>
+          <div class="col-7 text-wine-light">-{{ txDetail.rewardPointsUsed }}</div>
+        </div>
+        <div class="row mb-2" *ngIf="!txDetail.rewardPointsEarned && !txDetail.rewardPointsUsed">
+          <div class="col-12 text-muted">No reward points associated with this transaction.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeTxModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

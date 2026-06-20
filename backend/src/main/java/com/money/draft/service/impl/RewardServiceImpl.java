@@ -111,10 +111,16 @@ public class RewardServiceImpl implements RewardService {
         Optional<RewardTransaction> redeemed = rewardRepo
                 .findByAccountIdAndReferenceTransactionIdAndType(accountId, transactionId, RewardTransactionType.REDEEMED);
 
+        java.util.Map<Long, Account> accountCache = new java.util.HashMap<>();
+        accountRepo.findById(tx.getFromAccountId()).ifPresent(a -> accountCache.put(a.getId(), a));
+        accountRepo.findById(tx.getToAccountId()).ifPresent(a -> accountCache.put(a.getId(), a));
+
         return new TransactionDetailResponse(
                 tx.getId(),
                 tx.getFromAccountId(),
                 tx.getToAccountId(),
+                resolveAccountNumber(tx.getFromAccountId(), accountCache),
+                resolveAccountNumber(tx.getToAccountId(), accountCache),
                 tx.getAmount(),
                 tx.getStatus().name(),
                 tx.getFailureReason(),
@@ -128,9 +134,14 @@ public class RewardServiceImpl implements RewardService {
     @Override
     @Transactional(readOnly = true)
     public List<RewardTransactionResponse> getAllRewardTransactions() {
-        return rewardRepo.findAll().stream()
-                .sorted((a, b) -> b.getCreatedOn().compareTo(a.getCreatedOn()))
-                .map(this::toRewardTransactionResponse)
+        List<RewardTransaction> all = rewardRepo.findAll();
+        all.sort((a, b) -> b.getCreatedOn().compareTo(a.getCreatedOn()));
+        java.util.Set<Long> accountIds = new java.util.HashSet<>();
+        for (RewardTransaction r : all) accountIds.add(r.getAccountId());
+        java.util.Map<Long, Account> accountCache = accountRepo.findAllById(accountIds).stream()
+                .collect(java.util.stream.Collectors.toMap(Account::getId, a -> a));
+        return all.stream()
+                .map(r -> toRewardTransactionResponse(r, accountCache))
                 .toList();
     }
 
@@ -149,15 +160,29 @@ public class RewardServiceImpl implements RewardService {
     }
 
     private RewardTransactionResponse toRewardTransactionResponse(RewardTransaction r) {
+        java.util.Map<Long, Account> cache = new java.util.HashMap<>();
+        accountRepo.findById(r.getAccountId()).ifPresent(a -> cache.put(a.getId(), a));
+        return toRewardTransactionResponse(r, cache);
+    }
+
+    private RewardTransactionResponse toRewardTransactionResponse(RewardTransaction r, java.util.Map<Long, Account> accountCache) {
+        Account a = accountCache.get(r.getAccountId());
         return new RewardTransactionResponse(
                 r.getId(),
                 r.getAccountId(),
+                a != null ? a.getAccountNumber() : null,
+                a != null ? a.getHolderName() : null,
                 r.getType().name(),
                 r.getPoints(),
                 r.getReferenceTransactionId(),
                 toLocalDateTime(r.getCreatedOn()),
                 toLocalDateTime(r.getExpiresOn())
         );
+    }
+
+    private static String resolveAccountNumber(Long accountId, java.util.Map<Long, Account> cache) {
+        Account a = cache.get(accountId);
+        return a != null ? a.getAccountNumber() : "#" + accountId;
     }
 
     private static LocalDateTime toLocalDateTime(Instant instant) {

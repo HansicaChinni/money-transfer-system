@@ -38,17 +38,17 @@
 
           <form [formGroup]="transferForm" (ngSubmit)="onSubmit()">
             <div class="mb-3">
-              <label for="toAccountId" class="form-label">Recipient Account ID</label>
+              <label for="toAccountNumber" class="form-label">Recipient Account Number</label>
               <input
-                type="number"
+                type="text"
                 class="form-control"
-                id="toAccountId"
-                formControlName="toAccountId"
-                placeholder="Enter recipient account ID"
-                [class.is-invalid]="transferForm.get('toAccountId')?.invalid && transferForm.get('toAccountId')?.touched"
+                id="toAccountNumber"
+                formControlName="toAccountNumber"
+                placeholder="Enter account number (e.g., ACC-2026-000001)"
+                [class.is-invalid]="transferForm.get('toAccountNumber')?.invalid && transferForm.get('toAccountNumber')?.touched"
               />
-              <div class="invalid-feedback" *ngIf="transferForm.get('toAccountId')?.invalid && transferForm.get('toAccountId')?.touched">
-                Please enter a valid account ID
+              <div class="invalid-feedback" *ngIf="transferForm.get('toAccountNumber')?.invalid && transferForm.get('toAccountNumber')?.touched">
+                Please enter a valid account number (format: ACC-XXXX-XXXXXX)
               </div>
             </div>
 

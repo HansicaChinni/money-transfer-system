@@ -16,7 +16,7 @@
         <div class="card">
           <div class="card-header"><h5 class="mb-0">Account Information</h5></div>
           <div class="card-body">
-            <div class="mb-2"><strong>Account ID:</strong> #{{ account.id }}</div>
+            <div class="mb-2"><strong>Account Number:</strong> {{ account.accountNumber }}</div>
             <div class="mb-2"><strong>Holder Name:</strong> {{ account.holderName }}</div>
             <div class="mb-2"><strong>Balance:</strong> <span style="font-size: 1.5rem; font-weight: 700; color: var(--wine-primary);">₹{{ account.balance | number:'1.2-2' }}</span></div>
             <div class="mb-2"><strong>Status:</strong> <span class="badge {{ getStatusBadgeClass(account.status) }}">{{ account.status }}</span></div>
@@ -52,8 +52,8 @@
               <tr *ngFor="let tx of transactions">
                 <td>#{{ tx.id }}</td>
                 <td>{{ tx.createdOn | date:'short' }}</td>
-                <td>Acc #{{ tx.fromAccountId }}</td>
-                <td>Acc #{{ tx.toAccountId }}</td>
+                <td>{{ tx.fromAccountNumber }}</td>
+                <td>{{ tx.toAccountNumber }}</td>
                 <td class="text-end">₹{{ tx.amount | number:'1.2-2' }}</td>
                 <td><span *ngIf="tx.rewardPointsEarned" class="text-wine">+{{ tx.rewardPointsEarned }}</span><span *ngIf="!tx.rewardPointsEarned">-</span></td>
                 <td><span *ngIf="tx.rewardPointsUsed" class="text-wine-light">-{{ tx.rewardPointsUsed }}</span><span *ngIf="!tx.rewardPointsUsed">-</span></td>

@@ -2,8 +2,10 @@
 package com.money.draft.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.money.draft.domain.entity.Account;
 import com.money.draft.domain.entity.AppUser;
 import com.money.draft.domain.enums.Role;
+import com.money.draft.domain.repository.AccountRepository;
 import com.money.draft.domain.repository.AppUserRepository;
 import com.money.draft.dto.AccountResponse;
 import com.money.draft.dto.MeTransferRequest;
@@ -52,6 +54,9 @@ class UserControllerTest {
     @Mock
     private AppUserRepository appUserRepository;
 
+    @Mock
+    private AccountRepository accountRepository;
+
     @InjectMocks
     private UserController userController;
 
@@ -92,11 +97,14 @@ class UserControllerTest {
     void transfer_ShouldReturnSuccess_WhenTransferIsValid() throws Exception {
         setSecurityContext("john.doe");
         AppUser user = createUser(1L, "john.doe", 100L);
+        Account toAccount = new Account();
+        toAccount.setId(200L);
 
-        MeTransferRequest req = new MeTransferRequest(200L, new BigDecimal("50.00"), false);
+        MeTransferRequest req = new MeTransferRequest("ACC-2026-000200", new BigDecimal("50.00"), false);
         TransferResponse res = TransferResponse.success(1L, new BigDecimal("50.00"), 0, 0);
 
         when(appUserRepository.findByUsername("john.doe")).thenReturn(Optional.of(user));
+        when(accountRepository.findByAccountNumber("ACC-2026-000200")).thenReturn(Optional.of(toAccount));
         when(transferService.transferForUser(100L, 200L, new BigDecimal("50.00"), false))
                 .thenReturn(res);
 
@@ -114,7 +122,7 @@ class UserControllerTest {
     @Test
     void transfer_ShouldReturn404_WhenUserAccountNotFound() throws Exception {
         setSecurityContext("john.doe");
-        MeTransferRequest req = new MeTransferRequest(200L, new BigDecimal("50.00"), false);
+        MeTransferRequest req = new MeTransferRequest("ACC-2026-000200", new BigDecimal("50.00"), false);
         when(appUserRepository.findByUsername("john.doe")).thenReturn(Optional.empty());
 
         mockMvc.perform(post("/me/transfer")
@@ -126,7 +134,7 @@ class UserControllerTest {
     @Test
     void transfer_ShouldReturn400_WhenAmountIsNegative() throws Exception {
         setSecurityContext("john.doe");
-        MeTransferRequest req = new MeTransferRequest(200L, new BigDecimal("-10"), false);
+        MeTransferRequest req = new MeTransferRequest("ACC-2026-000200", new BigDecimal("-10"), false);
 
         mockMvc.perform(post("/me/transfer")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -138,9 +146,12 @@ class UserControllerTest {
     void transfer_ShouldReturn400_WhenInsufficientBalance() throws Exception {
         setSecurityContext("john.doe");
         AppUser user = createUser(1L, "john.doe", 100L);
-        MeTransferRequest req = new MeTransferRequest(200L, new BigDecimal("5000"), false);
+        Account toAccount = new Account();
+        toAccount.setId(200L);
+        MeTransferRequest req = new MeTransferRequest("ACC-2026-000200", new BigDecimal("5000"), false);
 
         when(appUserRepository.findByUsername("john.doe")).thenReturn(Optional.of(user));
+        when(accountRepository.findByAccountNumber("ACC-2026-000200")).thenReturn(Optional.of(toAccount));
         when(transferService.transferForUser(anyLong(), anyLong(), any(), anyBoolean()))
                 .thenThrow(new InsufficientBalanceException(100L,
                         new BigDecimal("100"), new BigDecimal("5000")));
@@ -193,9 +204,9 @@ class UserControllerTest {
         LocalDateTime now = LocalDateTime.now();
 
         List<TransactionLogResponse> mockTransactions = Arrays.asList(
-                new TransactionLogResponse(1L, 100L, 200L, new BigDecimal("100.00"),
+                new TransactionLogResponse(1L, 100L, 200L, "ACC-2026-000100", "ACC-2026-000200", new BigDecimal("100.00"),
                         "SUCCESS", null, "key-1", now, null, null),
-                new TransactionLogResponse(2L, 300L, 100L, new BigDecimal("50.00"),
+                new TransactionLogResponse(2L, 300L, 100L, "ACC-2026-000300", "ACC-2026-000100", new BigDecimal("50.00"),
                         "SUCCESS", null, "key-2", now, null, null)
         );
 

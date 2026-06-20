@@ -45,9 +45,9 @@ class AdminControllerTest {
     void allAccountsNoNames_ShouldReturnListOfAccounts() throws Exception {
         LocalDateTime now = LocalDateTime.now();
         List<AdminAccountView> mockAccounts = Arrays.asList(
-                new AdminAccountView(1L, "ACC-2026-000001", new BigDecimal("1000.00"), "ACTIVE", now),
-                new AdminAccountView(2L, "ACC-2026-000002", new BigDecimal("2500.50"), "ACTIVE", now),
-                new AdminAccountView(3L, "ACC-2026-000003", new BigDecimal("500.75"), "LOCKED", now)
+                new AdminAccountView(1L, "ACC-2026-000001", "Alice", new BigDecimal("1000.00"), "ACTIVE", now),
+                new AdminAccountView(2L, "ACC-2026-000002", "Bob", new BigDecimal("2500.50"), "ACTIVE", now),
+                new AdminAccountView(3L, "ACC-2026-000003", "Charlie", new BigDecimal("500.75"), "LOCKED", now)
         );
 
         when(adminService.getAllAccounts()).thenReturn(mockAccounts);
@@ -87,11 +87,11 @@ class AdminControllerTest {
     void allTransactions_ShouldReturnListOfTransactions() throws Exception {
         LocalDateTime now = LocalDateTime.now();
         List<TransactionLogResponse> mockTransactions = Arrays.asList(
-                new TransactionLogResponse(1L, 1L, 2L, new BigDecimal("500.00"),
+                new TransactionLogResponse(1L, 1L, 2L, "ACC-2026-000001", "ACC-2026-000002", new BigDecimal("500.00"),
                         "SUCCESS", null, "key-1", now, null, null),
-                new TransactionLogResponse(2L, 2L, 3L, new BigDecimal("200.00"),
+                new TransactionLogResponse(2L, 2L, 3L, "ACC-2026-000002", "ACC-2026-000003", new BigDecimal("200.00"),
                         "SUCCESS", null, "key-2", now, null, null),
-                new TransactionLogResponse(3L, 1L, 3L, new BigDecimal("300.00"),
+                new TransactionLogResponse(3L, 1L, 3L, "ACC-2026-000001", "ACC-2026-000003", new BigDecimal("300.00"),
                         "FAILED", "Insufficient funds", "key-3", now, null, null)
         );
 
@@ -136,9 +136,9 @@ class AdminControllerTest {
     void allAccountsNoNames_ShouldHandleMultipleAccountStatuses() throws Exception {
         LocalDateTime now = LocalDateTime.now();
         List<AdminAccountView> mockAccounts = Arrays.asList(
-                new AdminAccountView(1L, "ACC-2026-000001", new BigDecimal("1000.00"), "ACTIVE", now),
-                new AdminAccountView(2L, "ACC-2026-000002", new BigDecimal("2500.50"), "LOCKED", now),
-                new AdminAccountView(3L, "ACC-2026-000003", new BigDecimal("0.00"), "CLOSED", now)
+                new AdminAccountView(1L, "ACC-2026-000001", "Alice", new BigDecimal("1000.00"), "ACTIVE", now),
+                new AdminAccountView(2L, "ACC-2026-000002", "Bob", new BigDecimal("2500.50"), "LOCKED", now),
+                new AdminAccountView(3L, "ACC-2026-000003", "Charlie", new BigDecimal("0.00"), "CLOSED", now)
         );
 
         when(adminService.getAllAccounts()).thenReturn(mockAccounts);
@@ -158,9 +158,9 @@ class AdminControllerTest {
     void allTransactions_ShouldHandleSuccessAndFailedTransactions() throws Exception {
         LocalDateTime now = LocalDateTime.now();
         List<TransactionLogResponse> mockTransactions = Arrays.asList(
-                new TransactionLogResponse(1L, 1L, 2L, new BigDecimal("100.00"),
+                new TransactionLogResponse(1L, 1L, 2L, "ACC-2026-000001", "ACC-2026-000002", new BigDecimal("100.00"),
                         "SUCCESS", null, "success-key", now, null, null),
-                new TransactionLogResponse(2L, 3L, 4L, new BigDecimal("50.00"),
+                new TransactionLogResponse(2L, 3L, 4L, "ACC-2026-000003", "ACC-2026-000004", new BigDecimal("50.00"),
                         "FAILED", "Account not active", "failed-key", now, null, null)
         );
 

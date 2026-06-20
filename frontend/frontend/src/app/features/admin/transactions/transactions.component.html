@@ -16,8 +16,8 @@
             <tr *ngFor="let tx of transactions">
               <td><strong>#{{ tx.id }}</strong></td>
               <td>{{ tx.createdOn | date:'medium' }}</td>
-              <td>Acc #{{ tx.fromAccountId }}</td>
-              <td>Acc #{{ tx.toAccountId }}</td>
+              <td>{{ tx.fromAccountNumber }}</td>
+              <td>{{ tx.toAccountNumber }}</td>
               <td class="text-end"><strong>₹{{ tx.amount | number:'1.2-2' }}</strong></td>
               <td>
                 <span *ngIf="tx.rewardPointsEarned" class="text-wine">+{{ tx.rewardPointsEarned }}</span>

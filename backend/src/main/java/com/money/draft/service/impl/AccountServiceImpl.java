@@ -61,11 +61,16 @@ public class AccountServiceImpl implements AccountService {
         List<TransactionLog> logs =
                 txRepo.findByFromAccountIdOrToAccountIdOrderByCreatedOnDesc(accountId, accountId);
 
+        java.util.Map<Long, Account> accountCache = loadAccounts(logs);
         return logs.stream()
                 .map(tx -> new TransactionLogResponse(
                         tx.getId(),
                         tx.getFromAccountId(),
                         tx.getToAccountId(),
+                        resolveAccountNumber(tx.getFromAccountId(), accountCache),
+                        resolveAccountNumber(tx.getToAccountId(), accountCache),
+                        resolveHolderName(tx.getFromAccountId(), accountCache),
+                        resolveHolderName(tx.getToAccountId(), accountCache),
                         tx.getAmount(),
                         tx.getStatus().name(),
                         tx.getFailureReason(),
@@ -75,6 +80,26 @@ public class AccountServiceImpl implements AccountService {
                         tx.getRewardPointsUsed()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    private java.util.Map<Long, Account> loadAccounts(List<TransactionLog> txs) {
+        java.util.Set<Long> ids = new java.util.HashSet<>();
+        for (TransactionLog tx : txs) {
+            ids.add(tx.getFromAccountId());
+            ids.add(tx.getToAccountId());
+        }
+        return accountRepo.findAllById(ids).stream()
+                .collect(java.util.stream.Collectors.toMap(Account::getId, a -> a));
+    }
+
+    private static String resolveAccountNumber(Long accountId, java.util.Map<Long, Account> cache) {
+        Account a = cache.get(accountId);
+        return a != null ? a.getAccountNumber() : "#" + accountId;
+    }
+
+    private static String resolveHolderName(Long accountId, java.util.Map<Long, Account> cache) {
+        Account a = cache.get(accountId);
+        return a != null ? a.getHolderName() : "Unknown";
     }
 
     private static LocalDateTime toLocalDateTime(Instant instant) {

@@ -94,8 +94,8 @@
                   <tr *ngFor="let tx of recentTransactions">
                     <td><strong>#{{ tx.id }}</strong></td>
                     <td>{{ tx.createdOn | date:'short' }}</td>
-                    <td>Acc #{{ tx.fromAccountId }}</td>
-                    <td>Acc #{{ tx.toAccountId }}</td>
+                    <td>{{ tx.fromAccountNumber }}</td>
+                    <td>{{ tx.toAccountNumber }}</td>
                     <td class="text-end"><strong>₹{{ tx.amount | number:'1.2-2' }}</strong></td>
                     <td>
                       <span *ngIf="tx.rewardPointsEarned" class="text-wine">+{{ tx.rewardPointsEarned }}</span>
@@ -132,7 +132,7 @@
               <table class="table table-hover mb-0">
                 <thead>
                   <tr>
-                    <th>Account ID</th>
+                    <th>Account #</th>
                     <th class="text-end">Balance</th>
                     <th>Status</th>
                     <th>Last Updated</th>
@@ -141,7 +141,7 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let account of accounts.slice(0, 5)">
-                    <td><strong>#{{ account.id }}</strong></td>
+                    <td><strong>{{ account.accountNumber }}</strong></td>
                     <td class="text-end">₹{{ account.balance | number:'1.2-2' }}</td>
                     <td>
                       <span class="badge {{ getStatusBadgeClass(account.status) }}">

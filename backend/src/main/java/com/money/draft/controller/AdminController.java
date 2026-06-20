@@ -4,6 +4,7 @@ import com.money.draft.domain.enums.AccountStatus;
 import com.money.draft.dto.*;
 import com.money.draft.service.AccountService;
 import com.money.draft.service.AdminService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,6 +42,12 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getAccountDetails(id));
     }
 
+    @Operation(summary = "Get transaction detail by ID")
+    @GetMapping("/transactions/detail/{id}")
+    public ResponseEntity<TransactionDetailResponse> getTransactionDetail(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.getTransactionDetail(id));
+    }
+
     @Operation(summary = "Get transaction history of given account id")
     @GetMapping("/transactions/{id}")
     public ResponseEntity<List<TransactionLogResponse>> getAccountTransactions(@PathVariable Long id) {
@@ -67,4 +74,5 @@ public class AdminController {
     public ResponseEntity<List<TransactionLogResponse>> allTransactions() {
         return ResponseEntity.ok(adminService.getAllTransactions());
     }
+
 }

@@ -5,9 +5,11 @@ import {
   AdminAccountView,
   AdminAccountDetailResponse,
   AdminRewardDashboardResponse,
+  TransactionDetailResponse,
   TransactionLogResponse,
   AdminCreateAccountRequest,
-  AccountStatus
+  AccountStatus,
+  RewardTransactionResponse
 } from '../models/api.models';
 
 @Injectable({
@@ -45,5 +47,13 @@ export class AdminService {
 
   getRewardDashboard(): Observable<AdminRewardDashboardResponse> {
     return this.http.get<AdminRewardDashboardResponse>(`${this.apiUrl}/rewards/dashboard`);
+  }
+
+  getAllRewardTransactions(): Observable<RewardTransactionResponse[]> {
+    return this.http.get<RewardTransactionResponse[]>(`${this.apiUrl}/rewards`);
+  }
+
+  getTransactionDetail(transactionId: number): Observable<TransactionDetailResponse> {
+    return this.http.get<TransactionDetailResponse>(`${this.apiUrl}/transactions/detail/${transactionId}`);
   }
 }

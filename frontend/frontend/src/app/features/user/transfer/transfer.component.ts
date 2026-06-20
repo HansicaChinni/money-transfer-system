@@ -30,7 +30,7 @@ export class TransferComponent implements OnInit {
     private router: Router
   ) {
     this.transferForm = this.fb.group({
-      toAccountId: ['', [Validators.required, Validators.min(1)]],
+      toAccountNumber: ['', [Validators.required, Validators.pattern(/^ACC-\d{4}-\d{6}$/)]],
       amount: ['', [Validators.required, Validators.min(0.01)]],
       useRewardPoints: [false]
     });

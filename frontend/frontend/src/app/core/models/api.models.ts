@@ -11,6 +11,7 @@ export interface LoginResponse {
 
 export interface AccountResponse {
   id: number;
+  accountNumber: string;
   holderName: string;
   balance: number;
   status: string;
@@ -19,6 +20,8 @@ export interface AccountResponse {
 
 export interface AdminAccountView {
   id: number;
+  accountNumber: string;
+  holderName: string;
   balance: number;
   status: string;
   lastUpdated: string;
@@ -26,6 +29,7 @@ export interface AdminAccountView {
 
 export interface AdminAccountDetailResponse {
   id: number;
+  accountNumber: string;
   holderName: string;
   balance: number;
   status: string;
@@ -39,6 +43,8 @@ export interface TransactionLogResponse {
   id: number;
   fromAccountId: number;
   toAccountId: number;
+  fromAccountNumber: string;
+  toAccountNumber: string;
   amount: number;
   status: string;
   failureReason: string | null;
@@ -57,7 +63,7 @@ export interface TransferRequest {
 }
 
 export interface MeTransferRequest {
-  toAccountId: number;
+  toAccountNumber: string;
   amount: number;
   useRewardPoints: boolean;
 }
@@ -93,6 +99,8 @@ export interface ErrorResponse {
 export interface RewardTransactionResponse {
   id: number;
   accountId: number;
+  accountNumber: string;
+  holderName: string;
   type: string;
   points: number;
   referenceTransactionId: number | null;
@@ -116,6 +124,8 @@ export interface TransactionDetailResponse {
   id: number;
   fromAccountId: number;
   toAccountId: number;
+  fromAccountNumber: string;
+  toAccountNumber: string;
   amount: number;
   status: string;
   failureReason: string | null;

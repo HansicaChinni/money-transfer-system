@@ -4,6 +4,7 @@ import com.money.draft.domain.enums.AccountStatus;
 import com.money.draft.dto.AdminAccountDetailResponse;
 import com.money.draft.dto.AdminAccountView;
 import com.money.draft.dto.AdminCreateAccountRequest;
+import com.money.draft.dto.TransactionDetailResponse;
 import com.money.draft.dto.TransactionLogResponse;
 import java.util.List;
 
@@ -18,4 +19,5 @@ public interface AdminService {
     // Existing signatures:
     List<AdminAccountView> getAllAccounts();
     List<TransactionLogResponse> getAllTransactions();
+    TransactionDetailResponse getTransactionDetail(Long transactionId);
 }

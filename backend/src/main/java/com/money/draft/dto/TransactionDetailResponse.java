@@ -8,6 +8,8 @@ public record TransactionDetailResponse(
         Long id,
         Long fromAccountId,
         Long toAccountId,
+        String fromAccountNumber,
+        String toAccountNumber,
         BigDecimal amount,
         String status,
         String failureReason,

@@ -1,10 +1,13 @@
 
 package com.money.draft.controller;
 
+import com.money.draft.domain.entity.Account;
 import com.money.draft.domain.entity.AppUser;
+import com.money.draft.domain.repository.AccountRepository;
 import com.money.draft.domain.repository.AppUserRepository;
 import com.money.draft.dto.*;
 import com.money.draft.exception.AccountNotFoundException;
+import com.money.draft.exception.ValidationException;
 import com.money.draft.service.AccountService;
 import com.money.draft.service.RewardService;
 import com.money.draft.service.TransferService;
@@ -27,15 +30,17 @@ import java.util.Map;
 public class UserController {
 
     private final AppUserRepository userRepo;
+    private final AccountRepository accountRepo;
     private final AccountService accountService;
     private final TransferService transferService;
     private final AppUserRepository appUserRepository;
     private final RewardService rewardService;
 
-    public UserController(AppUserRepository userRepo, AccountService accountService,
+    public UserController(AppUserRepository userRepo, AccountRepository accountRepo, AccountService accountService,
                           TransferService transferService, AppUserRepository appUserRepository,
                           RewardService rewardService) {
         this.userRepo = userRepo;
+        this.accountRepo = accountRepo;
         this.accountService = accountService;
         this.transferService = transferService;
         this.appUserRepository = appUserRepository;
@@ -50,7 +55,9 @@ public class UserController {
     @PostMapping("/transfer")
     public ResponseEntity<TransferResponse> transfer(@Valid @RequestBody MeTransferRequest req) {
         var user = userRepo.findByUsername(getAuth().getName()).orElseThrow(() -> new AccountNotFoundException(-1L));
-        var resp = transferService.transferForUser(user.getAccountId(), req.toAccountId(), req.amount(), req.useRewardPoints());
+        Account toAccount = accountRepo.findByAccountNumber(req.toAccountNumber())
+                .orElseThrow(() -> new ValidationException("Recipient account not found: " + req.toAccountNumber()));
+        var resp = transferService.transferForUser(user.getAccountId(), toAccount.getId(), req.amount(), req.useRewardPoints());
         return ResponseEntity.ok(resp);
     }
 

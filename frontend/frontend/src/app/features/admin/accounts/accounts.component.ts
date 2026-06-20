@@ -49,7 +49,9 @@ export class AccountsComponent implements OnInit {
 
     const searchTerm = this.searchAccountId.trim().toLowerCase();
     this.filteredAccounts = this.accounts.filter(account => 
-      account.id.toString().includes(searchTerm)
+      account.id.toString().includes(searchTerm) ||
+      account.accountNumber.toLowerCase().includes(searchTerm) ||
+      account.holderName.toLowerCase().includes(searchTerm)
     );
   }
 

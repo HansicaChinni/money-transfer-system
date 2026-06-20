@@ -2,6 +2,7 @@
 package com.money.draft.service.impl;
 
 import com.money.draft.domain.entity.Account;
+import com.money.draft.domain.entity.TransactionLog;
 import com.money.draft.domain.enums.RewardTransactionType;
 import com.money.draft.domain.repository.AccountRepository;
 import com.money.draft.domain.repository.AppUserRepository;
@@ -10,6 +11,7 @@ import com.money.draft.domain.repository.TransactionLogRepository;
 import com.money.draft.dto.AdminAccountDetailResponse;
 import com.money.draft.dto.AdminAccountView;
 import com.money.draft.dto.AdminCreateAccountRequest;
+import com.money.draft.dto.TransactionDetailResponse;
 import com.money.draft.dto.TransactionLogResponse;
 import com.money.draft.exception.ValidationException;
 import com.money.draft.service.AdminService;
@@ -21,7 +23,11 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -51,6 +57,7 @@ public class AdminServiceImpl implements AdminService {
                 .map(a -> new AdminAccountView(
                         a.getId(),
                         a.getAccountNumber(),
+                        a.getHolderName(),
                         a.getBalance(),
                         a.getStatus().name(),
                         toLocalDateTime(a.getLastUpdated())
@@ -61,11 +68,15 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional(readOnly = true)
     public List<TransactionLogResponse> getAllTransactions() {
-        return txRepo.findAll().stream()
+        List<TransactionLog> txs = txRepo.findAll();
+        Map<Long, Account> accountCache = loadAccounts(txs);
+        return txs.stream()
                 .map(tx -> new TransactionLogResponse(
                         tx.getId(),
                         tx.getFromAccountId(),
                         tx.getToAccountId(),
+                        resolveAccountNumber(tx.getFromAccountId(), accountCache),
+                        resolveAccountNumber(tx.getToAccountId(), accountCache),
                         tx.getAmount(),
                         tx.getStatus().name(),
                         tx.getFailureReason(),
@@ -75,6 +86,21 @@ public class AdminServiceImpl implements AdminService {
                         tx.getRewardPointsUsed()
                 ))
                 .toList();
+    }
+
+    private Map<Long, Account> loadAccounts(List<TransactionLog> txs) {
+        Set<Long> ids = new HashSet<>();
+        for (TransactionLog tx : txs) {
+            ids.add(tx.getFromAccountId());
+            ids.add(tx.getToAccountId());
+        }
+        return accountRepo.findAllById(ids).stream()
+                .collect(Collectors.toMap(Account::getId, a -> a));
+    }
+
+    private static String resolveAccountNumber(Long accountId, Map<Long, Account> cache) {
+        Account a = cache.get(accountId);
+        return a != null ? a.getAccountNumber() : "#" + accountId;
     }
 
     private static LocalDateTime toLocalDateTime(Instant instant) {
@@ -133,6 +159,32 @@ public class AdminServiceImpl implements AdminService {
 
         a.setStatus(status);
         return mapToAdminDetailResponse(accountRepo.save(a));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TransactionDetailResponse getTransactionDetail(Long transactionId) {
+        TransactionLog tx = txRepo.findById(transactionId)
+                .orElseThrow(() -> new com.money.draft.exception.AccountNotFoundException(transactionId));
+
+        Map<Long, Account> accountCache = new java.util.HashMap<>();
+        accountRepo.findById(tx.getFromAccountId()).ifPresent(a -> accountCache.put(a.getId(), a));
+        accountRepo.findById(tx.getToAccountId()).ifPresent(a -> accountCache.put(a.getId(), a));
+
+        return new TransactionDetailResponse(
+                tx.getId(),
+                tx.getFromAccountId(),
+                tx.getToAccountId(),
+                resolveAccountNumber(tx.getFromAccountId(), accountCache),
+                resolveAccountNumber(tx.getToAccountId(), accountCache),
+                tx.getAmount(),
+                tx.getStatus().name(),
+                tx.getFailureReason(),
+                tx.getIdempotencyKey(),
+                toLocalDateTime(tx.getCreatedOn()),
+                tx.getRewardPointsEarned(),
+                tx.getRewardPointsUsed()
+        );
     }
 
     private AdminAccountDetailResponse mapToAdminDetailResponse(Account a) {

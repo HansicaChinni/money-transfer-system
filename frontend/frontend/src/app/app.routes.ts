@@ -65,6 +65,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/admin/transactions/transactions.component').then(m => m.AdminTransactionsComponent)
       },
       {
+        path: 'rewards',
+        loadComponent: () => import('./features/admin/rewards/rewards.component').then(m => m.AdminRewardsComponent)
+      },
+      {
         path: 'create-account',
         loadComponent: () => import('./features/admin/create-account/create-account.component').then(m => m.CreateAccountComponent)
       },

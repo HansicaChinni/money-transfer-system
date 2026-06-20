@@ -33,7 +33,7 @@
               {{ accountInfo.status }}
             </span>
           </div>
-          <p class="text-muted mb-0" style="font-size: 0.85rem;">Account #{{ accountInfo.id }}</p>
+          <p class="text-muted mb-0" style="font-size: 0.85rem;">{{ accountInfo.accountNumber }}</p>
         </div>
       </div>
       <div class="col-md-4 mb-3">
@@ -83,8 +83,8 @@
                   <span *ngIf="tx.toAccountId === accountInfo!.id" class="text-wine">Received</span>
                 </td>
                 <td>
-                  <span *ngIf="tx.fromAccountId === accountInfo!.id">To: #{{ tx.toAccountId }}</span>
-                  <span *ngIf="tx.toAccountId === accountInfo!.id">From: #{{ tx.fromAccountId }}</span>
+                  <span *ngIf="tx.fromAccountId === accountInfo!.id">To: {{ tx.toAccountNumber }}</span>
+                  <span *ngIf="tx.toAccountId === accountInfo!.id">From: {{ tx.fromAccountNumber }}</span>
                 </td>
                 <td class="text-end">
                   <strong
