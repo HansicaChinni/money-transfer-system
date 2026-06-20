@@ -45,6 +45,8 @@ export interface TransactionLogResponse {
   toAccountId: number;
   fromAccountNumber: string;
   toAccountNumber: string;
+  fromHolderName: string;
+  toHolderName: string;
   amount: number;
   status: string;
   failureReason: string | null;

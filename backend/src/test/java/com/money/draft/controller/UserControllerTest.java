@@ -204,9 +204,9 @@ class UserControllerTest {
         LocalDateTime now = LocalDateTime.now();
 
         List<TransactionLogResponse> mockTransactions = Arrays.asList(
-                new TransactionLogResponse(1L, 100L, 200L, "ACC-2026-000100", "ACC-2026-000200", new BigDecimal("100.00"),
+                new TransactionLogResponse(1L, 100L, 200L, "ACC-2026-000100", "ACC-2026-000200", "John", "Alice", new BigDecimal("100.00"),
                         "SUCCESS", null, "key-1", now, null, null),
-                new TransactionLogResponse(2L, 300L, 100L, "ACC-2026-000300", "ACC-2026-000100", new BigDecimal("50.00"),
+                new TransactionLogResponse(2L, 300L, 100L, "ACC-2026-000300", "ACC-2026-000100", "Bob", "John", new BigDecimal("50.00"),
                         "SUCCESS", null, "key-2", now, null, null)
         );
 

@@ -87,11 +87,11 @@ class AdminControllerTest {
     void allTransactions_ShouldReturnListOfTransactions() throws Exception {
         LocalDateTime now = LocalDateTime.now();
         List<TransactionLogResponse> mockTransactions = Arrays.asList(
-                new TransactionLogResponse(1L, 1L, 2L, "ACC-2026-000001", "ACC-2026-000002", new BigDecimal("500.00"),
+                new TransactionLogResponse(1L, 1L, 2L, "ACC-2026-000001", "ACC-2026-000002", "Alice", "Bob", new BigDecimal("500.00"),
                         "SUCCESS", null, "key-1", now, null, null),
-                new TransactionLogResponse(2L, 2L, 3L, "ACC-2026-000002", "ACC-2026-000003", new BigDecimal("200.00"),
+                new TransactionLogResponse(2L, 2L, 3L, "ACC-2026-000002", "ACC-2026-000003", "Bob", "Charlie", new BigDecimal("200.00"),
                         "SUCCESS", null, "key-2", now, null, null),
-                new TransactionLogResponse(3L, 1L, 3L, "ACC-2026-000001", "ACC-2026-000003", new BigDecimal("300.00"),
+                new TransactionLogResponse(3L, 1L, 3L, "ACC-2026-000001", "ACC-2026-000003", "Alice", "Charlie", new BigDecimal("300.00"),
                         "FAILED", "Insufficient funds", "key-3", now, null, null)
         );
 
@@ -158,9 +158,9 @@ class AdminControllerTest {
     void allTransactions_ShouldHandleSuccessAndFailedTransactions() throws Exception {
         LocalDateTime now = LocalDateTime.now();
         List<TransactionLogResponse> mockTransactions = Arrays.asList(
-                new TransactionLogResponse(1L, 1L, 2L, "ACC-2026-000001", "ACC-2026-000002", new BigDecimal("100.00"),
+                new TransactionLogResponse(1L, 1L, 2L, "ACC-2026-000001", "ACC-2026-000002", "Alice", "Bob", new BigDecimal("100.00"),
                         "SUCCESS", null, "success-key", now, null, null),
-                new TransactionLogResponse(2L, 3L, 4L, "ACC-2026-000003", "ACC-2026-000004", new BigDecimal("50.00"),
+                new TransactionLogResponse(2L, 3L, 4L, "ACC-2026-000003", "ACC-2026-000004", "Charlie", "Diana", new BigDecimal("50.00"),
                         "FAILED", "Account not active", "failed-key", now, null, null)
         );
 

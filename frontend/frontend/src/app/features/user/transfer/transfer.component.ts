@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { UserService } from '../../../core/services/user.service';
 import { AccountResponse, RewardSummaryResponse } from '../../../core/models/api.models';
@@ -27,7 +27,8 @@ export class TransferComponent implements OnInit {
     private fb: FormBuilder,
     private userService: UserService,
     private rewardService: RewardService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.transferForm = this.fb.group({
       toAccountNumber: ['', [Validators.required, Validators.pattern(/^ACC-\d{4}-\d{6}$/)]],
@@ -39,6 +40,14 @@ export class TransferComponent implements OnInit {
   ngOnInit(): void {
     this.loadAccountInfo();
     this.loadRewardSummary();
+
+    this.route.queryParams.subscribe(params => {
+      const toAccount = params['to'];
+      if (toAccount) {
+        this.transferForm.patchValue({ toAccountNumber: toAccount });
+      }
+    });
+
     this.transferForm.get('amount')?.valueChanges.subscribe(() => this.updateRewardEstimate());
     this.transferForm.get('useRewardPoints')?.valueChanges.subscribe(() => this.updateRewardEstimate());
   }

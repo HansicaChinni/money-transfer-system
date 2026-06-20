@@ -54,6 +54,32 @@
       </div>
     </div>
 
+    <!-- Quick Transfer -->
+    <div class="row mb-4" *ngIf="quickContacts.length > 0">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Quick Transfer</h5>
+          </div>
+          <div class="card-body">
+            <div class="quick-transfer-row">
+              <a
+                *ngFor="let contact of quickContacts"
+                [routerLink]="'/user/transfer'"
+                [queryParams]="{to: contact.accountNumber}"
+                class="quick-transfer-item"
+              >
+                <div class="avatar-circle" [style.background-color]="getAvatarColor(contact.accountNumber)">
+                  {{ getInitials(contact.holderName) }}
+                </div>
+                <span class="quick-transfer-name">{{ contact.holderName }}</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Recent Transactions -->
     <div class="card">
       <div class="card-header">

@@ -77,6 +77,8 @@ public class AdminServiceImpl implements AdminService {
                         tx.getToAccountId(),
                         resolveAccountNumber(tx.getFromAccountId(), accountCache),
                         resolveAccountNumber(tx.getToAccountId(), accountCache),
+                        resolveHolderName(tx.getFromAccountId(), accountCache),
+                        resolveHolderName(tx.getToAccountId(), accountCache),
                         tx.getAmount(),
                         tx.getStatus().name(),
                         tx.getFailureReason(),
@@ -101,6 +103,11 @@ public class AdminServiceImpl implements AdminService {
     private static String resolveAccountNumber(Long accountId, Map<Long, Account> cache) {
         Account a = cache.get(accountId);
         return a != null ? a.getAccountNumber() : "#" + accountId;
+    }
+
+    private static String resolveHolderName(Long accountId, Map<Long, Account> cache) {
+        Account a = cache.get(accountId);
+        return a != null ? a.getHolderName() : "Unknown";
     }
 
     private static LocalDateTime toLocalDateTime(Instant instant) {

@@ -9,3 +9,59 @@
 .stat-card:nth-child(2) {
   animation-delay: 0.1s;
 }
+
+.quick-transfer-row {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.quick-transfer-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 80px;
+}
+
+.quick-transfer-item:hover {
+  background: linear-gradient(135deg, var(--wine-lightest) 0%, #FFF8F9 100%);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 1.125rem;
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quick-transfer-item:hover .avatar-circle {
+  box-shadow: var(--shadow-md);
+  transform: scale(1.05);
+}
+
+.quick-transfer-name {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  text-align: center;
+  max-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
