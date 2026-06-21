@@ -8,7 +8,7 @@
 
 .auth-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 25px 35px -10px rgba(114, 47, 55, 0.2);
+  box-shadow: 0 25px 35px -10px rgba(6, 63, 37, 0.18);
 }
 
 .logo-wrapper {
@@ -24,7 +24,7 @@
   height: auto;        // keeps aspect ratio
   max-height: 85px;    // desktop size cap
   object-fit: contain;
-  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 8px 18px rgba(6, 63, 37, 0.18));
   transition: transform 0.3s ease;
 }
 
@@ -35,6 +35,6 @@
 .auth-tagline {
   font-size: 0.95rem;
   opacity: 0.9;
-  color: white;
+  color: var(--leaf-dark);
 }
 

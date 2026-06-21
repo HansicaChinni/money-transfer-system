@@ -24,13 +24,13 @@
   text-decoration: none;
   color: inherit;
   padding: 0.75rem 1rem;
-  border-radius: 12px;
+  border-radius: 8px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 80px;
 }
 
 .quick-transfer-item:hover {
-  background: linear-gradient(135deg, var(--wine-lightest) 0%, #FFF8F9 100%);
+  background: linear-gradient(135deg, var(--lime-soft) 0%, rgba(255, 255, 255, 0.88) 100%);
   transform: translateY(-3px);
   box-shadow: var(--shadow-md);
 }

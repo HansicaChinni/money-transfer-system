@@ -1,73 +1,63 @@
-<nav class="navbar navbar-expand-lg navbar-dark glass-navbar fixed-top">
-  <div class="container">
-    
-    <!-- Logo + Brand -->
-    <a class="navbar-brand d-flex align-items-center" routerLink="/">
-      <img 
-        src="assets/logo1.png" 
-        alt="FlowPay Logo"
-        class="navbar-logo me-2"
-      />
+<nav class="app-sidebar" aria-label="Primary navigation">
+  <a class="sidebar-brand" routerLink="/">
+    <span class="brand-mark">
+      <img src="assets/logo1.png" alt="FlowPay Logo" class="navbar-logo" />
+    </span>
+    <span>
       <span class="brand-text">FlowPay</span>
-    </a>
+      <small>Money Transfer</small>
+    </span>
+  </a>
 
-    <button 
-      class="navbar-toggler" 
-      type="button" 
-      data-bs-toggle="collapse" 
-      data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+  <div class="sidebar-section">
+    <span class="sidebar-label">Menu</span>
 
-    <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="sidebar-nav" *ngIf="isAdmin">
+      <li>
+        <a class="nav-link" routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
+      </li>
+      <li>
+        <a class="nav-link" routerLink="/admin/accounts" routerLinkActive="active">Accounts</a>
+      </li>
+      <li>
+        <a class="nav-link" routerLink="/admin/transactions" routerLinkActive="active">Transactions</a>
+      </li>
+      <li>
+        <a class="nav-link" routerLink="/admin/rewards" routerLinkActive="active">Rewards</a>
+      </li>
+      <li>
+        <a class="nav-link" routerLink="/admin/create-account" routerLinkActive="active">Create Account</a>
+      </li>
+    </ul>
 
-      <!-- Admin Links -->
-      <ul class="navbar-nav ms-auto" *ngIf="isAdmin">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/admin/accounts" routerLinkActive="active">Accounts</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/admin/transactions" routerLinkActive="active">Transactions</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/admin/rewards" routerLinkActive="active">Rewards</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/admin/create-account" routerLinkActive="active">Create Account</a>
-        </li>
-      </ul>
+    <ul class="sidebar-nav" *ngIf="!isAdmin">
+      <li>
+        <a class="nav-link" routerLink="/user/dashboard" routerLinkActive="active">Dashboard</a>
+      </li>
+      <li>
+        <a class="nav-link" routerLink="/user/transfer" routerLinkActive="active">Transfer</a>
+      </li>
+      <li>
+        <a class="nav-link" routerLink="/user/transactions" routerLinkActive="active">Transactions</a>
+      </li>
+      <li>
+        <a class="nav-link" routerLink="/user/rewards" routerLinkActive="active">Rewards</a>
+      </li>
+      <li>
+        <a class="nav-link" routerLink="/user/profile" routerLinkActive="active">Profile</a>
+      </li>
+    </ul>
+  </div>
 
-      <!-- User Links -->
-      <ul class="navbar-nav ms-auto" *ngIf="!isAdmin">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/user/dashboard" routerLinkActive="active">Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/user/transfer" routerLinkActive="active">Transfer</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/user/transactions" routerLinkActive="active">Transactions</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/user/rewards" routerLinkActive="active">Rewards</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/user/profile" routerLinkActive="active">Profile</a>
-        </li>
-      </ul>
-
-      <!-- Logout -->
-      <ul class="navbar-nav ms-3">
-        <li class="nav-item">
-          <button class="btn btn-outline-light btn-sm logout-btn" (click)="logout()">
-            Logout
-          </button>
-        </li>
-      </ul>
-
+  <div class="sidebar-footer">
+    <div class="user-chip" *ngIf="currentUser">
+      <span class="user-avatar">{{ isAdmin ? 'A' : 'U' }}</span>
+      <span>
+        <strong>{{ isAdmin ? 'Admin' : 'User' }} Portal</strong>
+        <small>Account {{ currentUser.accountId || 'management' }}</small>
+      </span>
     </div>
+
+    <button class="btn logout-btn" type="button" (click)="logout()">Logout</button>
   </div>
 </nav>

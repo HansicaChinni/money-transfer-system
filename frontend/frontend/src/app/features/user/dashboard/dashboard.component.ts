@@ -25,11 +25,11 @@ export class DashboardComponent implements OnInit {
   errorMessage = '';
 
   private avatarColors = [
-    'var(--wine-primary)',
-    'var(--wine-dark)',
-    'var(--wine-medium)',
-    'var(--wine-light)',
-    'var(--wine-accent)',
+    'var(--leaf-primary)',
+    'var(--leaf-dark)',
+    'var(--leaf-medium)',
+    'var(--leaf-light)',
+    'var(--lime-accent)',
     'var(--wine-accent-light)'
   ];
 
