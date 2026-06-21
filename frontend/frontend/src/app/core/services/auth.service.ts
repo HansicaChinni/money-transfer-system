@@ -13,9 +13,9 @@ export class AuthService {
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {
-    // Initialize user from storage in browser environment only
     if (typeof localStorage !== 'undefined') {
-      this.currentUserSubject.next(this.getUserFromStorage());
+      const user = this.getUserFromStorage();
+      this.currentUserSubject.next(user);
     }
   }
 

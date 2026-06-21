@@ -16,6 +16,11 @@ export class CreateAccountComponent {
   createForm: FormGroup;
   loading = false;
   errorMessage = '';
+  passwordVisible = false;
+
+  togglePasswordVisibility(): void {
+    this.passwordVisible = !this.passwordVisible;
+  }
 
   constructor(private fb: FormBuilder, private adminService: AdminService, private router: Router) {
     this.createForm = this.fb.group({

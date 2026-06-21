@@ -100,6 +100,38 @@
   min-width: 120px;
 }
 
+.wallet-account-switcher {
+  margin-top: -0.5rem;
+}
+
+.wallet-account-switcher .eyebrow {
+  margin: 0 0 0.4rem;
+  opacity: 0.78;
+  font-size: 0.78rem;
+  color: white;
+}
+
+.wallet-account-switcher .btn {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.65rem;
+}
+
+.charts-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.chart-card {
+  padding: 1rem 1.25rem;
+}
+
+.chart-container {
+  height: 180px;
+  margin-top: 0.5rem;
+}
+
 .reward-card {
   display: flex;
   flex-direction: column;

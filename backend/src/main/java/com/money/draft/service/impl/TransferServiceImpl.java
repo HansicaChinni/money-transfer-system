@@ -158,12 +158,12 @@ public class TransferServiceImpl implements TransferService {
             rewardRepo.save(RewardTransaction.redeemed(from.getId(), rewardPointsUsed, tx.getId()));
         }
 
-        try {
-            if (grantBase.compareTo(new BigDecimal("100")) > 0) {
+        if (pointsEarned > 0) {
+            try {
                 rewardGrantWriter.grantPoints(from.getId(), tx.getId(), grantBase);
+            } catch (Exception e) {
+                log.warn("Reward grant failed for transaction {}: {}", tx.getId(), e.getMessage());
             }
-        } catch (Exception e) {
-            log.warn("Reward grant failed for transaction {}: {}", tx.getId(), e.getMessage());
         }
 
         return TransferResponse.success(tx.getId(), amount, rewardPointsUsed, pointsEarned);

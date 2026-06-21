@@ -9,3 +9,38 @@
 .form-group {
   margin-bottom: 1.25rem;
 }
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper .form-control {
+  padding-right: 40px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  line-height: 1;
+}
+
+.password-toggle-btn:hover {
+  color: #495057;
+}
+
+.password-toggle-btn:focus {
+  outline: none;
+}

@@ -96,5 +96,24 @@
         </div>
       </div>
     </div>
+
+    <div *ngIf="!loading && allTransactions.length > 0" class="charts-section">
+      <div class="chart-card card">
+        <div class="compact-card-header">
+          <h5>7-Day Spending</h5>
+        </div>
+        <div class="chart-container">
+          <canvas id="spendingChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card card">
+        <div class="compact-card-header">
+          <h5>30-Day Income vs Expenses</h5>
+        </div>
+        <div class="chart-container">
+          <canvas id="incomeChart"></canvas>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

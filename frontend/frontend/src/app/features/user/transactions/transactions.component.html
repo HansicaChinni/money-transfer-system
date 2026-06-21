@@ -4,8 +4,15 @@
   <div class="container-custom fade-in">
   <div class="row mb-4">
     <div class="col-12">
-      <h2 class="text-primary" style="font-weight: 700;">Transaction History</h2>
-      <p class="text-muted">View all your transaction records.</p>
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div>
+          <h2 class="text-primary" style="font-weight: 700;">Transaction History</h2>
+          <p class="text-muted">View all your transaction records.</p>
+        </div>
+        <button class="btn btn-outline-primary btn-sm" (click)="exportPdf()" *ngIf="!loading && transactions.length > 0">
+          Export PDF
+        </button>
+      </div>
     </div>
   </div>
 
@@ -58,10 +65,10 @@
                   {{ isOutgoing(tx) ? '-' : '+' }}₹{{ tx.amount | number:'1.2-2' }}
                 </strong>
               </td>
-              <td>
-                <span *ngIf="tx.rewardPointsEarned" class="text-wine">+{{ tx.rewardPointsEarned }}</span>
-                <span *ngIf="tx.rewardPointsUsed" class="text-wine-light">-{{ tx.rewardPointsUsed }}</span>
-                <span *ngIf="!tx.rewardPointsEarned && !tx.rewardPointsUsed">-</span>
+              <td class="points-cell">
+                <div *ngIf="tx.rewardPointsEarned" class="text-wine">+{{ tx.rewardPointsEarned }}</div>
+                <div *ngIf="tx.rewardPointsUsed" class="text-wine-light">-{{ tx.rewardPointsUsed }}</div>
+                <div *ngIf="!tx.rewardPointsEarned && !tx.rewardPointsUsed">-</div>
               </td>
               <td>
                 <span class="badge {{ getStatusBadgeClass(tx.status) }}">

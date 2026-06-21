@@ -91,19 +91,31 @@ class UserControllerTest {
         return user;
     }
 
+    private Account createAccount(Long id) {
+        Account account = new Account();
+        account.setId(id);
+        account.setAccountNumber("ACC-2026-" + String.format("%06d", id));
+        account.setHolderName("John");
+        account.setBalance(new BigDecimal("1500"));
+        account.setStatus(com.money.draft.domain.enums.AccountStatus.ACTIVE);
+        account.setRewardPoints(0);
+        return account;
+    }
+
     /* -------------------- TRANSFER TESTS -------------------- */
 
     @Test
     void transfer_ShouldReturnSuccess_WhenTransferIsValid() throws Exception {
         setSecurityContext("john.doe");
         AppUser user = createUser(1L, "john.doe", 100L);
-        Account toAccount = new Account();
-        toAccount.setId(200L);
+        Account fromAccount = createAccount(100L);
+        Account toAccount = createAccount(200L);
 
         MeTransferRequest req = new MeTransferRequest("ACC-2026-000200", new BigDecimal("50.00"), false);
         TransferResponse res = TransferResponse.success(1L, new BigDecimal("50.00"), 0, 0);
 
         when(appUserRepository.findByUsername("john.doe")).thenReturn(Optional.of(user));
+        when(accountRepository.findById(100L)).thenReturn(Optional.of(fromAccount));
         when(accountRepository.findByAccountNumber("ACC-2026-000200")).thenReturn(Optional.of(toAccount));
         when(transferService.transferForUser(100L, 200L, new BigDecimal("50.00"), false))
                 .thenReturn(res);
@@ -146,11 +158,12 @@ class UserControllerTest {
     void transfer_ShouldReturn400_WhenInsufficientBalance() throws Exception {
         setSecurityContext("john.doe");
         AppUser user = createUser(1L, "john.doe", 100L);
-        Account toAccount = new Account();
-        toAccount.setId(200L);
+        Account fromAccount = createAccount(100L);
+        Account toAccount = createAccount(200L);
         MeTransferRequest req = new MeTransferRequest("ACC-2026-000200", new BigDecimal("5000"), false);
 
         when(appUserRepository.findByUsername("john.doe")).thenReturn(Optional.of(user));
+        when(accountRepository.findById(100L)).thenReturn(Optional.of(fromAccount));
         when(accountRepository.findByAccountNumber("ACC-2026-000200")).thenReturn(Optional.of(toAccount));
         when(transferService.transferForUser(anyLong(), anyLong(), any(), anyBoolean()))
                 .thenThrow(new InsufficientBalanceException(100L,
@@ -168,6 +181,7 @@ class UserControllerTest {
     void getBalance_ShouldReturnAccountDetails() throws Exception {
         setSecurityContext("john.doe");
         AppUser user = createUser(1L, "john.doe", 100L);
+        Account account = createAccount(100L);
 
         AccountResponse response = new AccountResponse(
                 100L, null, "John", new BigDecimal("1500"), "ACTIVE", 0
@@ -175,6 +189,7 @@ class UserControllerTest {
 
         when(appUserRepository.findByUsername("john.doe"))
                 .thenReturn(Optional.of(user));
+        when(accountRepository.findById(100L)).thenReturn(Optional.of(account));
         when(accountService.getAccount(100L)).thenReturn(response);
 
         mockMvc.perform(get("/me/balance"))
@@ -201,6 +216,7 @@ class UserControllerTest {
     void getTransactions_ShouldReturnTransactionHistory() throws Exception {
         setSecurityContext("john.doe");
         AppUser user = createUser(1L, "john.doe", 100L);
+        Account account = createAccount(100L);
         LocalDateTime now = LocalDateTime.now();
 
         List<TransactionLogResponse> mockTransactions = Arrays.asList(
@@ -212,6 +228,7 @@ class UserControllerTest {
 
         when(appUserRepository.findByUsername("john.doe"))
                 .thenReturn(Optional.of(user));
+        when(accountRepository.findById(100L)).thenReturn(Optional.of(account));
         when(accountService.getTransactions(100L)).thenReturn(mockTransactions);
 
         mockMvc.perform(get("/me/transactions"))
@@ -227,9 +244,11 @@ class UserControllerTest {
     void getTransactions_ShouldReturnEmptyList_WhenNoTransactions() throws Exception {
         setSecurityContext("john.doe");
         AppUser user = createUser(1L, "john.doe", 100L);
+        Account account = createAccount(100L);
 
         when(appUserRepository.findByUsername("john.doe"))
                 .thenReturn(Optional.of(user));
+        when(accountRepository.findById(100L)).thenReturn(Optional.of(account));
         when(accountService.getTransactions(100L)).thenReturn(List.of());
 
         mockMvc.perform(get("/me/transactions"))

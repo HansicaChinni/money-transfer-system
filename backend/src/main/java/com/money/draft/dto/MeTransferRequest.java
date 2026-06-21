@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-/** User-facing transfer request (server derives fromAccountId from JWT). */
 public record MeTransferRequest(
         @NotBlank String toAccountNumber,
         @NotNull @DecimalMin(value = "0.01", inclusive = true)

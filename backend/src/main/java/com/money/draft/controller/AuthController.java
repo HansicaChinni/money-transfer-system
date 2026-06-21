@@ -25,7 +25,8 @@ public class AuthController {
     private final PasswordEncoder encoder;
     private final JwtService jwt;
 
-    public AuthController(AppUserRepository userRepo, PasswordEncoder encoder, JwtService jwt) {
+    public AuthController(AppUserRepository userRepo,
+                          PasswordEncoder encoder, JwtService jwt) {
         this.userRepo = userRepo;
         this.encoder = encoder;
         this.jwt = jwt;
@@ -37,7 +38,6 @@ public class AuthController {
         var user = userRepo.findByUsername(req.username()).orElse(null);
 
         if (user == null || !encoder.matches(req.password(), user.getPassword())) {
-            // Consistent error payload with the rest of the API
             ErrorResponse body = new ErrorResponse(
                     "UNAUTHORIZED",
                     "Invalid username or password",
@@ -47,7 +47,9 @@ public class AuthController {
             return ResponseEntity.status(401).body(body);
         }
 
-        String token = jwt.generateToken(user.getUsername(), user.getRole().name(), user.getAccountId());
-        return ResponseEntity.ok(new LoginResponse(token, user.getRole().name(), user.getAccountId()));
+        Long accountId = user.getAccountId();
+
+        String token = jwt.generateToken(user.getUsername(), user.getRole().name(), accountId);
+        return ResponseEntity.ok(new LoginResponse(token, user.getRole().name(), accountId));
     }
 }

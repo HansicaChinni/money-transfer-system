@@ -1,52 +1,50 @@
 :root {
-  /* Muted green interface palette */
-  --leaf-primary: #2f8f62;
-  --leaf-dark: #173d2d;
-  --leaf-medium: #5fae83;
-  --leaf-light: #8fc1b5;
-  --lime-accent: #ddecc7;
-  --lime-soft: #deebc7;
-  --mint-soft: #d9ebe0;
-  --mint-glass: rgba(217, 235, 224, 0.78);
-  --sage: #8fc1b5;
-  --mint: #d9ebe0;
-  --mint-warm: #d9ebe9;
-  --celadon: #d0eedb;
-  --pale-lime: #ddecc7;
-  --pale-lime-soft: #deebc7;
+  /* Neo-bank Mint + Lime Palette */
+  --leaf-primary: #5dbb84;
+  --leaf-dark: #183a2d;
+  --leaf-medium: #79d19a;
+  --leaf-light: #b8ead2;
+  --lime-accent: #efff73;
+  --lime-soft: #f3ffd4;
+  --mint-soft: #dff4ea;
+  --mint-glass: rgba(255,255,255,0.75);
+  --sage: #b8ead2;
+  --mint: #dff4ea;
+  --mint-warm: #edf9f3;
+  --celadon: #d6f5e7;
+  --pale-lime: #efff73;
+  --pale-lime-soft: #f3ffd4;
 
-  /* Backward-compatible aliases used by existing templates */
   --wine-primary: var(--leaf-primary);
   --wine-dark: var(--leaf-dark);
   --wine-medium: var(--leaf-medium);
   --wine-light: var(--leaf-light);
   --wine-lighter: var(--celadon);
   --wine-lightest: var(--lime-soft);
-  --wine-accent: #3d9b68;
+  --wine-accent: #6ed490;
   --wine-accent-light: var(--celadon);
 
   --primary-purple-lightest: var(--lime-soft);
   --accent-orange-lightest: var(--mint-warm);
 
-  /* Surfaces */
-  --bg-light: #f4f9f6;
+  --bg-light: #f7fcf8;
   --bg-white: #ffffff;
   --bg-gradient-light: var(--mint-warm);
-  --surface: rgba(255, 255, 255, 0.88);
+  --surface: rgba(255,255,255,0.72);
   --surface-solid: #ffffff;
 
-  /* Text */
-  --text-dark: #1a2e25;
-  --text-gray: #5f7a6c;
-  --text-light: #8fa89b;
+  --text-dark: #10281f;
+  --text-gray: #6f8d7f;
+  --text-light: #9eb4aa;
 
-  /* Borders and shadows */
-  --border-color: rgba(47, 143, 98, 0.12);
-  --border-light: rgba(47, 143, 98, 0.07);
-  --shadow-sm: 0 1px 3px rgba(23, 61, 45, 0.05);
-  --shadow-md: 0 10px 24px rgba(23, 61, 45, 0.06);
-  --shadow-lg: 0 18px 42px rgba(23, 61, 45, 0.08);
-  --shadow-xl: 0 28px 60px rgba(23, 61, 45, 0.12);
+  --border-color: rgba(93,187,132,0.15);
+  --border-light: rgba(93,187,132,0.08);
+
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-md: 0 12px 35px rgba(0,0,0,0.08);
+  --shadow-lg: 0 20px 50px rgba(0,0,0,0.10);
+  --shadow-xl: 0 30px 70px rgba(0,0,0,0.12);
+
   --sidebar-width: 248px;
 }
 
@@ -62,11 +60,14 @@ body {
   font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
   line-height: 1.55;
   letter-spacing: 0;
+
   background:
-    radial-gradient(circle at 18% 14%, rgba(208, 238, 219, 0.50) 0 18rem, transparent 32rem),
-    radial-gradient(circle at 80% 10%, rgba(221, 236, 199, 0.48) 0 20rem, transparent 34rem),
-    radial-gradient(circle at 50% 80%, rgba(217, 235, 233, 0.40) 0 22rem, transparent 36rem),
-    linear-gradient(160deg, #8fc1b5 0%, #d9ebe0 38%, #d0eedb 66%, #deebc7 100%);
+    radial-gradient(circle at 15% 20%, rgba(236,255,120,.55) 0%, rgba(236,255,120,.18) 20%, transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(209,255,140,.45) 0%, rgba(209,255,140,.12) 25%, transparent 50%),
+    radial-gradient(circle at 50% 80%, rgba(214,255,180,.35) 0%, rgba(214,255,180,.08) 30%, transparent 55%),
+    radial-gradient(circle at 75% 60%, rgba(255,255,180,.25) 0%, transparent 40%),
+    linear-gradient(135deg,#9fcfc4 0%,#b9ddd1 25%,#cce8da 50%,#d9efe0 75%,#e8f5d7 100%);
+
   background-attachment: fixed;
 }
 
@@ -120,7 +121,7 @@ h5 {
 .stat-card,
 .auth-card {
   background: var(--surface);
-  border: 1px solid rgba(143, 193, 181, 0.18);
+  border: 1px solid rgba(143, 193, 181, 0.24);
   border-radius: 10px;
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(18px);
@@ -180,12 +181,12 @@ h5 {
 }
 
 .stat-card-wine {
-  background: linear-gradient(135deg, #1a3f31, #2f8f62 55%, #8fc1b5);
+  background: linear-gradient(135deg, #1a4a36, #3da874 48%, #8fc1b5);
   color: white;
 }
 
 .stat-card-wine:hover {
-  background: linear-gradient(135deg, #1e4a38, var(--leaf-primary) 55%, var(--leaf-light));
+  background: linear-gradient(135deg, #1e553f, #45b87e 48%, #9dcdc0);
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }

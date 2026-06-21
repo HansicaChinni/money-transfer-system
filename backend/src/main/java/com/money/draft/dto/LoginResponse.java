@@ -5,4 +5,5 @@ public record LoginResponse(
         String token,
         String role,
         Long accountId
-) {}
+) {
+}

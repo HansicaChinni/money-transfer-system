@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
+import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
 import { AccountResponse, TransactionLogResponse } from '../../../core/models/api.models';
+import Chart from 'chart.js/auto';
 
 interface QuickContact {
   accountNumber: string;
@@ -17,12 +19,16 @@ interface QuickContact {
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
   accountInfo: AccountResponse | null = null;
+  allTransactions: TransactionLogResponse[] = [];
   recentTransactions: TransactionLogResponse[] = [];
   quickContacts: QuickContact[] = [];
   loading = true;
   errorMessage = '';
+  private _chartsInitialized = false;
+  private _spendingChart: Chart | null = null;
+  private _incomeChart: Chart | null = null;
 
   private avatarColors = [
     'var(--leaf-primary)',
@@ -33,10 +39,19 @@ export class DashboardComponent implements OnInit {
     'var(--wine-accent-light)'
   ];
 
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.loadDashboardData();
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.loading && this.allTransactions.length > 0) {
+      this.buildCharts();
+    }
   }
 
   loadDashboardData(): void {
@@ -55,13 +70,135 @@ export class DashboardComponent implements OnInit {
 
     this.userService.getTransactions().subscribe({
       next: (transactions) => {
+        this.allTransactions = transactions;
         this.recentTransactions = transactions.slice(0, 5);
         this.buildQuickContacts(transactions);
+        if (!this._chartsInitialized && transactions.length > 0) {
+          this.buildCharts();
+        }
       },
       error: () => {
         console.error('Failed to load transactions');
       }
     });
+  }
+
+  private buildCharts(): void {
+    this._chartsInitialized = true;
+    setTimeout(() => this._renderCharts(), 100);
+  }
+
+  private _renderCharts(): void {
+    const accountId = this.accountInfo?.id;
+    if (!accountId) return;
+
+    const spendingCanvas = document.getElementById('spendingChart') as HTMLCanvasElement | null;
+    const incomeCanvas = document.getElementById('incomeChart') as HTMLCanvasElement | null;
+
+    if (spendingCanvas) {
+      if (this._spendingChart) this._spendingChart.destroy();
+      const { labels, data } = this._computeDailySpending(accountId, 7);
+      this._spendingChart = new Chart(spendingCanvas, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Spent',
+            data,
+            backgroundColor: 'rgba(143, 193, 181, 0.65)',
+            borderColor: '#8fc1b5',
+            borderWidth: 1,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    if (incomeCanvas) {
+      if (this._incomeChart) this._incomeChart.destroy();
+      const { labels, incoming, outgoing } = this._computeMonthlySummary(accountId, 30);
+      this._incomeChart = new Chart(incomeCanvas, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Received', data: incoming, backgroundColor: 'rgba(143, 193, 181, 0.8)', borderRadius: 4 },
+            { label: 'Sent', data: outgoing, backgroundColor: 'rgba(222, 236, 199, 0.8)', borderRadius: 4 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'top', labels: { boxWidth: 12, padding: 8 } } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+  }
+
+  private _computeDailySpending(accountId: number, days: number): { labels: string[]; data: number[] } {
+    const labels: string[] = [];
+    const data: number[] = [];
+    const now = new Date();
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      labels.push(d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric' }));
+      const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      const dayEnd = new Date(dayStart.getTime() + 86400000);
+      let total = 0;
+      for (const tx of this.allTransactions) {
+        if (tx.fromAccountId === accountId && tx.createdOn) {
+          const txDate = new Date(tx.createdOn);
+          if (txDate >= dayStart && txDate < dayEnd) {
+            total += tx.amount;
+          }
+        }
+      }
+      data.push(total);
+    }
+    return { labels, data };
+  }
+
+  private _computeMonthlySummary(accountId: number, days: number): { labels: string[]; incoming: number[]; outgoing: number[] } {
+    const labels: string[] = [];
+    const incoming: number[] = [];
+    const outgoing: number[] = [];
+    const now = new Date();
+    const weeks = Math.ceil(days / 7);
+    for (let w = weeks - 1; w >= 0; w--) {
+      const start = new Date(now);
+      start.setDate(start.getDate() - (w * 7) - 6);
+      const end = new Date(now);
+      end.setDate(end.getDate() - (w * 7));
+      if (w === weeks - 1) start.setDate(start.getDate() + 7);
+      labels.push(`W${weeks - w}`);
+      let inc = 0;
+      let out = 0;
+      for (const tx of this.allTransactions) {
+        if (!tx.createdOn) continue;
+        const txDate = new Date(tx.createdOn);
+        if (txDate >= start && txDate <= end) {
+          if (tx.toAccountId === accountId) inc += tx.amount;
+          if (tx.fromAccountId === accountId) out += tx.amount;
+        }
+      }
+      incoming.push(inc);
+      outgoing.push(out);
+    }
+    return { labels, incoming, outgoing };
   }
 
   private buildQuickContacts(transactions: TransactionLogResponse[]): void {

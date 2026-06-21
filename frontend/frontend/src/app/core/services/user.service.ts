@@ -16,7 +16,9 @@ import {
 export class UserService {
   private apiUrl = 'http://localhost:8080/me';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient
+  ) {}
 
   getBalance(): Observable<AccountResponse> {
     return this.http.get<AccountResponse>(`${this.apiUrl}/balance`);
