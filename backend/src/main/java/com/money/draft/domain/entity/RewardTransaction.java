@@ -73,4 +73,6 @@ public class RewardTransaction {
     public Long getReferenceTransactionId() { return referenceTransactionId; }
     public Instant getCreatedOn() { return createdOn; }
     public Instant getExpiresOn() { return expiresOn; }
+    public void setExpiresOn(Instant expiresOn) { this.expiresOn = expiresOn; }
+    public void setReferenceTransactionId(Long referenceTransactionId) { this.referenceTransactionId = referenceTransactionId; }
 }

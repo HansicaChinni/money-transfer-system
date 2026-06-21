@@ -142,4 +142,6 @@ public class TransactionLog {
     public Instant getCreatedOn() { return createdOn; }
     public Integer getRewardPointsEarned() { return rewardPointsEarned; }
     public Integer getRewardPointsUsed() { return rewardPointsUsed; }
+    public void setRewardPointsEarned(Integer rewardPointsEarned) { this.rewardPointsEarned = rewardPointsEarned; }
+    public void setRewardPointsUsed(Integer rewardPointsUsed) { this.rewardPointsUsed = rewardPointsUsed; }
 }

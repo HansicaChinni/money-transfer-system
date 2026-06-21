@@ -83,13 +83,22 @@ body::before {
 .navbar-spacing {
   min-height: 100vh;
   margin-left: var(--sidebar-width);
-  padding: 2rem;
+  padding: 3rem;
 }
 
 .container-custom {
   max-width: 1220px;
   margin: 0 auto;
-  padding: 0;
+  padding: 0 2rem;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+}
+
+h2 {
+    font-size: 1.8rem;
 }
 
 .page-header {
@@ -120,13 +129,21 @@ h5 {
 .card,
 .stat-card,
 .auth-card {
-  background: var(--surface);
-  border: 1px solid rgba(143, 193, 181, 0.24);
-  border-radius: 10px;
-  box-shadow: var(--shadow-md);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  border-radius: 28px;
+
+  background: rgba(255,255,255,0.72);
+
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+
+  border: 1px solid rgba(255,255,255,0.45);
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,.06),
+    0 25px 60px rgba(0,0,0,.05),
+    inset 0 1px 0 rgba(255,255,255,.8);
+
+  padding: 2rem;
 }
 
 .card:hover,
@@ -144,7 +161,8 @@ h5 {
   border-bottom: 1px solid var(--border-light);
   border-radius: 10px 10px 0 0 !important;
   padding: 1rem 1.25rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .card-body {

@@ -48,7 +48,9 @@ public class RewardServiceImpl implements RewardService {
     }
 
     @Override
+    @Transactional
     public int redeemDuringTransfer(Account from, BigDecimal amount) {
+        processExpiredPoints(from.getId());
         int available = from.getRewardPoints();
         if (available <= 0) return 0;
         int amountInt = amount.setScale(0, RoundingMode.DOWN).intValue();
@@ -73,7 +75,7 @@ public class RewardServiceImpl implements RewardService {
 
     private int calculateExpiringPoints(Long accountId) {
         Instant now = Instant.now();
-        Instant threshold = now.plus(2, ChronoUnit.DAYS);
+        Instant threshold = now.plus(1, ChronoUnit.DAYS);
         int raw = rewardRepo.sumPointsExpiringBetween(accountId, now, threshold);
         Account account = accountRepo.findById(accountId).orElse(null);
         if (account == null) return 0;
@@ -106,10 +108,12 @@ public class RewardServiceImpl implements RewardService {
         TransactionLog tx = txRepo.findById(transactionId)
                 .orElseThrow(() -> new AccountNotFoundException(transactionId));
 
-        Optional<RewardTransaction> earned = rewardRepo
+        List<RewardTransaction> earnedList = rewardRepo
                 .findByAccountIdAndReferenceTransactionIdAndType(accountId, transactionId, RewardTransactionType.EARNED);
-        Optional<RewardTransaction> redeemed = rewardRepo
+        List<RewardTransaction> redeemedList = rewardRepo
                 .findByAccountIdAndReferenceTransactionIdAndType(accountId, transactionId, RewardTransactionType.REDEEMED);
+        Optional<RewardTransaction> earned = earnedList.isEmpty() ? Optional.empty() : Optional.of(earnedList.get(0));
+        Optional<RewardTransaction> redeemed = redeemedList.isEmpty() ? Optional.empty() : Optional.of(redeemedList.get(0));
 
         java.util.Map<Long, Account> accountCache = new java.util.HashMap<>();
         accountRepo.findById(tx.getFromAccountId()).ifPresent(a -> accountCache.put(a.getId(), a));
@@ -189,6 +193,7 @@ public class RewardServiceImpl implements RewardService {
         return instant == null ? null : instant.atOffset(ZoneOffset.UTC).toLocalDateTime();
     }
 
+    @Override
     @Transactional
     public void processExpiredPoints(Long accountId) {
         List<RewardTransaction> earnedList = rewardRepo.findEarnedByAccountIdOrderByCreatedOnAsc(accountId);
@@ -229,11 +234,16 @@ public class RewardServiceImpl implements RewardService {
         if (totalUnredeemedExpired > 0) {
             Account account = accountRepo.findById(accountId)
                     .orElseThrow(() -> new AccountNotFoundException(accountId));
-            int toDeduct = Math.min(totalUnredeemedExpired, account.getRewardPoints());
-            if (toDeduct > 0) {
-                account.setRewardPoints(account.getRewardPoints() - toDeduct);
+            int totalEarned = rewardRepo.sumPointsByAccountIdAndType(accountId, RewardTransactionType.EARNED);
+            int totalRedeemed = rewardRepo.sumPointsByAccountIdAndType(accountId, RewardTransactionType.REDEEMED);
+            int correctBalance = totalEarned - totalRedeemed - totalUnredeemedExpired;
+            if (correctBalance < 0) { correctBalance = 0; }
+            int oldBalance = account.getRewardPoints();
+            if (oldBalance != correctBalance) {
+                account.setRewardPoints(correctBalance);
                 accountRepo.save(account);
-                log.info("Deducted {} expired reward points from account {}", toDeduct, accountId);
+                log.info("Set reward points from {} to {} for account {} ({} expired points unredeemed)",
+                        oldBalance, correctBalance, accountId, totalUnredeemedExpired);
             }
         }
     }

@@ -50,7 +50,9 @@ export class AdminDashboardComponent implements OnInit {
 
     this.adminService.getAllTransactions().subscribe({
       next: (transactions) => {
-        this.recentTransactions = transactions.slice(0, 5);
+        this.recentTransactions = transactions
+          .sort((a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime())
+          .slice(0, 5);
         this.recentTransactionCount = transactions.filter(t => t.status === 'SUCCESS').length;
       },
       error: () => {

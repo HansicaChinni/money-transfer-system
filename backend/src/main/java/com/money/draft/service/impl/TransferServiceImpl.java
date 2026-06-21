@@ -12,6 +12,7 @@ import com.money.draft.dto.TransferRequest;
 import com.money.draft.dto.TransferResponse;
 import com.money.draft.exception.*;
 import com.money.draft.service.RewardGrantWriter;
+import com.money.draft.service.RewardService;
 import com.money.draft.service.TransactionLogWriter;
 import com.money.draft.service.TransferService;
 import org.slf4j.Logger;
@@ -34,17 +35,20 @@ public class TransferServiceImpl implements TransferService {
     private final TransactionLogRepository txRepo;
     private final TransactionLogWriter logWriter;
     private final RewardTransactionRepository rewardRepo;
+    private final RewardService rewardService;
     private final RewardGrantWriter rewardGrantWriter;
 
     public TransferServiceImpl(AccountRepository accountRepo,
                                TransactionLogRepository txRepo,
                                TransactionLogWriter logWriter,
                                RewardTransactionRepository rewardRepo,
+                               RewardService rewardService,
                                RewardGrantWriter rewardGrantWriter) {
         this.accountRepo = accountRepo;
         this.txRepo = txRepo;
         this.logWriter = logWriter;
         this.rewardRepo = rewardRepo;
+        this.rewardService = rewardService;
         this.rewardGrantWriter = rewardGrantWriter;
     }
 
@@ -127,12 +131,9 @@ public class TransferServiceImpl implements TransferService {
         BigDecimal actualDebit = amount;
         int rewardPointsUsed = 0;
 
-        if (req.useRewardPoints() && from.getRewardPoints() > 0) {
-            int available = from.getRewardPoints();
-            int amountInt = amount.setScale(0, RoundingMode.DOWN).intValue();
-            rewardPointsUsed = Math.min(available, amountInt);
+        if (req.useRewardPoints()) {
+            rewardPointsUsed = rewardService.redeemDuringTransfer(from, amount);
             actualDebit = amount.subtract(BigDecimal.valueOf(rewardPointsUsed));
-            from.debitRewardPoints(rewardPointsUsed);
         }
 
         if (actualDebit.compareTo(BigDecimal.ZERO) > 0) {

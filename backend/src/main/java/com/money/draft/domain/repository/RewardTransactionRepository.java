@@ -18,7 +18,7 @@ public interface RewardTransactionRepository extends JpaRepository<RewardTransac
 
     List<RewardTransaction> findByAccountIdAndReferenceTransactionId(Long accountId, Long referenceTransactionId);
 
-    Optional<RewardTransaction> findByAccountIdAndReferenceTransactionIdAndType(
+    List<RewardTransaction> findByAccountIdAndReferenceTransactionIdAndType(
             Long accountId, Long referenceTransactionId, RewardTransactionType type);
 
     @Query("SELECT COALESCE(SUM(r.points), 0) FROM RewardTransaction r WHERE r.accountId = :accountId AND r.type = :type")
@@ -38,4 +38,10 @@ public interface RewardTransactionRepository extends JpaRepository<RewardTransac
 
     @Query("SELECT COALESCE(SUM(r.points), 0) FROM RewardTransaction r WHERE r.accountId = :accountId AND r.type = 'EARNED' AND r.expiresOn BETWEEN :from AND :to")
     int sumPointsExpiringBetween(@Param("accountId") Long accountId, @Param("from") Instant from, @Param("to") Instant to);
+
+    @Query("SELECT r FROM RewardTransaction r WHERE r.type = 'EARNED' AND r.expiresOn IS NULL")
+    List<RewardTransaction> findEarnedWithNullExpiresOn();
+
+    @Query("SELECT r FROM RewardTransaction r WHERE r.type = 'REDEEMED' AND r.referenceTransactionId IS NULL")
+    List<RewardTransaction> findRedeemedWithNullReferenceTransactionId();
 }

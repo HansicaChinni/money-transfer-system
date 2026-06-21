@@ -66,9 +66,12 @@
                 </strong>
               </td>
               <td class="points-cell">
-                <div *ngIf="tx.rewardPointsEarned" class="text-wine">+{{ tx.rewardPointsEarned }}</div>
-                <div *ngIf="tx.rewardPointsUsed" class="text-wine-light">-{{ tx.rewardPointsUsed }}</div>
-                <div *ngIf="!tx.rewardPointsEarned && !tx.rewardPointsUsed">-</div>
+                <ng-container *ngIf="isOutgoing(tx); else incomingPoints">
+                  <div *ngIf="tx.rewardPointsEarned" class="text-wine">+{{ tx.rewardPointsEarned }}</div>
+                  <div *ngIf="tx.rewardPointsUsed" class="text-wine-light">-{{ tx.rewardPointsUsed }}</div>
+                  <div *ngIf="!tx.rewardPointsEarned && !tx.rewardPointsUsed">-</div>
+                </ng-container>
+                <ng-template #incomingPoints>-</ng-template>
               </td>
               <td>
                 <span class="badge {{ getStatusBadgeClass(tx.status) }}">

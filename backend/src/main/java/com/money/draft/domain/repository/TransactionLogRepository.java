@@ -2,6 +2,7 @@
 package com.money.draft.domain.repository;
 
 import com.money.draft.domain.entity.TransactionLog;
+import com.money.draft.domain.enums.TransactionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -12,4 +13,7 @@ public interface TransactionLogRepository extends JpaRepository<TransactionLog, 
 
     List<TransactionLog> findByFromAccountIdOrToAccountIdOrderByCreatedOnDesc(Long fromId, Long toId);
 
+    List<TransactionLog> findByStatus(TransactionStatus status);
+
+    List<TransactionLog> findByFromAccountIdAndRewardPointsUsed(Long fromAccountId, Integer rewardPointsUsed);
 }

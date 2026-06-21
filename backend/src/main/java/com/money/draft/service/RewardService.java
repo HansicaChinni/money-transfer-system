@@ -12,6 +12,7 @@ import java.util.List;
 
 public interface RewardService {
     int redeemDuringTransfer(Account from, BigDecimal amount);
+    void processExpiredPoints(Long accountId);
     void grantPoints(Long accountId, Long transactionId, BigDecimal actualDebit);
     RewardSummaryResponse getRewardSummary(Long accountId);
     List<RewardTransactionResponse> getRewardTransactions(Long accountId);
