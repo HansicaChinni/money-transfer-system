@@ -14,6 +14,7 @@ import { LoginResponse } from '../../../core/models/api.models';
 export class NavbarComponent implements OnInit {
   currentUser: LoginResponse | null = null;
   isAdmin = false;
+  menuOpen = false;
 
   constructor(
     private authService: AuthService,
@@ -28,6 +29,15 @@ export class NavbarComponent implements OnInit {
   }
 
   logout(): void {
+    this.menuOpen = false;
     this.authService.logout();
+  }
+
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  closeMenu(): void {
+    this.menuOpen = false;
   }
 }

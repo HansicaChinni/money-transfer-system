@@ -1,46 +1,52 @@
 :root {
-  /* Green-yellow interface palette */
-  --leaf-primary: #168a42;
-  --leaf-dark: #063f25;
-  --leaf-medium: #21a957;
-  --leaf-light: #6fe19a;
-  --lime-accent: #f4ff5f;
-  --lime-soft: #f8ffd2;
-  --mint-soft: #dff6e5;
-  --mint-glass: rgba(229, 250, 226, 0.74);
+  /* Muted green interface palette */
+  --leaf-primary: #2f8f62;
+  --leaf-dark: #173d2d;
+  --leaf-medium: #5fae83;
+  --leaf-light: #8fc1b5;
+  --lime-accent: #ddecc7;
+  --lime-soft: #deebc7;
+  --mint-soft: #d9ebe0;
+  --mint-glass: rgba(217, 235, 224, 0.78);
+  --sage: #8fc1b5;
+  --mint: #d9ebe0;
+  --mint-warm: #d9ebe9;
+  --celadon: #d0eedb;
+  --pale-lime: #ddecc7;
+  --pale-lime-soft: #deebc7;
 
   /* Backward-compatible aliases used by existing templates */
   --wine-primary: var(--leaf-primary);
   --wine-dark: var(--leaf-dark);
   --wine-medium: var(--leaf-medium);
   --wine-light: var(--leaf-light);
-  --wine-lighter: #a9f3bb;
+  --wine-lighter: var(--celadon);
   --wine-lightest: var(--lime-soft);
-  --wine-accent: #0f7f38;
-  --wine-accent-light: #b7f36a;
+  --wine-accent: #3d9b68;
+  --wine-accent-light: var(--celadon);
 
   --primary-purple-lightest: var(--lime-soft);
-  --accent-orange-lightest: #ecffd9;
+  --accent-orange-lightest: var(--mint-warm);
 
   /* Surfaces */
-  --bg-light: #f6fbf4;
+  --bg-light: #f4f9f6;
   --bg-white: #ffffff;
-  --bg-gradient-light: #eefbd9;
+  --bg-gradient-light: var(--mint-warm);
   --surface: rgba(255, 255, 255, 0.88);
   --surface-solid: #ffffff;
 
   /* Text */
-  --text-dark: #111b16;
-  --text-gray: #66736b;
-  --text-light: #9aa8a0;
+  --text-dark: #1a2e25;
+  --text-gray: #5f7a6c;
+  --text-light: #8fa89b;
 
   /* Borders and shadows */
-  --border-color: rgba(15, 127, 56, 0.16);
-  --border-light: rgba(15, 127, 56, 0.09);
-  --shadow-sm: 0 1px 3px rgba(8, 63, 37, 0.08);
-  --shadow-md: 0 10px 24px rgba(8, 63, 37, 0.09);
-  --shadow-lg: 0 18px 42px rgba(8, 63, 37, 0.13);
-  --shadow-xl: 0 28px 60px rgba(8, 63, 37, 0.18);
+  --border-color: rgba(47, 143, 98, 0.12);
+  --border-light: rgba(47, 143, 98, 0.07);
+  --shadow-sm: 0 1px 3px rgba(23, 61, 45, 0.05);
+  --shadow-md: 0 10px 24px rgba(23, 61, 45, 0.06);
+  --shadow-lg: 0 18px 42px rgba(23, 61, 45, 0.08);
+  --shadow-xl: 0 28px 60px rgba(23, 61, 45, 0.12);
   --sidebar-width: 248px;
 }
 
@@ -57,9 +63,10 @@ body {
   line-height: 1.55;
   letter-spacing: 0;
   background:
-    radial-gradient(circle at 18% 12%, rgba(244, 255, 95, 0.58) 0 16rem, transparent 29rem),
-    radial-gradient(circle at 82% 10%, rgba(111, 225, 154, 0.38) 0 18rem, transparent 31rem),
-    linear-gradient(135deg, #94c9b8 0%, #dff5ce 45%, #f7ff96 100%);
+    radial-gradient(circle at 18% 14%, rgba(208, 238, 219, 0.50) 0 18rem, transparent 32rem),
+    radial-gradient(circle at 80% 10%, rgba(221, 236, 199, 0.48) 0 20rem, transparent 34rem),
+    radial-gradient(circle at 50% 80%, rgba(217, 235, 233, 0.40) 0 22rem, transparent 36rem),
+    linear-gradient(160deg, #8fc1b5 0%, #d9ebe0 38%, #d0eedb 66%, #deebc7 100%);
   background-attachment: fixed;
 }
 
@@ -113,8 +120,8 @@ h5 {
 .stat-card,
 .auth-card {
   background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 8px;
+  border: 1px solid rgba(143, 193, 181, 0.18);
+  border-radius: 10px;
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -124,17 +131,17 @@ h5 {
 .card:hover,
 .stat-card:hover,
 .stat-card-clickable:hover {
-  border-color: rgba(244, 255, 95, 0.75);
+  border-color: rgba(143, 193, 181, 0.58);
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
 
 .card-header {
-  background: linear-gradient(135deg, rgba(255,255,255,0.94), rgba(238, 255, 219, 0.82));
+  background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(208, 238, 219, 0.60));
   color: var(--leaf-dark);
   border: 0;
   border-bottom: 1px solid var(--border-light);
-  border-radius: 8px 8px 0 0 !important;
+  border-radius: 10px 10px 0 0 !important;
   padding: 1rem 1.25rem;
   font-weight: 700;
 }
@@ -156,7 +163,7 @@ h5 {
   height: 8rem;
   right: -3.5rem;
   top: -4.5rem;
-  background: radial-gradient(circle, rgba(244, 255, 95, 0.7), transparent 68%);
+  background: radial-gradient(circle, rgba(208, 238, 219, 0.72), transparent 68%);
 }
 
 .stat-card-clickable {
@@ -166,13 +173,21 @@ h5 {
   text-decoration: none;
 }
 
+.row > [class*="col-"] > .card,
+.row > [class*="col-"] > .stat-card,
+.row > [class*="col-"] > .stat-card-clickable {
+  height: 100%;
+}
+
 .stat-card-wine {
-  background: linear-gradient(135deg, var(--leaf-dark), var(--leaf-primary) 58%, #a8ea55);
+  background: linear-gradient(135deg, #1a3f31, #2f8f62 55%, #8fc1b5);
   color: white;
 }
 
 .stat-card-wine:hover {
-  background: linear-gradient(135deg, #052f1d, var(--leaf-primary) 58%, var(--lime-accent));
+  background: linear-gradient(135deg, #1e4a38, var(--leaf-primary) 55%, var(--leaf-light));
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 .btn {
@@ -189,7 +204,7 @@ h5 {
   color: white;
   border: 0;
   background: linear-gradient(135deg, var(--leaf-dark), var(--leaf-primary));
-  box-shadow: 0 10px 20px rgba(6, 63, 37, 0.16);
+  box-shadow: 0 10px 20px rgba(23, 61, 45, 0.13);
 }
 
 .btn-primary:hover,
@@ -199,7 +214,7 @@ h5 {
   color: white;
   background: linear-gradient(135deg, var(--leaf-primary), var(--leaf-medium));
   transform: translateY(-1px);
-  box-shadow: 0 14px 24px rgba(6, 63, 37, 0.2);
+  box-shadow: 0 14px 24px rgba(23, 61, 45, 0.16);
 }
 
 .btn-outline-primary,
@@ -212,7 +227,7 @@ h5 {
 .btn-outline-primary:hover,
 .btn-outline-secondary:hover {
   color: var(--leaf-dark);
-  border-color: rgba(244, 255, 95, 0.85);
+  border-color: rgba(143, 193, 181, 0.75);
   background: linear-gradient(135deg, #ffffff, var(--lime-soft));
   transform: translateY(-1px);
 }
@@ -237,7 +252,7 @@ h5 {
 .form-select:focus {
   border-color: var(--leaf-primary);
   background: #fff;
-  box-shadow: 0 0 0 4px rgba(244, 255, 95, 0.34);
+  box-shadow: 0 0 0 4px rgba(143, 193, 181, 0.25);
   outline: 0;
 }
 
@@ -271,14 +286,14 @@ h5 {
 .alert-info,
 .alert-wine {
   color: var(--leaf-dark);
-  background: linear-gradient(135deg, rgba(244, 255, 95, 0.5), rgba(223, 246, 229, 0.88));
+  background: linear-gradient(135deg, rgba(217, 235, 224, 0.82), rgba(208, 238, 219, 0.74));
   border-left: 4px solid var(--leaf-primary);
 }
 
 .alert-danger,
 .alert-warning {
   color: #6f4a00;
-  background: linear-gradient(135deg, #fff8cf, #eefbd9);
+  background: linear-gradient(135deg, #f3f6df, #d9ebe0);
   border-left: 4px solid #e1bc1f;
 }
 
@@ -294,13 +309,13 @@ h5 {
 .badge-earned,
 .badge-primary {
   color: var(--leaf-dark);
-  background: linear-gradient(135deg, var(--lime-accent), #b8f76b);
+  background: linear-gradient(135deg, #d0eedb, #ddecc7);
 }
 
 .badge-locked,
 .badge-redeemed {
   color: #5c4200;
-  background: linear-gradient(135deg, #fff3a3, #ffd66b);
+  background: linear-gradient(135deg, #deecc7, #d9ebe0);
 }
 
 .badge-closed,
@@ -319,7 +334,7 @@ h5 {
 }
 
 .table thead {
-  background: linear-gradient(135deg, rgba(244, 255, 95, 0.42), rgba(255, 255, 255, 0.74));
+  background: linear-gradient(135deg, rgba(208, 238, 219, 0.60), rgba(255, 255, 255, 0.80));
 }
 
 .table thead th {
@@ -338,7 +353,7 @@ h5 {
 }
 
 .table tbody tr:hover {
-  background: rgba(244, 255, 95, 0.15);
+  background: rgba(217, 235, 224, 0.34);
 }
 
 .table tbody td {
@@ -397,7 +412,7 @@ h5 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--leaf-primary), var(--lime-accent));
+  background: linear-gradient(135deg, var(--leaf-primary), var(--leaf-light));
   border-radius: 999px;
 }
 
@@ -411,7 +426,7 @@ h5 {
 
 .search-bar:focus {
   border-color: var(--leaf-primary);
-  box-shadow: 0 0 0 4px rgba(244, 255, 95, 0.34);
+  box-shadow: 0 0 0 4px rgba(143, 193, 181, 0.25);
   outline: 0;
 }
 
@@ -452,8 +467,8 @@ h5 {
   padding: 2rem;
   text-align: center;
   background:
-    radial-gradient(circle at 72% 18%, rgba(244, 255, 95, 0.82), transparent 7rem),
-    linear-gradient(135deg, #eaffd2, #ffffff 52%, #dff6e5);
+    radial-gradient(circle at 72% 18%, rgba(208, 238, 219, 0.80), transparent 7rem),
+    linear-gradient(135deg, #d9ebe0, #ffffff 52%, #d9ebe9);
 }
 
 .auth-body {
@@ -518,7 +533,7 @@ select:focus-visible {
 
   .navbar-spacing {
     margin-left: 0;
-    padding: 6.25rem 1rem 1.25rem;
+    padding: 4.5rem 1rem 1.25rem;
   }
 }
 

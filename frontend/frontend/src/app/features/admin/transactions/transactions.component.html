@@ -11,7 +11,7 @@
       <div *ngIf="transactions.length === 0" class="text-center py-5 text-muted">No transactions</div>
       <div *ngIf="transactions.length > 0" class="table-responsive">
         <table class="table table-hover mb-0">
-          <thead><tr><th>ID</th><th>Date & Time</th><th>From Account</th><th>To Account</th><th class="text-end">Amount</th><th>Points</th><th>Status</th><th>Idempotency Key</th></tr></thead>
+          <thead><tr><th>ID</th><th>Date & Time</th><th>From</th><th>To</th><th class="text-end">Amount</th><th>Points</th><th>Status</th></tr></thead>
           <tbody>
             <tr *ngFor="let tx of transactions">
               <td><strong>#{{ tx.id }}</strong></td>
@@ -25,7 +25,6 @@
                 <span *ngIf="!tx.rewardPointsEarned && !tx.rewardPointsUsed">-</span>
               </td>
               <td><span class="badge {{ getStatusBadgeClass(tx.status) }}">{{ tx.status }}</span><div *ngIf="tx.failureReason" class="text-wine-dark small mt-1">{{ tx.failureReason }}</div></td>
-              <td><small class="text-muted">{{ tx.idempotencyKey }}</small></td>
             </tr>
           </tbody>
         </table>

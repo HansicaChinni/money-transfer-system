@@ -2,142 +2,99 @@
 
 <div class="navbar-spacing">
   <div class="container-custom fade-in">
-  <div class="row mb-4">
-    <div class="col-12">
-      <h2 class="text-primary" style="font-weight: 700;">Dashboard</h2>
-      <p class="text-muted">Welcome back! Here's your account overview.</p>
-    </div>
-  </div>
-
-  <div *ngIf="errorMessage" class="alert alert-wine" role="alert">
-    {{ errorMessage }}
-  </div>
-
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Loading...</span>
-    </div>
-  </div>
-
-  <div *ngIf="!loading && accountInfo">
-    <!-- Account Information -->
     <div class="row mb-4">
-      <div class="col-md-4 mb-3">
-        <div class="stat-card">
-          <div class="d-flex justify-content-between align-items-start mb-2">
-            <div>
-              <p class="text-muted mb-1" style="font-size: 0.9rem;">Account Balance</p>
-              <h2 class="text-primary mb-0" style="font-weight: 700;">₹{{ accountInfo.balance | number:'1.2-2' }}</h2>
-            </div>
-            <span class="badge {{ getStatusBadgeClass(accountInfo.status) }}">
-              {{ accountInfo.status }}
-            </span>
-          </div>
-          <p class="text-muted mb-0" style="font-size: 0.85rem;">{{ accountInfo.accountNumber }}</p>
-        </div>
-      </div>
-      <div class="col-md-4 mb-3">
-        <a routerLink="/user/rewards" class="stat-card stat-card-clickable">
-          <p class="text-muted mb-1" style="font-size: 0.9rem;">Reward Points</p>
-          <h2 class="mb-0" style="font-weight: 700; color: var(--wine-primary);">{{ accountInfo.rewardPoints }}</h2>
-        </a>
-      </div>
-      <div class="col-md-4 mb-3">
-        <div class="stat-card">
-          <p class="text-muted mb-1" style="font-size: 0.9rem;">Account Holder</p>
-          <h4 class="mb-2" style="font-weight: 600; color: var(--wine-dark);">{{ accountInfo.holderName }}</h4>
-          <div class="mt-3">
-            <a routerLink="/user/transfer" class="btn btn-secondary btn-sm me-2">Make Transfer</a>
-            <a routerLink="/user/transactions" class="btn btn-outline-secondary btn-sm">View History</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick Transfer -->
-    <div class="row mb-4" *ngIf="quickContacts.length > 0">
       <div class="col-12">
-        <div class="card">
-          <div class="card-header">
-            <h5 class="mb-0">Quick Transfer</h5>
-          </div>
-          <div class="card-body">
-            <div class="quick-transfer-row">
-              <a
-                *ngFor="let contact of quickContacts"
-                [routerLink]="'/user/transfer'"
-                [queryParams]="{to: contact.accountNumber}"
-                class="quick-transfer-item"
-              >
-                <div class="avatar-circle" [style.background-color]="getAvatarColor(contact.accountNumber)">
-                  {{ getInitials(contact.holderName) }}
-                </div>
-                <span class="quick-transfer-name">{{ contact.holderName }}</span>
-              </a>
-            </div>
-          </div>
-        </div>
+        <h2 class="text-primary" style="font-weight: 700;">Dashboard</h2>
+        <p class="text-muted">Welcome back! Here's your account overview.</p>
       </div>
     </div>
 
-    <!-- Recent Transactions -->
-    <div class="card">
-      <div class="card-header">
-        <h5 class="mb-0">Recent Transactions</h5>
+    <div *ngIf="errorMessage" class="alert alert-wine" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
-      <div class="card-body">
+    </div>
+
+    <div *ngIf="!loading && accountInfo" class="dashboard-grid">
+      <div class="wallet-card stat-card stat-card-wine">
+        <div class="wallet-topline">
+          <div class="user-avatar-lg">{{ getInitials(accountInfo.holderName) }}</div>
+          <div>
+            <p class="eyebrow">Account Holder</p>
+            <h3>{{ accountInfo.holderName }}</h3>
+            <p class="wallet-account">{{ accountInfo.accountNumber }}</p>
+          </div>
+          <span class="badge status-pill {{ getStatusBadgeClass(accountInfo.status) }}">
+            {{ accountInfo.status }}
+          </span>
+        </div>
+
+        <div class="wallet-balance">
+          <p>Available Balance</p>
+          <h2>₹{{ accountInfo.balance | number:'1.2-2' }}</h2>
+        </div>
+
+        <div class="wallet-actions">
+          <a routerLink="/user/transfer" class="btn btn-light btn-sm">Make Transfer</a>
+          <a routerLink="/user/transactions" class="btn btn-outline-light btn-sm">View History</a>
+        </div>
+      </div>
+
+      <a routerLink="/user/rewards" class="reward-card stat-card stat-card-clickable">
+        <p class="text-muted mb-1">Reward Points</p>
+        <h2>{{ accountInfo.rewardPoints }}</h2>
+        <span>Tap to view rewards</span>
+      </a>
+
+      <div class="quick-send-card card" *ngIf="quickContacts.length > 0">
+        <div class="compact-card-header">
+          <h5>Quick Send</h5>
+          <a routerLink="/user/transfer">See All</a>
+        </div>
+        <div class="quick-transfer-row">
+          <a
+            *ngFor="let contact of quickContacts"
+            [routerLink]="'/user/transfer'"
+            [queryParams]="{to: contact.accountNumber}"
+            class="quick-transfer-item"
+          >
+            <div class="avatar-circle" [style.background-color]="getAvatarColor(contact.accountNumber)">
+              {{ getInitials(contact.holderName) }}
+            </div>
+            <span class="quick-transfer-name">{{ contact.holderName }}</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="recent-card card">
+        <div class="compact-card-header">
+          <h5>Recent Transactions</h5>
+          <a routerLink="/user/transactions">View All</a>
+        </div>
+
         <div *ngIf="recentTransactions.length === 0" class="text-center py-4 text-muted">
           <p class="mb-0">No transactions yet</p>
         </div>
-        <div *ngIf="recentTransactions.length > 0" class="table-responsive">
-          <table class="table table-hover mb-0">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Account</th>
-                <th class="text-end">Amount</th>
-                <th>Points</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let tx of recentTransactions">
-                <td>{{ tx.createdOn | date:'short' }}</td>
-                <td>
-                  <span *ngIf="tx.fromAccountId === accountInfo!.id" class="text-wine-dark">Sent</span>
-                  <span *ngIf="tx.toAccountId === accountInfo!.id" class="text-wine">Received</span>
-                </td>
-                <td>
-                  <span *ngIf="tx.fromAccountId === accountInfo!.id">To: {{ tx.toAccountNumber }}</span>
-                  <span *ngIf="tx.toAccountId === accountInfo!.id">From: {{ tx.fromAccountNumber }}</span>
-                </td>
-                <td class="text-end">
-                  <strong
-                    [class.text-wine-dark]="tx.fromAccountId === accountInfo!.id"
-                    [class.text-wine]="tx.toAccountId === accountInfo!.id">
-                    {{ tx.fromAccountId === accountInfo!.id ? '-' : '+' }}₹{{ tx.amount | number:'1.2-2' }}
-                  </strong>
-                </td>
-                <td>
-                  <span *ngIf="tx.rewardPointsEarned" class="text-wine">+{{ tx.rewardPointsEarned }}</span>
-                  <span *ngIf="tx.rewardPointsUsed" class="text-wine-light">-{{ tx.rewardPointsUsed }}</span>
-                  <span *ngIf="!tx.rewardPointsEarned && !tx.rewardPointsUsed">-</span>
-                </td>
-                <td>
-                  <span class="badge {{ getTransactionStatusBadge(tx.status) }}">
-                    {{ tx.status }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div *ngIf="recentTransactions.length > 0" class="mt-3 text-center">
-          <a routerLink="/user/transactions" class="btn btn-outline-primary btn-sm">View All Transactions</a>
+
+        <div *ngIf="recentTransactions.length > 0" class="transaction-list">
+          <div *ngFor="let tx of recentTransactions" class="transaction-item">
+            <div class="avatar-circle tx-avatar" [style.background-color]="getAvatarColor(getCounterpartyAccount(tx))">
+              {{ getInitials(getCounterpartyName(tx)) }}
+            </div>
+            <div class="tx-copy">
+              <strong>{{ getCounterpartyName(tx) }}</strong>
+              <span>{{ isOutgoing(tx) ? 'Sent' : 'Received' }}</span>
+            </div>
+            <strong class="tx-amount" [class.incoming]="isIncoming(tx)">
+              {{ isOutgoing(tx) ? '-' : '+' }}₹{{ tx.amount | number:'1.2-2' }}
+            </strong>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </div>

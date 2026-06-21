@@ -51,6 +51,10 @@ export class TransactionsComponent implements OnInit {
     return tx.toAccountId === this.accountId;
   }
 
+  getCounterpartyName(tx: TransactionLogResponse): string {
+    return this.isOutgoing(tx) ? tx.toHolderName : tx.fromHolderName;
+  }
+
   getStatusBadgeClass(status: string): string {
     return status === 'SUCCESS' ? 'badge-tx-success' : 'badge-tx-failed';
   }

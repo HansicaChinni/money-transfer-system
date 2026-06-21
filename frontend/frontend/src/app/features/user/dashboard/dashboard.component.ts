@@ -103,6 +103,22 @@ export class DashboardComponent implements OnInit {
     return this.avatarColors[index];
   }
 
+  isOutgoing(tx: TransactionLogResponse): boolean {
+    return tx.fromAccountId === this.accountInfo?.id;
+  }
+
+  isIncoming(tx: TransactionLogResponse): boolean {
+    return tx.toAccountId === this.accountInfo?.id;
+  }
+
+  getCounterpartyName(tx: TransactionLogResponse): string {
+    return this.isOutgoing(tx) ? tx.toHolderName : tx.fromHolderName;
+  }
+
+  getCounterpartyAccount(tx: TransactionLogResponse): string {
+    return this.isOutgoing(tx) ? tx.toAccountNumber : tx.fromAccountNumber;
+  }
+
   getStatusBadgeClass(status: string): string {
     switch (status?.toUpperCase()) {
       case 'ACTIVE':

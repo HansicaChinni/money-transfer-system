@@ -33,11 +33,10 @@
               <th>ID</th>
               <th>Date & Time</th>
               <th>Type</th>
-              <th>Account</th>
+              <th>Counterparty</th>
               <th class="text-end">Amount</th>
               <th>Points</th>
               <th>Status</th>
-              <th>Idempotency Key</th>
             </tr>
           </thead>
           <tbody>
@@ -49,8 +48,8 @@
                 <span *ngIf="isIncoming(tx)" class="badge badge-earned">Received</span>
               </td>
               <td>
-                <span *ngIf="isOutgoing(tx)">To: <strong>{{ tx.toAccountNumber }}</strong></span>
-                <span *ngIf="isIncoming(tx)">From: <strong>{{ tx.fromAccountNumber }}</strong></span>
+                <span *ngIf="isOutgoing(tx)">To: <strong>{{ tx.toHolderName }}</strong></span>
+                <span *ngIf="isIncoming(tx)">From: <strong>{{ tx.fromHolderName }}</strong></span>
               </td>
               <td class="text-end">
                 <strong
@@ -71,9 +70,6 @@
                 <div *ngIf="tx.failureReason" class="text-wine-dark small mt-1">
                   {{ tx.failureReason }}
                 </div>
-              </td>
-              <td>
-                <small class="text-muted">{{ tx.idempotencyKey }}</small>
               </td>
             </tr>
           </tbody>
