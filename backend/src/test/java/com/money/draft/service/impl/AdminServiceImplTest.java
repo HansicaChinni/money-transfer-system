@@ -19,6 +19,7 @@ import com.money.draft.dto.TransactionLogResponse;
 import com.money.draft.exception.AccountClosureException;
 import com.money.draft.exception.AccountNotFoundException;
 import com.money.draft.exception.BusinessException;
+import com.money.draft.exception.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -176,6 +177,41 @@ class AdminServiceImplTest {
     void updateAccountStatus_ShouldThrow_WhenAccountNotFound() {
         when(accountRepo.findById(99L)).thenReturn(Optional.empty());
         assertThrows(AccountNotFoundException.class, () -> adminService.updateAccountStatus(99L, AccountStatus.ACTIVE));
+    }
+
+    /* ---------- updateDailyLimit ---------- */
+
+    @Test
+    void updateDailyLimit_ShouldUpdate() {
+        Account a = createAccount(1L, "ACC-1", BigDecimal.ZERO, AccountStatus.ACTIVE);
+        a.setDailyTransferLimit(new BigDecimal("50000"));
+        when(accountRepo.findById(1L)).thenReturn(Optional.of(a));
+        when(accountRepo.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+        AdminAccountDetailResponse result = adminService.updateDailyLimit(1L, new BigDecimal("75000"));
+        assertEquals("75000", result.dailyTransferLimit().toString());
+        verify(auditLogRepo).save(any(AuditLog.class));
+    }
+
+    @Test
+    void updateDailyLimit_ShouldThrow_WhenNull() {
+        assertThrows(ValidationException.class, () -> adminService.updateDailyLimit(1L, null));
+    }
+
+    @Test
+    void updateDailyLimit_ShouldThrow_WhenNegative() {
+        assertThrows(ValidationException.class, () -> adminService.updateDailyLimit(1L, new BigDecimal("-100")));
+    }
+
+    @Test
+    void updateDailyLimit_ShouldThrow_WhenZero() {
+        assertThrows(ValidationException.class, () -> adminService.updateDailyLimit(1L, BigDecimal.ZERO));
+    }
+
+    @Test
+    void updateDailyLimit_ShouldThrow_WhenAccountNotFound() {
+        when(accountRepo.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(AccountNotFoundException.class, () -> adminService.updateDailyLimit(99L, new BigDecimal("10000")));
     }
 
     private Account createAccount(Long id, String accNum, BigDecimal balance, AccountStatus status) {

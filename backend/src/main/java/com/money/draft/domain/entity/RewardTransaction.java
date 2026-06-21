@@ -18,7 +18,7 @@ public class RewardTransaction {
     @Column(nullable = false)
     private Long accountId;
 
-    @Column(nullable = false)
+    @Column
     private Long transactionId;
 
     @Column(nullable = false)

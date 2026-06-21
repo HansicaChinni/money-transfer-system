@@ -5,6 +5,7 @@ import com.money.draft.dto.AdminAccountDetailResponse;
 import com.money.draft.dto.AdminAccountView;
 import com.money.draft.dto.AdminCreateAccountRequest;
 import com.money.draft.dto.TransactionLogResponse;
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface AdminService {
@@ -14,6 +15,8 @@ public interface AdminService {
     AdminAccountDetailResponse getAccountDetails(Long id);
 
     AdminAccountDetailResponse updateAccountStatus(Long id, AccountStatus status);
+
+    AdminAccountDetailResponse updateDailyLimit(Long id, BigDecimal dailyLimit);
 
     // Existing signatures:
     List<AdminAccountView> getAllAccounts();

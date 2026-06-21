@@ -13,9 +13,15 @@
     <div *ngIf="errorMessage" class="alert alert-danger" role="alert">{{ errorMessage }}</div>
 
     <div class="card mb-4">
-      <div class="card-header d-flex justify-content-between align-items-center">
+      <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
         <h5 class="mb-0">Reward Catalog</h5>
-        <button class="btn btn-primary btn-sm" (click)="openNewItem()">+ New Item</button>
+        <div class="d-flex gap-2">
+          <span class="badge bg-info d-flex align-items-center px-3 py-2">
+            Ratio: 1 pt per ₹{{ currentRatio }}
+          </span>
+          <button class="btn btn-outline-info btn-sm" (click)="openRatioModal()">Configure</button>
+          <button class="btn btn-primary btn-sm" (click)="openNewItem()">+ New Item</button>
+        </div>
       </div>
       <div class="card-body">
         <div *ngIf="showItemForm" class="mb-4 p-3 border rounded bg-light">
@@ -145,6 +151,40 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Configure Ratio Confirm Modal -->
+<div class="modal-backdrop fade show" *ngIf="showRatioModal" (click)="closeRatioModal()"></div>
+<div class="modal fade show d-block" *ngIf="showRatioModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Configure Reward Ratio</h5>
+        <button type="button" class="btn-close" (click)="closeRatioModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted">Set how many rupees equal 1 reward point for future transfers.</p>
+        <div class="alert alert-warning py-2 small" role="alert">
+          ⚠ Session expires in 5 minutes from login. Complete this action before timeout or you'll be redirected.
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Rupees per 1 Point</label>
+          <input type="number" class="form-control" [(ngModel)]="newRatio" min="1" />
+          <small class="text-muted">Current: 1 pt per ₹{{ currentRatio }} | New: 1 pt per ₹{{ newRatio }}</small>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Type <strong>confirm</strong> to proceed</label>
+          <input type="text" class="form-control" [(ngModel)]="ratioConfirmText" placeholder="type confirm here" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" (click)="closeRatioModal()">Cancel</button>
+        <button class="btn btn-primary" [disabled]="ratioConfirmText !== 'confirm' || newRatio <= 0" (click)="confirmRatioChange()">
+          Confirm & Update
+        </button>
       </div>
     </div>
   </div>

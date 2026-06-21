@@ -20,6 +20,18 @@
             <div class="mb-2"><strong>Holder Name:</strong> {{ account.holderName }}</div>
             <div class="mb-2"><strong>Balance:</strong> <span class="text-primary" style="font-size: 1.5rem; font-weight: 700;">₹{{ account.balance | number:'1.2-2' }}</span></div>
             <div class="mb-2"><strong>Status:</strong> <span class="badge {{ getStatusBadgeClass(account.status) }}">{{ account.status }}</span></div>
+            <div class="mb-2">
+              <strong>Daily Transfer Limit:</strong>
+              <span *ngIf="!editingLimit">
+                ₹{{ account.dailyTransferLimit | number:'1.2-2' }}
+                <button class="btn btn-sm btn-outline-primary ms-2" (click)="startEditLimit()">Edit</button>
+              </span>
+              <span *ngIf="editingLimit" class="d-flex align-items-center gap-2 mt-1">
+                <input type="number" class="form-control form-control-sm" style="width:180px" [(ngModel)]="newDailyLimit" min="1" />
+                <button class="btn btn-sm btn-success" (click)="saveDailyLimit()">Save</button>
+                <button class="btn btn-sm btn-outline-secondary" (click)="cancelEditLimit()">Cancel</button>
+              </span>
+            </div>
             <div class="mb-2"><strong>Version:</strong> {{ account.version }}</div>
             <div class="mb-2"><strong>Last Updated:</strong> {{ account.lastUpdated | date:'medium' }}</div>
           </div>

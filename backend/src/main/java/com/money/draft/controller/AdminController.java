@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
@@ -74,6 +75,14 @@ public class AdminController {
             @PathVariable Long id,
             @RequestParam AccountStatus status) {
         return ResponseEntity.ok(adminService.updateAccountStatus(id, status));
+    }
+
+    @Operation(summary = "Update the daily transfer limit for an account")
+    @PatchMapping("/accounts/{id}/daily-limit")
+    public ResponseEntity<AdminAccountDetailResponse> updateDailyLimit(
+            @PathVariable Long id,
+            @RequestParam BigDecimal dailyLimit) {
+        return ResponseEntity.ok(adminService.updateDailyLimit(id, dailyLimit));
     }
 
     @Operation(summary = "List all transaction logs")

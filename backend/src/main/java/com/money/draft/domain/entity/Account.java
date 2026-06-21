@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "accounts")
 public class Account {
 
-    private static final BigDecimal DEFAULT_DAILY_LIMIT = new BigDecimal("100000.00");
+    public static final BigDecimal DEFAULT_DAILY_LIMIT = new BigDecimal("50000.00");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

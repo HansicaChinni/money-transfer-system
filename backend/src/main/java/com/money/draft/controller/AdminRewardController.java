@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -53,5 +54,17 @@ public class AdminRewardController {
     public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
         rewardService.deleteItem(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/ratio")
+    public ResponseEntity<RewardRatioResponse> getRatio() {
+        return ResponseEntity.ok(new RewardRatioResponse(rewardService.getPointsPerUnit()));
+    }
+
+    @PutMapping("/ratio")
+    public ResponseEntity<RewardRatioResponse> updateRatio(@RequestParam int pointsPerUnit,
+                                                           Principal principal) {
+        rewardService.updatePointsPerUnit(pointsPerUnit, principal.getName());
+        return ResponseEntity.ok(new RewardRatioResponse(pointsPerUnit));
     }
 }

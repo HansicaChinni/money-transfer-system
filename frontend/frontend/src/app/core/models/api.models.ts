@@ -22,6 +22,7 @@ export interface AccountResponse {
   holderName: string;
   balance: number;
   status: string;
+  dailyTransferLimit: number;
 }
 
 export interface AdminAccountView {
@@ -38,6 +39,7 @@ export interface AdminAccountDetailResponse {
   status: string;
   version: number;
   lastUpdated: string;
+  dailyTransferLimit: number;
 }
 
 export interface TransactionLogResponse {
@@ -157,4 +159,8 @@ export interface CreateRewardItemRequest {
 
 export interface FulfillRequest {
   notes: string;
+}
+
+export interface RewardRatioResponse {
+  pointsPerUnit: number;
 }

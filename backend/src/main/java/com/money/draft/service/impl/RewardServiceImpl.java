@@ -1,5 +1,7 @@
 package com.money.draft.service.impl;
 
+import com.money.draft.domain.audit.AuditLog;
+import com.money.draft.domain.audit.AuditLogRepository;
 import com.money.draft.domain.entity.*;
 import com.money.draft.domain.enums.RedemptionStatus;
 import com.money.draft.domain.enums.TransactionStatus;
@@ -7,6 +9,7 @@ import com.money.draft.domain.repository.*;
 import com.money.draft.dto.*;
 import com.money.draft.exception.*;
 import com.money.draft.service.RewardService;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,9 +39,11 @@ public class RewardServiceImpl implements RewardService {
     private final AccountRepository accountRepo;
     private final AppUserRepository userRepo;
     private final TransactionLogRepository txLogRepo;
+    private final RewardConfigRepository configRepo;
+    private final AuditLogRepository auditLogRepo;
 
     @Value("${reward.points-per-unit:100}")
-    private int pointsPerUnit;
+    private int defaultPointsPerUnit;
 
     public RewardServiceImpl(AccountRewardsRepository rewardsRepo,
                              RewardTransactionRepository rewardTxRepo,
@@ -46,7 +51,9 @@ public class RewardServiceImpl implements RewardService {
                              RedemptionRequestRepository redemptionRepo,
                              AccountRepository accountRepo,
                              AppUserRepository userRepo,
-                             TransactionLogRepository txLogRepo) {
+                             TransactionLogRepository txLogRepo,
+                             RewardConfigRepository configRepo,
+                             AuditLogRepository auditLogRepo) {
         this.rewardsRepo = rewardsRepo;
         this.rewardTxRepo = rewardTxRepo;
         this.itemRepo = itemRepo;
@@ -54,6 +61,21 @@ public class RewardServiceImpl implements RewardService {
         this.accountRepo = accountRepo;
         this.userRepo = userRepo;
         this.txLogRepo = txLogRepo;
+        this.configRepo = configRepo;
+        this.auditLogRepo = auditLogRepo;
+    }
+
+    @PostConstruct
+    void seedConfig() {
+        if (configRepo.count() == 0) {
+            configRepo.save(new RewardConfig(defaultPointsPerUnit));
+        }
+    }
+
+    private int resolvePointsPerUnit() {
+        return configRepo.findById(1L)
+                .map(RewardConfig::getPointsPerUnit)
+                .orElse(defaultPointsPerUnit);
     }
 
     @Override
@@ -71,7 +93,8 @@ public class RewardServiceImpl implements RewardService {
             AppUser toUser = userRepo.findByAccountId(toAccountId).orElse(null);
             if (fromUser == null || toUser == null || Objects.equals(fromUser.getId(), toUser.getId())) return;
 
-            int points = amount.intValue() / pointsPerUnit;
+            int ppu = resolvePointsPerUnit();
+            int points = amount.intValue() / ppu;
             if (points <= 0) return;
 
             AccountRewards ar = rewardsRepo.findByAccountId(fromAccountId)
@@ -246,6 +269,33 @@ public class RewardServiceImpl implements RewardService {
                 .orElseThrow(() -> new BusinessException("ITEM_NOT_FOUND", "Reward item not found"));
         item.setActive(false);
         itemRepo.save(item);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int getPointsPerUnit() {
+        return resolvePointsPerUnit();
+    }
+
+    @Override
+    @Transactional
+    public void updatePointsPerUnit(int pointsPerUnit, String performedBy) {
+        if (pointsPerUnit <= 0) {
+            throw new ValidationException("Points per unit must be greater than zero");
+        }
+
+        RewardConfig config = configRepo.findById(1L)
+                .orElse(new RewardConfig(pointsPerUnit));
+
+        int oldValue = config.getPointsPerUnit();
+        config.setPointsPerUnit(pointsPerUnit);
+        config.setUpdatedBy(performedBy);
+        config.setUpdatedAt(LocalDateTime.now());
+        configRepo.save(config);
+
+        auditLogRepo.save(new AuditLog(
+                "RATIO_CHANGE", "RewardConfig", 1L, performedBy,
+                String.valueOf(oldValue), String.valueOf(pointsPerUnit)));
     }
 
     private String generateCouponCode() {

@@ -14,5 +14,6 @@ public record AdminAccountDetailResponse(
         BigDecimal balance,
         String status,
         Long version,
-        LocalDateTime lastUpdated
+        LocalDateTime lastUpdated,
+        BigDecimal dailyTransferLimit
 ) {}

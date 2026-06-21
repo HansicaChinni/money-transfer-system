@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { AdminService } from '../../../core/services/admin.service';
 import { AdminAccountDetailResponse, TransactionLogResponse, AccountStatus } from '../../../core/models/api.models';
@@ -9,7 +9,7 @@ import { AdminAccountDetailResponse, TransactionLogResponse, AccountStatus } fro
 @Component({
   selector: 'app-account-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, NavbarComponent],
+  imports: [CommonModule, RouterModule, FormsModule, NavbarComponent],
   templateUrl: './account-detail.component.html',
   styleUrl: './account-detail.component.scss'
 })
@@ -22,6 +22,8 @@ export class AccountDetailComponent implements OnInit {
   successMessage = '';
   accountStatuses = Object.values(AccountStatus);
   AccountStatus = AccountStatus;
+  editingLimit = false;
+  newDailyLimit = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -80,5 +82,29 @@ export class AccountDetailComponent implements OnInit {
 
   getTransactionStatusBadge(status: string): string {
     return status === 'SUCCESS' ? 'badge-success' : 'badge-danger';
+  }
+
+  startEditLimit(): void {
+    this.newDailyLimit = this.account?.dailyTransferLimit ?? 50000;
+    this.editingLimit = true;
+  }
+
+  cancelEditLimit(): void {
+    this.editingLimit = false;
+  }
+
+  saveDailyLimit(): void {
+    if (!this.account || this.newDailyLimit <= 0) return;
+    this.adminService.updateDailyLimit(this.account.id, this.newDailyLimit).subscribe({
+      next: (account) => {
+        this.account = account;
+        this.editingLimit = false;
+        this.successMessage = `Daily transfer limit updated to ₹${this.newDailyLimit.toLocaleString()}`;
+        setTimeout(() => this.successMessage = '', 3000);
+      },
+      error: (err) => {
+        this.errorMessage = 'Failed to update daily limit';
+      }
+    });
   }
 }

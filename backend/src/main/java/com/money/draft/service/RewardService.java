@@ -17,4 +17,7 @@ public interface RewardService {
     RewardItemResponse createItem(CreateRewardItemRequest req);
     RewardItemResponse updateItem(Long id, CreateRewardItemRequest req);
     void deleteItem(Long id);
+
+    int getPointsPerUnit();
+    void updatePointsPerUnit(int pointsPerUnit, String performedBy);
 }

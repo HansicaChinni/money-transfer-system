@@ -10,7 +10,8 @@ import {
   RedemptionResponse,
   RewardItemResponse,
   CreateRewardItemRequest,
-  FulfillRequest
+  FulfillRequest,
+  RewardRatioResponse
 } from '../models/api.models';
 
 @Injectable({
@@ -43,6 +44,11 @@ export class AdminService {
     return this.http.patch<AdminAccountDetailResponse>(`${this.apiUrl}/accounts/${id}/status`, null, { params });
   }
 
+  updateDailyLimit(id: number, dailyLimit: number): Observable<AdminAccountDetailResponse> {
+    const params = new HttpParams().set('dailyLimit', dailyLimit.toString());
+    return this.http.patch<AdminAccountDetailResponse>(`${this.apiUrl}/accounts/${id}/daily-limit`, null, { params });
+  }
+
   getAllTransactions(): Observable<TransactionLogResponse[]> {
     return this.http.get<TransactionLogResponse[]>(`${this.apiUrl}/transactions`);
   }
@@ -73,5 +79,14 @@ export class AdminService {
 
   deleteRewardItem(id: number): Observable<void> {
     return this.http.delete<void>(`${this.rewardUrl}/items/${id}`);
+  }
+
+  getRewardRatio(): Observable<RewardRatioResponse> {
+    return this.http.get<RewardRatioResponse>(`${this.rewardUrl}/ratio`);
+  }
+
+  updateRewardRatio(pointsPerUnit: number): Observable<RewardRatioResponse> {
+    const params = new HttpParams().set('pointsPerUnit', pointsPerUnit.toString());
+    return this.http.put<RewardRatioResponse>(`${this.rewardUrl}/ratio`, null, { params });
   }
 }

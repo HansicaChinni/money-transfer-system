@@ -40,13 +40,17 @@ class RewardServiceImplTest {
     private AppUserRepository userRepo;
     @Mock
     private TransactionLogRepository txLogRepo;
+    @Mock
+    private RewardConfigRepository configRepo;
+    @Mock
+    private com.money.draft.domain.audit.AuditLogRepository auditLogRepo;
 
     @InjectMocks
     private RewardServiceImpl rewardService;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(rewardService, "pointsPerUnit", 100);
+        lenient().when(configRepo.findById(1L)).thenReturn(Optional.of(new com.money.draft.domain.entity.RewardConfig(100)));
     }
 
     /* ---------- grantRewardIfEligible ---------- */

@@ -156,6 +156,28 @@ public class AdminServiceImpl implements AdminService {
         return mapToAdminDetailResponse(saved);
     }
 
+    @Override
+    @Transactional
+    public AdminAccountDetailResponse updateDailyLimit(Long id, BigDecimal dailyLimit) {
+        if (dailyLimit == null || dailyLimit.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ValidationException("Daily limit must be greater than zero");
+        }
+
+        Account a = accountRepo.findById(id)
+                .orElseThrow(() -> new com.money.draft.exception.AccountNotFoundException(id));
+
+        BigDecimal oldLimit = a.getDailyTransferLimit();
+        a.setDailyTransferLimit(dailyLimit);
+        Account saved = accountRepo.save(a);
+
+        auditLogRepo.save(new AuditLog(
+                "DAILY_LIMIT_CHANGE", "Account", id, "admin",
+                oldLimit.toString(), dailyLimit.toString()
+        ));
+
+        return mapToAdminDetailResponse(saved);
+    }
+
     // Mapper for the Admin-specific detail view
     private AdminAccountDetailResponse mapToAdminDetailResponse(com.money.draft.domain.entity.Account a) {
         return new AdminAccountDetailResponse(
@@ -165,7 +187,8 @@ public class AdminServiceImpl implements AdminService {
                 a.getBalance(),
                 a.getStatus().name(),
                 a.getVersion(),
-                toLocalDateTime(a.getLastUpdated())
+                toLocalDateTime(a.getLastUpdated()),
+                a.getDailyTransferLimit()
         );
     }
 }

@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { AdminService } from '../../../core/services/admin.service';
+import { AuthService } from '../../../core/services/auth.service';
 import {
   RewardItemResponse,
   RedemptionResponse,
@@ -37,10 +39,20 @@ export class AdminRewardsComponent implements OnInit {
 
   fulfillNotes = '';
 
-  constructor(private adminService: AdminService) {}
+  currentRatio = 100;
+  showRatioModal = false;
+  newRatio = 100;
+  ratioConfirmText = '';
+
+  constructor(
+    private adminService: AdminService,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadAll();
+    this.loadRatio();
   }
 
   loadAll(): void {
@@ -52,6 +64,43 @@ export class AdminRewardsComponent implements OnInit {
     this.adminService.getRedemptions().subscribe({
       next: (r) => { this.redemptions = r; this.loading = false; },
       error: () => { this.loading = false; }
+    });
+  }
+
+  loadRatio(): void {
+    this.adminService.getRewardRatio().subscribe({
+      next: (r) => { this.currentRatio = r.pointsPerUnit; },
+      error: () => {}
+    });
+  }
+
+  openRatioModal(): void {
+    this.newRatio = this.currentRatio;
+    this.ratioConfirmText = '';
+    this.showRatioModal = true;
+  }
+
+  closeRatioModal(): void {
+    this.showRatioModal = false;
+  }
+
+  confirmRatioChange(): void {
+    if (this.ratioConfirmText !== 'confirm' || this.newRatio <= 0) return;
+    if (!this.authService.isLoggedIn()) {
+      this.errorMessage = 'Session expired. Please login again.';
+      this.closeRatioModal();
+      return;
+    }
+    this.adminService.updateRewardRatio(this.newRatio).subscribe({
+      next: () => {
+        this.currentRatio = this.newRatio;
+        this.successMessage = `Reward ratio updated to 1 pt per ₹${this.newRatio}`;
+        this.closeRatioModal();
+        setTimeout(() => this.successMessage = '', 3000);
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to update ratio';
+      }
     });
   }
 
